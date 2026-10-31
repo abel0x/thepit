@@ -40,7 +40,7 @@ test("the pit's service worker precaches everything the table loads", function (
 });
 
 test("runtime files contain no remote fetch, script, stylesheet, or image URL", function () {
-  ["index.html", "css/styles.css", "js/i18n.js", "js/sound.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/game.js"].forEach(function (file) {
+  ["index.html", "css/styles.css", "js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/game.js"].forEach(function (file) {
     // A plain <a href> only navigates when followed; it never loads anything.
     var source = read(file).replace(/<a\b[^>]*>/gi, "");
     assert.doesNotMatch(source, /(?:src|href)\s*=\s*["']https?:\/\//i, file);
@@ -85,10 +85,7 @@ test("all DOM ids requested by game.js exist in index.html", function () {
 });
 
 test("every literal translation key resolves in English and Turkish", function () {
-  var source = read("js/i18n.js").replace(
-    "global.I18n = {",
-    "global.I18n = { _testDictionary: DICT,"
-  );
+  var source = require("../helpers/i18n.js").i18nSource("games/blackjack/js/strings.js");
   var storage = {};
   var context = {
     document: {
@@ -106,24 +103,24 @@ test("every literal translation key resolves in English and Turkish", function (
   vm.runInContext(source, context);
 
   assert.deepEqual(
-    Object.keys(context.I18n._testDictionary.en).sort(),
-    Object.keys(context.I18n._testDictionary.tr).sort(),
+    Object.keys(context.I18n._dict.en).sort(),
+    Object.keys(context.I18n._dict.tr).sort(),
     "English and Turkish dictionaries must have identical keys"
   );
-  assert.equal(context.I18n._testDictionary.tr.youLose, "KAYBETTİNİZ");
-  assert.equal(context.I18n._testDictionary.tr.bustShort, "21'İ GEÇTİNİZ");
-  assert.equal(context.I18n._testDictionary.tr.placeBetPrompt, "Bahsinizi yapın");
-  assert.equal(context.I18n._testDictionary.tr.insuranceTitle, "Sigorta ister misiniz?");
-  assert.equal(context.I18n._testDictionary.tr.tableTheme, "Masa ve kart arkası");
-  assert.equal(context.I18n._testDictionary.tr.muteSound, "Sesi kapat");
-  assert.equal(context.I18n._testDictionary.tr.unmuteSound, "Sesi aç");
+  assert.equal(context.I18n._dict.tr.youLose, "KAYBETTİNİZ");
+  assert.equal(context.I18n._dict.tr.bustShort, "21'İ GEÇTİNİZ");
+  assert.equal(context.I18n._dict.tr.placeBetPrompt, "Bahsinizi yapın");
+  assert.equal(context.I18n._dict.tr.insuranceTitle, "Sigorta ister misiniz?");
+  assert.equal(context.I18n._dict.tr.tableTheme, "Masa ve kart arkası");
+  assert.equal(context.I18n._dict.tr.muteSound, "Sesi kapat");
+  assert.equal(context.I18n._dict.tr.unmuteSound, "Sesi aç");
   assert.doesNotMatch(
-    JSON.stringify(context.I18n._testDictionary),
+    JSON.stringify(context.I18n._dict),
     /—|–/,
     "User-facing copy should use natural sentence punctuation instead of long dashes"
   );
   assert.doesNotMatch(
-    JSON.stringify(context.I18n._testDictionary.tr),
+    JSON.stringify(context.I18n._dict.tr),
     /battı|bahs(?:i|inizi) koy|sigorta al\?|özel yüksek limitli/i
   );
 

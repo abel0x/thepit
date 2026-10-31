@@ -22,7 +22,7 @@ function loadI18n(saved) {
     document: { querySelectorAll: function () { return []; }, documentElement: { setAttribute: function () {} } }
   };
   sandbox.window = sandbox;
-  vm.runInNewContext(read("js/i18n.js"), sandbox);
+  vm.runInNewContext(require("../helpers/i18n.js").i18nSource("games/roulette/js/strings.js"), sandbox);
   return { I18n: sandbox.I18n, storage: storage };
 }
 

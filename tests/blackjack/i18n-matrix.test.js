@@ -9,10 +9,7 @@ var fs = require("node:fs");
 var path = require("node:path");
 var vm = require("node:vm");
 
-var source = fs.readFileSync(path.resolve(__dirname, "../../games/blackjack/js/i18n.js"), "utf8").replace(
-  "global.I18n = {",
-  "global.I18n = { _testDictionary: DICT,"
-);
+var source = require("../helpers/i18n.js").i18nSource("games/blackjack/js/strings.js");
 
 function emptyDocument() {
   return {
@@ -219,7 +216,7 @@ test("apply updates text, title, aria-label, placeholder, and metadata", functio
 });
 
 test("all user-facing strings avoid accidental repeated spaces", function () {
-  var dictionary = loadI18n().I18n._testDictionary;
+  var dictionary = loadI18n().I18n._dict;
   Object.keys(dictionary).forEach(function (language) {
     Object.keys(dictionary[language]).forEach(function (key) {
       var values = Array.isArray(dictionary[language][key])
@@ -233,7 +230,7 @@ test("all user-facing strings avoid accidental repeated spaces", function () {
 });
 
 test("Turkish interface copy contains no stray English action words", function () {
-  var dictionary = loadI18n().I18n._testDictionary.tr;
+  var dictionary = loadI18n().I18n._dict.tr;
   [
     dictionary.profileLasVegasSummary,
     dictionary.profileAtlanticCitySummary,

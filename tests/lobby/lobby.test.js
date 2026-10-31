@@ -24,7 +24,7 @@ function loadI18n(saved) {
     document: { querySelectorAll: function () { return []; }, documentElement: { setAttribute: function () {} } }
   };
   sandbox.window = sandbox;
-  vm.runInNewContext(read("lobby/js/i18n.js"), sandbox);
+  vm.runInNewContext(require("../helpers/i18n.js").i18nSource("lobby/js/strings.js"), sandbox);
   return { I18n: sandbox.I18n, storage: storage };
 }
 
@@ -67,8 +67,12 @@ test("the language is shared with every table and English comes first", function
   loaded.I18n.setLanguage("tr");
   assert.equal(loaded.storage["pit.lang"], "tr");
   assert.equal(loaded.I18n.locale(), "tr-TR");
-  ["blackjack", "roulette"].forEach(function (id) {
-    assert.match(read("games/" + id + "/js/i18n.js"), /var STORAGE_KEY = "pit\.lang";/, id);
+  assert.match(read("shared/js/i18n.js"), /var STORAGE_KEY = "pit\.lang";/);
+  ["index.html", "games/blackjack/index.html", "games/roulette/index.html"].forEach(function (page) {
+    var html = read(page);
+    var engine = html.search(/shared\/js\/i18n\.js/);
+    var words = html.search(/js\/strings\.js/);
+    assert.ok(engine !== -1 && words > engine, page + " loads the shared engine before its own words");
   });
 });
 

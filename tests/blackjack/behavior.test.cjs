@@ -63,12 +63,12 @@ function i18n(savedLanguage) {
     localStorage: { getItem: () => savedLanguage || null, setItem() {} }
   };
   context.window = context;
-  vm.runInNewContext(source("js/i18n.js").replace("global.I18n = {", "global.I18n = { dictionary: DICT,"), context);
+  vm.runInNewContext(require("../helpers/i18n.js").i18nSource("games/blackjack/js/strings.js"), context);
   return context.I18n;
 }
 
 test("all translation values have matching types, array lengths and placeholders", () => {
-  const dictionary = i18n().dictionary;
+  const dictionary = i18n()._dict;
   assert.deepEqual(Object.keys(dictionary.en).sort(), Object.keys(dictionary.tr).sort());
   const placeholders = value => [...value.matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort();
   for (const key of Object.keys(dictionary.en)) {

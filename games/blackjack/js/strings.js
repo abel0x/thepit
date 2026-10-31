@@ -2,34 +2,25 @@
    SPDX-License-Identifier: AGPL-3.0-or-later
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* =========================================================
-   i18n — English (default) + Turkish, persisted in browser
+   Table 21 — the blackjack table's own words, in English and Turkish
+   The words every page shares are in shared/js/i18n.js.
    ========================================================= */
-(function (global) {
+(function (I18n) {
   "use strict";
 
-  // Shared by every page of ThePit, so the language follows the player.
-  var STORAGE_KEY = "pit.lang";
-  var DEFAULT_LANG = "en";
-
-  var DICT = {
+  I18n.define({
     en: {
       appTitle: "Table 21 · ThePit",
       appDescription: "A free, play-money blackjack simulation that works completely offline.",
       brandName: "Table 21",
       subtitle: "Offline Blackjack",
-      balance: "Balance",
       dealer: "Dealer",
       player: "You",
       betLabel: "BET",
       blackjackTable: "Blackjack table",
-      controlsLabel: "Game controls",
       chipsLabel: "Betting chips",
-      languageSelector: "Language selection",
       dealerHand: "Dealer hand",
       playerHands: "Player hands",
-      close: "Close",
-      amount: "Amount",
-      quickAdd: "Quick add",
       allIn: "All in",
 
       deal: "Deal",
@@ -45,17 +36,8 @@
       dealerName: "DEALER",
       dealerTag: "TABLE 21",
 
-      settings: "Settings",
-      backToLobby: "Back to the lobby",
-      language: "Language",
       tableTheme: "Table & card back",
-      themeEmerald: "Emerald",
-      themeMidnight: "Midnight",
-      themeBordeaux: "Bordeaux",
       animationSpeed: "Animation speed",
-      speedFast: "Fast",
-      speedNormal: "Normal",
-      speedCinematic: "Cinematic",
       ruleProfiles: "Table rules",
       profileLasVegas: "Las Vegas",
       profileAtlanticCity: "Atlantic City",
@@ -73,16 +55,9 @@
       ruleSurrender: "Late surrender",
       ruleNoSurrender: "No surrender",
       ruleSplitLimit: "Up to {count} hands",
-      profileApplied: "{profile} rules applied",
       dealerHitsSoft17: "Dealer hits on soft 17",
       deckCount: "Number of decks",
-      soundLabel: "Sound",
-      muteSound: "Mute sound",
-      unmuteSound: "Turn sound on",
-      soundMixer: "Sound levels",
-      masterVolume: "Master",
       cardVolume: "Cards",
-      chipVolume: "Chips",
       tableVolume: "Table effects",
       stats: "Statistics",
       handsPlayed: "Hands played",
@@ -102,26 +77,13 @@
       coachSoft: "soft {total} vs {up}",
       coachPair: "{rank},{rank} vs {up}",
       coachInsurance: "Basic strategy declines insurance and even money.",
-      addFunds: "Add play money",
-      deposit: "Add",
-      deposited: "Added {amount} to your balance",
-      invalidDeposit: "Enter a positive whole-number amount",
-      accountBusy: "A round with this balance is still in play at another table or tab. Try again when it ends.",
-      roundElsewhere: "Finish the round still open at {table} first.",
-      temporaryAccount: "Shared storage protection is unavailable. This tab uses a separate session balance.",
       wagerLimit: "Maximum safe wager at this balance: {amount}",
       roundingHint: "Amounts use whole dollars. Fractional payouts are rounded down.",
       resetStats: "Reset stats",
-      disclaimerTitle: "Disclaimer",
       disclaimerPlayMoney: "Table 21 is a blackjack simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.",
       disclaimerOdds: "Results here do not predict play at a real table. If gambling is causing problems for you or someone close to you, please seek help.",
-      disclaimerWarranty: "Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.",
-      versionLabel: "Version",
-      licenseNotice: "Free software under the GNU AGPL v3",
-      sourceCode: "Source code",
       rulesChangeHint: "Profiles represent common table rules. Changes apply between rounds.",
       rulesLockedHint: "Table rules are locked until this round ends.",
-      tableInformation: "Table information",
       tableLimitsLabel: "MIN BET",
       tableProfileLabel: "GAME",
       tableShoeLabel: "SHOE",
@@ -172,7 +134,6 @@
       shuffling: "Shuffling cards…",
       settlingWager: "Settling wager…",
       insufficientFunds: "You don't have enough balance for that bet",
-      minBet: "Place a bet first",
       insuranceTitle: "Take insurance?",
       insuranceLabel: "INSURANCE",
       insuranceDesc: "The dealer shows an Ace. Insurance pays 2 to 1.",
@@ -221,19 +182,13 @@
       appDescription: "Tamamen çevrimdışı çalışan, oyun parasıyla oynanan ücretsiz bir blackjack simülasyonu.",
       brandName: "Table 21",
       subtitle: "Çevrimdışı Blackjack",
-      balance: "Bakiye",
       dealer: "Krupiye",
       player: "Siz",
       betLabel: "BAHİS",
       blackjackTable: "Blackjack masası",
-      controlsLabel: "Oyun kontrolleri",
       chipsLabel: "Bahis jetonları",
-      languageSelector: "Dil seçimi",
       dealerHand: "Krupiyenin eli",
       playerHands: "Elleriniz",
-      close: "Kapat",
-      amount: "Tutar",
-      quickAdd: "Hızlı bakiye ekle",
       allIn: "Tüm bakiyeyi yatır",
 
       deal: "Dağıt",
@@ -249,17 +204,8 @@
       dealerName: "KRUPİYE",
       dealerTag: "MASA 21",
 
-      settings: "Ayarlar",
-      backToLobby: "Lobiye dön",
-      language: "Dil",
       tableTheme: "Masa ve kart arkası",
-      themeEmerald: "Zümrüt",
-      themeMidnight: "Gece mavisi",
-      themeBordeaux: "Bordo",
       animationSpeed: "Animasyon hızı",
-      speedFast: "Hızlı",
-      speedNormal: "Normal",
-      speedCinematic: "Sinematik",
       ruleProfiles: "Masa kuralları",
       profileLasVegas: "Las Vegas",
       profileAtlanticCity: "Atlantic City",
@@ -277,16 +223,9 @@
       ruleSurrender: "Geç teslim",
       ruleNoSurrender: "Teslim yok",
       ruleSplitLimit: "En fazla {count} el",
-      profileApplied: "{profile} kuralları uygulandı",
       dealerHitsSoft17: "Krupiye yumuşak 17'de kart çeker",
       deckCount: "Deste sayısı",
-      soundLabel: "Ses",
-      muteSound: "Sesi kapat",
-      unmuteSound: "Sesi aç",
-      soundMixer: "Ses düzeyleri",
-      masterVolume: "Ana ses",
       cardVolume: "Kartlar",
-      chipVolume: "Jetonlar",
       tableVolume: "Masa sesleri",
       stats: "İstatistikler",
       handsPlayed: "Oynanan eller",
@@ -306,26 +245,13 @@
       coachSoft: "yumuşak {total}, krupiye {up}",
       coachPair: "{rank},{rank} çifti, krupiye {up}",
       coachInsurance: "Temel strateji sigortayı da garantili ödemeyi de reddeder.",
-      addFunds: "Oyun parası ekle",
-      deposit: "Ekle",
-      deposited: "Bakiyenize {amount} eklendi",
-      invalidDeposit: "Pozitif bir tam sayı tutarı girin",
-      accountBusy: "Bu bakiyeyle başka bir masada ya da sekmede tur sürüyor. Bitince yeniden deneyin.",
-      roundElsewhere: "Önce {table} masasında açık kalan turu bitirin.",
-      temporaryAccount: "Ortak kayıt koruması kullanılamıyor. Bu sekme ayrı bir oturum bakiyesi kullanıyor.",
       wagerLimit: "Bu bakiyeyle güvenli en yüksek bahis: {amount}",
       roundingHint: "Tutarlar tam dolar olarak hesaplanır. Kesirli ödemeler aşağı yuvarlanır.",
       resetStats: "İstatistikleri sıfırla",
-      disclaimerTitle: "Sorumluluk reddi",
       disclaimerPlayMoney: "Table 21 yalnızca eğlence amaçlı bir blackjack simülasyonudur. Jetonlar ve bakiye nakit değeri olmayan oyun parasıdır: satın alınamaz, satılamaz, paraya ya da ödüle çevrilemez. Gerçek parayla kumar sunulmaz.",
       disclaimerOdds: "Buradaki sonuçlar gerçek bir masada ne olacağını göstermez. Kumar sizin ya da bir yakınınız için sorun olmaya başladıysa lütfen yardım alın.",
-      disclaimerWarranty: "Yetişkinlere yöneliktir. Hiçbir kumarhaneyle bağlantısı yoktur. Olduğu gibi, hiçbir garanti verilmeden sunulur.",
-      versionLabel: "Sürüm",
-      licenseNotice: "GNU AGPL v3 lisanslı özgür yazılım",
-      sourceCode: "Kaynak kodu",
       rulesChangeHint: "Profiller yaygın masa kurallarını temsil eder. Değişiklikler eller arasında uygulanır.",
       rulesLockedHint: "Bu el bitene kadar masa kuralları değiştirilemez.",
-      tableInformation: "Masa bilgileri",
       tableLimitsLabel: "MİN. BAHİS",
       tableProfileLabel: "OYUN",
       tableShoeLabel: "PABUÇ",
@@ -374,7 +300,6 @@
       shuffling: "Kartlar karılıyor…",
       settlingWager: "El sonuçlandırılıyor…",
       insufficientFunds: "Bu bahsi karşılayacak bakiyeniz yok",
-      minBet: "Önce bir bahis yapın",
       insuranceTitle: "Sigorta ister misiniz?",
       insuranceLabel: "SİGORTA",
       insuranceDesc: "Krupiyenin açık kartı As. Krupiyede blackjack varsa her 1 birim sigorta bahsi 2 birim net kazanç sağlar.",
@@ -414,89 +339,5 @@
       sayWelcome: ["Bahsinizi yapın."],
       sayDeal: ["Kartlar oyunda."]
     }
-  };
-
-  var current = DEFAULT_LANG;
-  var listeners = [];
-
-  function detectInitial() {
-    // A previously saved choice always wins and is remembered across visits.
-    var saved = null;
-    try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
-    if (saved && Object.prototype.hasOwnProperty.call(DICT, saved)) return saved;
-    // First-ever visit: English is the primary language.
-    return DEFAULT_LANG;
-  }
-
-  function t(key, params) {
-    var table = DICT[current] || DICT[DEFAULT_LANG];
-    var str = table[key];
-    if (str == null) str = (DICT[DEFAULT_LANG][key] != null ? DICT[DEFAULT_LANG][key] : key);
-    if (params) {
-      str = str.replace(/\{(\w+)\}/g, function (m, p) {
-        return params[p] != null ? params[p] : m;
-      });
-    }
-    return str;
-  }
-
-  // Pick a random line from an array-valued key (falls back to t()).
-  function pick(key, params) {
-    var table = DICT[current] || DICT[DEFAULT_LANG];
-    var val = table[key] != null ? table[key] : DICT[DEFAULT_LANG][key];
-    if (Array.isArray(val) && val.length) {
-      var str = val[Math.floor(Math.random() * val.length)];
-      if (params) str = str.replace(/\{(\w+)\}/g, function (m, p) { return params[p] != null ? params[p] : m; });
-      return str;
-    }
-    return t(key, params);
-  }
-
-  function apply(root) {
-    root = root || document;
-    // textContent
-    root.querySelectorAll("[data-i18n]").forEach(function (el) {
-      el.textContent = t(el.getAttribute("data-i18n"));
-    });
-    // titles
-    root.querySelectorAll("[data-i18n-title]").forEach(function (el) {
-      el.setAttribute("title", t(el.getAttribute("data-i18n-title")));
-    });
-    root.querySelectorAll("[data-i18n-aria-label]").forEach(function (el) {
-      el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria-label")));
-    });
-    root.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
-      el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
-    });
-    root.querySelectorAll("[data-i18n-content]").forEach(function (el) {
-      el.setAttribute("content", t(el.getAttribute("data-i18n-content")));
-    });
-    document.documentElement.setAttribute("lang", current);
-    document.title = t("appTitle");
-  }
-
-  function setLanguage(lang) {
-    if (!Object.prototype.hasOwnProperty.call(DICT, lang)) lang = DEFAULT_LANG;
-    current = lang;
-    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
-    apply(document);
-    listeners.forEach(function (fn) { try { fn(lang); } catch (e) {} });
-  }
-
-  function onChange(fn) { listeners.push(fn); }
-  function get() { return current; }
-
-  // Initialize current language (does not touch DOM yet).
-  current = detectInitial();
-
-  global.I18n = {
-    t: t,
-    pick: pick,
-    apply: apply,
-    setLanguage: setLanguage,
-    onChange: onChange,
-    get: get,
-    DEFAULT: DEFAULT_LANG,
-    available: Object.keys(DICT)
-  };
-})(window);
+  });
+})((typeof window !== "undefined" ? window : globalThis).I18n);

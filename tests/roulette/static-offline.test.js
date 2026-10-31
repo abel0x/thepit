@@ -10,7 +10,7 @@ var path = require("node:path");
 
 var root = path.resolve(__dirname, "../../games/roulette");
 var read = function (file) { return fs.readFileSync(path.join(root, file), "utf8"); };
-var RUNTIME = ["index.html", "css/styles.css", "js/i18n.js", "js/sound.js", "js/engine.js", "js/layout.js", "js/spin.js",
+var RUNTIME = ["index.html", "css/styles.css", "js/strings.js", "js/sound.js", "js/engine.js", "js/layout.js", "js/spin.js",
   "js/chips.js", "js/store.js", "js/wheel.js", "js/game.js"];
 
 function pageRefs() {
@@ -37,7 +37,7 @@ test("every runtime asset is local and present", function () {
 
 test("scripts load after the modules they depend on", function () {
   var order = pageRefs().filter(function (ref) { return /\.js$/.test(ref); });
-  assert.deepEqual(order, ["../../shared/js/pit.js", "js/i18n.js", "js/sound.js", "js/engine.js", "js/layout.js", "js/spin.js",
+  assert.deepEqual(order, ["../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "js/sound.js", "js/engine.js", "js/layout.js", "js/spin.js",
     "js/chips.js", "js/store.js", "js/wheel.js", "js/game.js", "../../shared/js/pwa.js"]);
 });
 

@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v1";
+var CACHE_VERSION = "pit-v2";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -12,9 +12,10 @@ var ASSETS = [
   "./",
   "./index.html",
   "./lobby/css/styles.css",
-  "./lobby/js/i18n.js",
+  "./lobby/js/strings.js",
   "./lobby/js/lobby.js",
   "./shared/js/pit.js",
+  "./shared/js/i18n.js",
   "./shared/js/pwa.js",
   "./shared/fonts/thepit-sans-regular.woff2",
   "./shared/fonts/thepit-sans-semibold.woff2",
@@ -27,7 +28,7 @@ var ASSETS = [
   "./games/blackjack/index.html",
   "./games/blackjack/icon.svg",
   "./games/blackjack/css/styles.css",
-  "./games/blackjack/js/i18n.js",
+  "./games/blackjack/js/strings.js",
   "./games/blackjack/js/sound.js",
   "./games/blackjack/js/engine.js",
   "./games/blackjack/js/rules.js",
@@ -57,7 +58,7 @@ var ASSETS = [
   "./games/roulette/index.html",
   "./games/roulette/icon.svg",
   "./games/roulette/css/styles.css",
-  "./games/roulette/js/i18n.js",
+  "./games/roulette/js/strings.js",
   "./games/roulette/js/sound.js",
   "./games/roulette/js/engine.js",
   "./games/roulette/js/layout.js",

@@ -12,7 +12,7 @@ var vm = require("node:vm");
 var root = path.resolve(__dirname, "../../games/blackjack");
 var read = function (file) { return fs.readFileSync(path.join(root, file), "utf8"); };
 var runtimeTextFiles = [
-  "index.html", "css/styles.css", "js/i18n.js", "js/sound.js", "js/engine.js",
+  "index.html", "css/styles.css", "js/strings.js", "js/sound.js", "js/engine.js",
   "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"
 ];
 
@@ -26,7 +26,7 @@ runtimeTextFiles.forEach(function (file) {
 });
 
 [
-  "js/i18n.js", "js/sound.js", "js/engine.js", "js/rules.js",
+  "js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js",
   "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"
 ].forEach(function (file) {
   test("JavaScript parses successfully: " + file, function () {
@@ -60,7 +60,7 @@ test("runtime scripts load in dependency order", function () {
     return match[1];
   });
   assert.deepEqual(scripts, [
-    "../../shared/js/pit.js", "js/i18n.js", "js/sound.js", "js/engine.js", "js/rules.js",
+    "../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js",
     "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js", "../../shared/js/pwa.js"
   ]);
 });
@@ -105,14 +105,14 @@ test("the tab names Table 21 in the pit and every home screen names ThePit", fun
   // Without it iOS names the home-screen icon after the page title.
   assert.match(html, /<meta name="apple-mobile-web-app-title" content="ThePit" \/>/);
   // English and Turkish tab titles alike.
-  assert.equal((read("js/i18n.js").match(/^\s+appTitle: "Table 21 · ThePit",$/gm) || []).length, 2);
+  assert.equal((read("js/strings.js").match(/^\s+appTitle: "Table 21 · ThePit",$/gm) || []).length, 2);
 });
 
 test("balance controls speak of play money, never of banking", function () {
   var html = read("index.html");
   assert.match(html, /data-i18n="addFunds">Add play money</);
   assert.match(html, /id="btnDeposit"[^>]*data-i18n="deposit">Add</);
-  var strings = Array.from(read("js/i18n.js").matchAll(/^\s+\w+: "([^"]*)"/gm), function (match) { return match[1]; });
+  var strings = Array.from((read("../../shared/js/i18n.js") + read("js/strings.js")).matchAll(/^\s+\w+: "([^"]*)"/gm), function (match) { return match[1]; });
   assert.ok(strings.length > 300);
   strings.forEach(function (text) {
     assert.doesNotMatch(text, /deposit|withdraw|cash out|para yatır|para çek/i, text);
@@ -132,7 +132,7 @@ test("HTML has no inline executable event handlers", function () {
 });
 
 test("runtime JavaScript avoids dynamic code execution", function () {
-  ["js/i18n.js", "js/sound.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"]
+  ["js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"]
     .forEach(function (file) {
       assert.doesNotMatch(read(file), /\beval\s*\(|\bnew\s+Function\b/, file);
     });
@@ -231,7 +231,7 @@ test("split twenty-one is not presented as a natural blackjack", function () {
 
 test("money messages contain no accidental double-space separators", function () {
   var game = read("js/game.js");
-  var i18n = read("js/i18n.js");
+  var i18n = read("../../shared/js/i18n.js") + read("js/strings.js");
   assert.doesNotMatch(game, /["']  [+-]\$/);
   assert.doesNotMatch(i18n, /  \+\$/);
 });

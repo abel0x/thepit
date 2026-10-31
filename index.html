@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money casino of table games that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="ThePit" />
+  <meta property="og:description" content="A free, play-money casino of table games that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The lobby of ThePit with Table 21 blackjack and Table 37 roulette on green felt" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="lobby/css/styles.css" />
+</head>
+<body data-theme="emerald">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="pitRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+            <linearGradient id="pitSpade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fbf1c8"/><stop offset="45%" stop-color="#e7c869"/>
+              <stop offset="100%" stop-color="#a87d24"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#pitRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="21.5" fill="none" stroke="#7d1219" stroke-width="7" stroke-dasharray="3.65 3.65"/>
+          <circle cx="32" cy="32" r="21.5" fill="none" stroke="#151516" stroke-width="7" stroke-dasharray="3.65 3.65" stroke-dashoffset="3.65"/>
+          <circle cx="32" cy="32" r="25.2" fill="none" stroke="url(#pitRing)" stroke-width="1"/>
+          <circle cx="32" cy="32" r="17.8" fill="none" stroke="url(#pitRing)" stroke-width="1"/>
+          <path fill="url(#pitSpade)" transform="translate(32 32) scale(.1) translate(-256 -259)"
+                d="M256 150C256 150 336 214 336 268C336 304 310 326 282 326C274 326 268 324 263 320C266 340 274 356 292 368L220 368C238 356 246 340 249 320C244 324 238 326 230 326C202 326 176 304 176 268C176 214 256 150 256 150Z"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="ThePit" data-i18n-aria-label="brandName">
+          <span class="brand-word">THE</span><span class="brand-number" aria-hidden="true">PIT</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">Offline Casino</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="floor">
+    <div class="floor-intro">
+      <h2 data-i18n="floorTitle">Choose your table</h2>
+      <p data-i18n="floorLead">Every table plays from the same play-money balance, entirely on this device.</p>
+    </div>
+
+    <ul class="table-list" aria-label="Tables" data-i18n-aria-label="tablesLabel">
+      <li class="table-card" data-game="blackjack">
+        <div class="table-card-felt" aria-hidden="true">
+          <svg class="table-card-art" viewBox="0 0 240 150" focusable="false">
+            <g class="art-card" transform="translate(70 22) rotate(-9 30 42)">
+              <rect width="60" height="84" rx="6" />
+              <text class="art-rank black" x="7" y="17">A</text>
+              <text class="art-suit black" x="7" y="29">♠</text>
+              <text class="art-pip black" x="30" y="55">♠</text>
+            </g>
+            <g class="art-card" transform="translate(112 24) rotate(8 30 42)">
+              <rect width="60" height="84" rx="6" />
+              <text class="art-rank red" x="7" y="17">K</text>
+              <text class="art-suit red" x="7" y="29">♥</text>
+              <text class="art-pip red" x="30" y="55">♥</text>
+            </g>
+            <g class="art-chips" transform="translate(184 104)">
+              <ellipse class="art-chip chip-a" cx="0" cy="12" rx="17" ry="6" />
+              <ellipse class="art-chip chip-a" cx="0" cy="7" rx="17" ry="6" />
+              <ellipse class="art-chip chip-b" cx="0" cy="2" rx="17" ry="6" />
+              <ellipse class="art-chip-face" cx="0" cy="2" rx="10" ry="3.4" />
+            </g>
+            <path class="art-print" d="M28 128 Q120 150 212 128" />
+          </svg>
+        </div>
+        <div class="table-card-body">
+          <h3>
+            <a class="table-card-link" href="games/blackjack/index.html">
+              <span class="table-lockup"><span class="table-word">TABLE</span><span class="table-number">21</span></span>
+              <span class="table-game" data-i18n="blackjackGame">Blackjack</span>
+            </a>
+          </h3>
+          <p class="table-card-summary" data-i18n="blackjackSummary">Blackjack pays 3:2. Las Vegas, Atlantic City and European rules, with an optional basic-strategy coach.</p>
+          <div class="table-card-foot">
+            <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$100</strong></span>
+            <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
+            <span class="table-card-cta" aria-hidden="true"><span data-i18n="takeSeat">Take a seat</span></span>
+          </div>
+        </div>
+      </li>
+
+      <li class="table-card" data-game="roulette">
+        <div class="table-card-felt" aria-hidden="true">
+          <svg class="table-card-art" viewBox="0 0 240 150" focusable="false">
+            <g transform="translate(120 75)">
+              <circle class="art-bowl" r="62" />
+              <circle class="art-brass" r="62" />
+              <g transform="rotate(-94.865)">
+                <circle class="art-pockets black" r="46" />
+                <circle class="art-pockets red" r="46" stroke-dasharray="7.812 7.812" />
+                <circle class="art-pockets green" r="46" stroke-dasharray="7.812 281.21" />
+              </g>
+              <circle class="art-fret" r="53" />
+              <circle class="art-fret" r="39" />
+              <circle class="art-cone" r="38" />
+              <path class="art-turret" d="M0 -16V16M-16 0H16" />
+              <circle class="art-hub" r="6" />
+              <circle class="art-ball" cx="30" cy="-36" r="5" />
+            </g>
+          </svg>
+        </div>
+        <div class="table-card-body">
+          <h3>
+            <a class="table-card-link" href="games/roulette/index.html">
+              <span class="table-lockup"><span class="table-word">TABLE</span><span class="table-number">37</span></span>
+              <span class="table-game" data-i18n="rouletteGame">Roulette</span>
+            </a>
+          </h3>
+          <p class="table-card-summary" data-i18n="rouletteSummary">A single-zero wheel with European and French rules, the racetrack and all 157 bets.</p>
+          <div class="table-card-foot">
+            <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$5</strong></span>
+            <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
+            <span class="table-card-cta" aria-hidden="true"><span data-i18n="takeSeat">Take a seat</span></span>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <p class="floor-note" data-i18n="footerNote">Play money only. Chips have no cash value and can never be bought or exchanged for money.</p>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel" aria-describedby="clothHint">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+          </div>
+          <p class="settings-hint" id="clothHint" data-i18n="clothHint">The cloth you choose dresses every table in the pit.</p>
+        </div>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">ThePit is a collection of casino table simulations for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every card and every spin is drawn at random on your device. Results here do not predict play at a real table. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="shared/js/pit.js"></script>
+  <script src="lobby/js/i18n.js"></script>
+  <script src="lobby/js/lobby.js"></script>
+  <script src="shared/js/pwa.js"></script>
+</body>
+</html>

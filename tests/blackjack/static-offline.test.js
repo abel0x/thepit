@@ -40,7 +40,7 @@ test("the pit's service worker precaches everything the table loads", function (
 });
 
 test("runtime files contain no remote fetch, script, stylesheet, or image URL", function () {
-  ["index.html", "css/styles.css", "js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/game.js"].forEach(function (file) {
+  ["index.html", "css/styles.css", "js/strings.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/game.js"].forEach(function (file) {
     // A plain <a href> only navigates when followed; it never loads anything.
     var source = read(file).replace(/<a\b[^>]*>/gi, "");
     assert.doesNotMatch(source, /(?:src|href)\s*=\s*["']https?:\/\//i, file);
@@ -161,21 +161,6 @@ test("every cloth of the pit has a table and a card back, drawn without assets",
   });
 });
 
-test("number cards show exactly their value in the central pip field", function () {
-  var game = read("js/game.js");
-  var layoutMatch = game.match(/var PIP_LAYOUTS\s*=\s*(\{[\s\S]*?\n  \});/);
-  assert.ok(layoutMatch, "pip layouts should be declared as a plain object");
-  var layouts = vm.runInNewContext("(" + layoutMatch[1] + ")");
-
-  for (var value = 2; value <= 10; value++) {
-    assert.equal(layouts[value].length, value, value + " should render " + value + " central pips");
-  }
-
-  var cornerBlock = game.match(/var tl = document\.createElement[\s\S]*?front\.appendChild\(br\);/);
-  assert.ok(cornerBlock, "corner-index rendering block should exist");
-  assert.doesNotMatch(cornerBlock[0], /card\.suit/, "corner indices should not add extra suit glyphs");
-});
-
 test("the physical table uses a live shoe, cut card, discard tray, and payout pile", function () {
   var html = read("index.html");
   var css = read("css/styles.css");
@@ -221,47 +206,6 @@ test("settings expose three local rule profiles", function () {
   assert.match(game, /Rules\.canDouble/);
   assert.match(game, /state\.settings\.dealerHoleCard/);
   assert.match(game, /state\.settings\.maxHands/);
-});
-
-test("court cards use distinct local vector portraits", function () {
-  var game = read("js/game.js");
-  var css = read("css/styles.css");
-  assert.match(game, /function courtFigureMarkup/);
-  assert.match(game, /rank === "J"/);
-  assert.match(game, /rank === "Q"/);
-  assert.match(game, /class="court-art"/);
-  assert.doesNotMatch(game, /COURT_ICONS/);
-  assert.match(css, /\.court-person-j/);
-  assert.match(css, /\.court-center-rank/);
-});
-
-test("physical sound samples are present and precached", function () {
-  var worker = read("../../sw.js");
-  var assets = [
-    "assets/audio/card-slide-1.ogg",
-    "assets/audio/card-slide-2.ogg",
-    "assets/audio/card-flip.ogg",
-    "assets/audio/chip-click-1.ogg",
-    "assets/audio/chip-click-2.ogg",
-    "assets/audio/chip-stack.ogg",
-    "assets/audio/chips-push.ogg",
-    "assets/audio/shuffle.ogg",
-    "assets/audio/card-slide-1.m4a",
-    "assets/audio/card-slide-2.m4a",
-    "assets/audio/card-flip.m4a",
-    "assets/audio/chip-click-1.m4a",
-    "assets/audio/chip-click-2.m4a",
-    "assets/audio/chip-stack.m4a",
-    "assets/audio/chips-push.m4a",
-    "assets/audio/shuffle.m4a"
-  ];
-
-  assets.forEach(function (asset) {
-    var fullPath = path.join(root, asset);
-    assert.ok(fs.existsSync(fullPath), "missing bundled asset: " + asset);
-    assert.ok(fs.statSync(fullPath).size > 1024, "bundled asset is unexpectedly empty: " + asset);
-    assert.ok(worker.indexOf('"./games/blackjack/' + asset + '"') !== -1, "bundled asset is not precached: " + asset);
-  });
 });
 
 test("settings expose three animation speeds and four independent sound levels", function () {

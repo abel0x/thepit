@@ -14,7 +14,7 @@ function loadSound() {
   context.window = context;
   vm.createContext(context);
   vm.runInContext(
-    fs.readFileSync(path.resolve(__dirname, "../../games/blackjack/js/sound.js"), "utf8"),
+    fs.readFileSync(path.resolve(__dirname, "../../shared/js/card-sound.js"), "utf8"),
     context
   );
   return context.Sound;

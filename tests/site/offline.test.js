@@ -109,23 +109,38 @@ test("the offline cache lists each existing file once", function () {
   assert.match(read("sw.js"), /var CACHE_VERSION = "pit-v\d+";/);
 });
 
-test("every sound a table plays is cached in both formats", function () {
+// The sound modules a page loads, with the folder their samples live in and
+// the tool that rebuilds them: a table's own sounds, or the card-table sounds.
+var SOUND_MODULES = {
+  "shared/js/card-sound.js": { audio: "shared/audio/", generator: "tools/generate-card-audio.sh" },
+  "games/roulette/js/sound.js": { audio: "games/roulette/assets/audio/", generator: "tools/generate-roulette-audio.sh" }
+};
+
+test("every sound a table plays is real, cached in both formats and rebuildable", function () {
   var cached = precached();
   Object.keys(Pit.TABLES).forEach(function (id) {
-    var base = "games/" + id + "/";
-    var samples = Array.from(read(base + "js/sound.js").matchAll(/["'](assets\/audio\/[\w-]+)\.ogg["']/g), function (match) {
-      return base + match[1];
+    var page = "games/" + id + "/index.html";
+    var modules = scripts(page).filter(function (file) { return SOUND_MODULES[file]; });
+    assert.equal(modules.length, 1, page + " loads one sound module");
+    var module = SOUND_MODULES[modules[0]];
+    var samples = Array.from(read(modules[0]).matchAll(/["'](?:assets\/audio\/)?([\w-]+)\.ogg["']/g), function (match) {
+      return module.audio + match[1];
     });
-    assert.ok(samples.length >= 8, id);
+    assert.ok(samples.length >= 8, page);
+    var generator = read(module.generator);
+    assert.match(generator, new RegExp('audio_dir="\\$project_dir/' + module.audio.replace(/\/$/, "") + '"'));
     samples.forEach(function (sample) {
       [".ogg", ".m4a"].forEach(function (ext) {
         assert.ok(fs.existsSync(path.join(root, sample + ext)), sample + ext);
         assert.ok(cached.indexOf(sample + ext) !== -1, "not precached: " + sample + ext);
       });
+      var ogg = fs.readFileSync(path.join(root, sample + ".ogg"));
+      assert.equal(ogg.subarray(0, 4).toString("ascii"), "OggS", sample + ".ogg");
+      var aac = fs.readFileSync(path.join(root, sample + ".m4a"));
+      assert.equal(aac.subarray(4, 8).toString("ascii") + aac.subarray(8, 11).toString("ascii"), "ftypM4A", sample + ".m4a");
+      assert.ok(ogg.length > 1024 && aac.length > 1024, sample);
+      assert.ok(generator.indexOf(path.basename(sample) + ".ogg") !== -1, "the generator rebuilds " + sample);
     });
-    var generator = read("tools/generate-" + id + "-audio.sh");
-    assert.match(generator, new RegExp('audio_dir="\\$project_dir/games/' + id + '/assets/audio"'));
-    samples.forEach(function (sample) { assert.ok(generator.indexOf(path.basename(sample) + ".ogg") !== -1, "the generator rebuilds " + sample); });
   });
 });
 
@@ -153,8 +168,13 @@ test("the interface font ships once, for every page, as real WOFF2", function ()
 test("every table loads the shared table look between the pit's and its own", function () {
   PAGES.filter(function (page) { return page !== "index.html"; }).forEach(function (page) {
     var sheets = stylesheets(page);
+    var own = path.posix.dirname(page) + "/css/styles.css";
     assert.deepEqual(sheets.slice(0, 2), ["shared/css/pit.css", "shared/css/table.css"], page);
-    assert.equal(sheets.length, 3, page);
+    assert.equal(sheets[sheets.length - 1], own, page + " ends with its own look");
+    // A card table also draws the pit's playing cards, with their maker.
+    var cardTable = scripts(page).indexOf("shared/js/cards.js") !== -1;
+    assert.equal(sheets.indexOf("shared/css/cards.css") !== -1, cardTable, page);
+    assert.equal(sheets.length, cardTable ? 4 : 3, page);
   });
   assert.deepEqual(stylesheets("index.html"), ["shared/css/pit.css", "lobby/css/styles.css"]);
 });

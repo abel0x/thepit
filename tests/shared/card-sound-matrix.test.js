@@ -9,7 +9,7 @@ var fs = require("node:fs");
 var path = require("node:path");
 var vm = require("node:vm");
 
-var source = fs.readFileSync(path.resolve(__dirname, "../../games/blackjack/js/sound.js"), "utf8");
+var source = fs.readFileSync(path.resolve(__dirname, "../../shared/js/card-sound.js"), "utf8");
 
 function loadWithAudio(playable) {
   var templates = [];

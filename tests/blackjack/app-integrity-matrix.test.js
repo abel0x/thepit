@@ -12,7 +12,7 @@ var vm = require("node:vm");
 var root = path.resolve(__dirname, "../../games/blackjack");
 var read = function (file) { return fs.readFileSync(path.join(root, file), "utf8"); };
 var runtimeTextFiles = [
-  "index.html", "css/styles.css", "js/strings.js", "js/sound.js", "js/engine.js",
+  "index.html", "css/styles.css", "js/strings.js", "js/engine.js",
   "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"
 ];
 
@@ -26,7 +26,7 @@ runtimeTextFiles.forEach(function (file) {
 });
 
 [
-  "js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js",
+  "js/strings.js", "js/engine.js", "js/rules.js",
   "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"
 ].forEach(function (file) {
   test("JavaScript parses successfully: " + file, function () {
@@ -60,41 +60,9 @@ test("runtime scripts load in dependency order", function () {
     return match[1];
   });
   assert.deepEqual(scripts, [
-    "../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js",
+    "../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "../../shared/js/card-sound.js", "../../shared/js/cards.js", "js/engine.js", "js/rules.js",
     "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js", "../../shared/js/pwa.js"
   ]);
-});
-
-test("all local sound references are in the offline cache", function () {
-  var worker = read("../../sw.js");
-  var sounds = Array.from(read("js/sound.js").matchAll(/["'](assets\/audio\/[^"']+\.ogg)["']/g), function (match) {
-    return match[1];
-  });
-  assert.equal(sounds.length, 8);
-  sounds.forEach(function (sound) {
-    var aac = sound.replace(/\.ogg$/, ".m4a");
-    assert.ok(fs.existsSync(path.join(root, sound)));
-    assert.ok(worker.includes('"./games/blackjack/' + sound + '"'));
-    assert.ok(fs.existsSync(path.join(root, aac)), "missing Safari twin: " + aac);
-    assert.ok(worker.includes('"./games/blackjack/' + aac + '"'), "Safari twin is not precached: " + aac);
-  });
-});
-
-[
-  "card-slide-1.ogg", "card-slide-2.ogg", "card-flip.ogg", "chip-click-1.ogg",
-  "chip-click-2.ogg", "chip-stack.ogg", "chips-push.ogg", "shuffle.ogg"
-].forEach(function (file) {
-  test("bundled audio has an Ogg container header: " + file, function () {
-    var buffer = fs.readFileSync(path.join(root, "assets/audio", file));
-    assert.equal(buffer.subarray(0, 4).toString("ascii"), "OggS");
-    assert.ok(buffer.length > 1024);
-  });
-  test("Safari's AAC twin has an MPEG-4 audio header: " + file.replace(/\.ogg$/, ".m4a"), function () {
-    var buffer = fs.readFileSync(path.join(root, "assets/audio", file.replace(/\.ogg$/, ".m4a")));
-    assert.equal(buffer.subarray(4, 8).toString("ascii"), "ftyp");
-    assert.equal(buffer.subarray(8, 11).toString("ascii"), "M4A");
-    assert.ok(buffer.length > 1024);
-  });
 });
 
 test("the tab names Table 21 in the pit and every home screen names ThePit", function () {
@@ -132,7 +100,7 @@ test("HTML has no inline executable event handlers", function () {
 });
 
 test("runtime JavaScript avoids dynamic code execution", function () {
-  ["js/strings.js", "js/sound.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"]
+  ["js/strings.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"]
     .forEach(function (file) {
       assert.doesNotMatch(read(file), /\beval\s*\(|\bnew\s+Function\b/, file);
     });
@@ -169,7 +137,7 @@ test("responsive rules cover phone width, short height, and reduced motion", fun
 
 test("all visual themes define their own table and card-back palette", function () {
   // The felt of each cloth is the pit's; the card back that matches it is this table's.
-  var palettes = { "../../shared/css/pit.css": ["--felt-highlight", "--felt-1", "--felt-2", "--felt-edge"], "css/styles.css": ["--card-back-top", "--card-back-bottom"] };
+  var palettes = { "../../shared/css/pit.css": ["--felt-highlight", "--felt-1", "--felt-2", "--felt-edge"], "../../shared/css/cards.css": ["--card-back-top", "--card-back-bottom"] };
   Object.keys(palettes).forEach(function (file) {
     var css = read(file);
     ["midnight", "bordeaux", "onyx", "amethyst"].forEach(function (theme) {

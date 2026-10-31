@@ -117,7 +117,7 @@ function soundWithUnsupportedSamples(options = {}) {
     pause() {}
   }
   const context = { Audio, AudioContext }; context.window = context;
-  vm.runInNewContext(source("js/sound.js"), context);
+  vm.runInNewContext(fs.readFileSync(path.join(root, "../../shared/js/card-sound.js"), "utf8"), context);
   return { api: context.Sound, sources: () => synthSources, reject: () => pending.forEach(reject => reject()), mediaError: () => samples.at(-1).listeners.error({ type: "error" }) };
 }
 

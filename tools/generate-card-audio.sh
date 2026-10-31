@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms.
 
-# Rebuilds the sound samples of Table 21 (blackjack) with ffmpeg.
+# Rebuilds the card-table sound samples every card table shares, with ffmpeg.
 set -euo pipefail
 
 project_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-audio_dir="$project_dir/games/blackjack/assets/audio"
+audio_dir="$project_dir/shared/audio"
 mkdir -p "$audio_dir"
 
 encode_noise() {

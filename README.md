@@ -76,7 +76,7 @@ npm run test:browser
 
 ## Development
 
-There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-blackjack-audio.sh` and `tools/generate-roulette-audio.sh` rebuild each table's sound samples with ffmpeg.
+There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-card-audio.sh` rebuilds the card-table samples in `shared/audio/` and `tools/generate-roulette-audio.sh` the roulette ones, with ffmpeg.
 
 A new table lives in its own folder under `games/`. It loads `shared/css/pit.css` and `shared/css/table.css` before its own stylesheet, `shared/js/pit.js` and `shared/js/i18n.js` first and `shared/js/pwa.js` last, adds its own words with `I18n.define()` (a word the pit already has can never be redefined), keeps its own data under `pit.<table>.*`, and joins `Pit.TABLES`, the lobby and the cache list in `sw.js`.
 
@@ -89,9 +89,13 @@ shared/js/pit.js           what every page shares: the wallet, its lock, the clo
 shared/js/i18n.js          the language engine and the words every page shares (EN/TR)
 shared/css/pit.css         the look every page shares: font, cloths, top bar, dialogs
 shared/css/table.css       the look every table shares: sound, mixer, rule profiles, chips, buttons
+shared/css/cards.css       the look of a playing card, with a back for every cloth
+shared/js/cards.js         the card maker every card table draws its cards with
+shared/js/card-sound.js    card, chip and shuffle sounds with Web Audio cues for card tables
+shared/audio/              the card-table samples (Ogg + AAC)
 shared/js/pwa.js           optional service-worker registration and safe updates
 shared/fonts/              local WOFF2 interface font + OFL license
-games/blackjack/           Table 21: page, look, engine, rules, strategy coach, sounds
+games/blackjack/           Table 21: page, look, engine, rules, strategy coach
 games/roulette/            Table 37: page, look, engine, layout, wheel, sounds
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)

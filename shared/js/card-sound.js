@@ -2,8 +2,11 @@
    SPDX-License-Identifier: AGPL-3.0-or-later
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* =========================================================
-   Sound — local physical table samples with restrained Web-Audio cues.
-   Every asset is bundled with the game and works directly from file://.
+   ThePit — the sound of a card table
+   Local samples of cards, chips and the shuffle, with restrained
+   Web Audio cues, shared by every card table. Every sample ships in
+   shared/audio/ and works directly from file://.
+   Exposed as window.Sound.
    ========================================================= */
 (function (global) {
   "use strict";
@@ -18,15 +21,19 @@
   var VOLUME_CHANNELS = ["master", "cards", "chips", "table"];
   var DEFAULT_VOLUMES = { master: 1, cards: 1, chips: 1, table: 1 };
   var volumes = { master: 1, cards: 1, chips: 1, table: 1 };
+  // The samples sit in shared/audio/, beside this script's own folder,
+  // whichever table loads it; it is two folders below the site root.
+  var script = global.document && global.document.currentScript;
+  var AUDIO_BASE = script && script.src ? new URL("../audio/", script.src).href : "../../shared/audio/";
   var SAMPLE_PATHS = {
-    card1: "assets/audio/card-slide-1.ogg",
-    card2: "assets/audio/card-slide-2.ogg",
-    flip: "assets/audio/card-flip.ogg",
-    chip1: "assets/audio/chip-click-1.ogg",
-    chip2: "assets/audio/chip-click-2.ogg",
-    chipStack: "assets/audio/chip-stack.ogg",
-    chipsPush: "assets/audio/chips-push.ogg",
-    shuffle: "assets/audio/shuffle.ogg"
+    card1: AUDIO_BASE + "card-slide-1.ogg",
+    card2: AUDIO_BASE + "card-slide-2.ogg",
+    flip: AUDIO_BASE + "card-flip.ogg",
+    chip1: AUDIO_BASE + "chip-click-1.ogg",
+    chip2: AUDIO_BASE + "chip-click-2.ogg",
+    chipStack: AUDIO_BASE + "chip-stack.ogg",
+    chipsPush: AUDIO_BASE + "chips-push.ogg",
+    shuffle: AUDIO_BASE + "shuffle.ogg"
   };
   // Each sample also ships as AAC (.m4a) for Safari versions that cannot play
   // Ogg. The browser's own canPlayType decides once, on first use.
@@ -413,4 +420,4 @@
   };
 
   global.Sound = Sound;
-})(window);
+})(typeof window !== "undefined" ? window : globalThis);

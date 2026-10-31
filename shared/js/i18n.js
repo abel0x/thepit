@@ -66,7 +66,28 @@
       disclaimerWarranty: "Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.",
       versionLabel: "Version",
       licenseNotice: "Free software under the GNU AGPL v3",
-      sourceCode: "Source code"
+      sourceCode: "Source code",
+
+      // Playing cards, as a screen reader names them
+      faceDownCard: "Face-down card",
+      cardLabel: "{rank} of {suit}",
+      rankAce: "Ace",
+      rankTwo: "Two",
+      rankThree: "Three",
+      rankFour: "Four",
+      rankFive: "Five",
+      rankSix: "Six",
+      rankSeven: "Seven",
+      rankEight: "Eight",
+      rankNine: "Nine",
+      rankTen: "Ten",
+      rankJack: "Jack",
+      rankQueen: "Queen",
+      rankKing: "King",
+      suitSpades: "spades",
+      suitHearts: "hearts",
+      suitDiamonds: "diamonds",
+      suitClubs: "clubs"
     },
 
     tr: {
@@ -120,7 +141,28 @@
       disclaimerWarranty: "Yetişkinlere yöneliktir. Hiçbir kumarhaneyle bağlantısı yoktur. Olduğu gibi, hiçbir garanti verilmeden sunulur.",
       versionLabel: "Sürüm",
       licenseNotice: "GNU AGPL v3 lisanslı özgür yazılım",
-      sourceCode: "Kaynak kodu"
+      sourceCode: "Kaynak kodu",
+
+      // Playing cards, as a screen reader names them
+      faceDownCard: "Kapalı kart",
+      cardLabel: "{suit} {rank}",
+      rankAce: "Ası",
+      rankTwo: "İkilisi",
+      rankThree: "Üçlüsü",
+      rankFour: "Dörtlüsü",
+      rankFive: "Beşlisi",
+      rankSix: "Altılısı",
+      rankSeven: "Yedilisi",
+      rankEight: "Sekizlisi",
+      rankNine: "Dokuzlusu",
+      rankTen: "Onlusu",
+      rankJack: "Valesi",
+      rankQueen: "Kızı",
+      rankKing: "Papazı",
+      suitSpades: "Maça",
+      suitHearts: "Kupa",
+      suitDiamonds: "Karo",
+      suitClubs: "Sinek"
     }
   };
   var LANGUAGES = Object.keys(DICT);

@@ -137,14 +137,26 @@ test("the interface font ships once, for every page, as real WOFF2", function ()
     assert.equal(buffer.subarray(0, 4).toString("ascii"), "wOF2", name);
     assert.ok(buffer.length > 1024, name);
   });
+  // Declared once, in the stylesheet every page loads first.
+  var shared = read("shared/css/pit.css");
+  assert.equal((shared.match(/@font-face \{/g) || []).length, 2);
+  Array.from(shared.matchAll(/url\("?([^")]+\.woff2)"?\)/g), function (match) { return resolve("shared/css/pit.css", match[1]); })
+    .forEach(function (font) { assert.match(font, /^shared\/fonts\/thepit-sans-(?:regular|semibold)\.woff2$/); });
   PAGES.forEach(function (page) {
-    stylesheets(page).forEach(function (sheet) {
-      var css = read(sheet);
-      assert.match(css, /font-family: "ThePit Sans";/, sheet);
-      Array.from(css.matchAll(/url\("?([^")]+\.woff2)"?\)/g), function (match) { return resolve(sheet, match[1]); })
-        .forEach(function (font) { assert.match(font, /^shared\/fonts\//, sheet); });
+    assert.equal(stylesheets(page)[0], "shared/css/pit.css", page + " loads the shared look first");
+    stylesheets(page).slice(1).forEach(function (sheet) {
+      assert.doesNotMatch(read(sheet), /@font-face/, sheet + " declares the font again");
     });
   });
+});
+
+test("every table loads the shared table look between the pit's and its own", function () {
+  PAGES.filter(function (page) { return page !== "index.html"; }).forEach(function (page) {
+    var sheets = stylesheets(page);
+    assert.deepEqual(sheets.slice(0, 2), ["shared/css/pit.css", "shared/css/table.css"], page);
+    assert.equal(sheets.length, 3, page);
+  });
+  assert.deepEqual(stylesheets("index.html"), ["shared/css/pit.css", "lobby/css/styles.css"]);
 });
 
 test("runtime files are clean UTF-8 that never reach the network", function () {

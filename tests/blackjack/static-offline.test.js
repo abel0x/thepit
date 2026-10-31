@@ -282,10 +282,9 @@ test("settings expose three animation speeds and four independent sound levels",
 
 test("the top bar uses the Table 21 lockup and a local stateful sound icon", function () {
   var html = read("index.html");
-  var css = read("css/styles.css");
 
   assert.match(html, /class="brand-word">TABLE<\/span><span class="brand-number"[^>]*>21<\/span>/);
   assert.match(html, /class="sound-glyph"[\s\S]*class="sound-slash"/);
   assert.doesNotMatch(html, /🔊|🔇|Private High-Limit Table|VIP Blackjack/);
-  assert.match(css, /#soundToggle\[aria-pressed="false"\] \.sound-slash/);
+  assert.match(read("../../shared/css/table.css"), /#soundToggle\[aria-pressed="false"\] \.sound-slash/);
 });

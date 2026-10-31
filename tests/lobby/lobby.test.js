@@ -108,7 +108,7 @@ test("every table of the pit has a card that leads to its page", function () {
 test("the cloth picker offers exactly the pit's cloths", function () {
   var themes = Array.from(html.matchAll(/data-set-theme="([^"]+)"/g), function (match) { return match[1]; });
   assert.deepEqual(themes, Pit.THEMES);
-  var css = read("lobby/css/styles.css");
+  var css = read("shared/css/pit.css");
   Pit.THEMES.filter(function (theme) { return theme !== Pit.DEFAULT_THEME; }).forEach(function (theme) {
     assert.match(css, new RegExp('body\\[data-theme="' + theme + '"\\]'), theme);
   });

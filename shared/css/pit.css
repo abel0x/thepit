@@ -1,0 +1,250 @@
+/* ThePit · Copyright (C) 2026 abel0x
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
+/* =========================================================
+   ThePit — the look every page shares
+   The lobby and every table load this first, then their own
+   stylesheet. Only what is the same on every page lives here, and
+   only when loading it earlier cannot change which rule wins on any
+   page: a page rule written before it, just as specific and setting
+   the same property, keeps the shared rule on the page instead.
+   ========================================================= */
+@font-face {
+  font-family: "ThePit Sans";
+  src: url("../fonts/thepit-sans-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ThePit Sans";
+  src: url("../fonts/thepit-sans-semibold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+}
+
+/* The cloth and brass of the pit; each page adds its own colours. */
+:root {
+  --page-highlight: #143226;
+  --page-mid: #0a1d15;
+  --page-edge: #05110c;
+  --ambient-glow: rgba(255, 240, 200, .10);
+  --felt-highlight: #207653;
+  --felt-1: #1b6b4a;
+  --felt-2: #0c3d2a;
+  --felt-edge: #06251a;
+  --topbar-top: rgba(6, 18, 13, .92);
+  --topbar-bottom: rgba(6, 18, 13, .55);
+  --modal-top: #12251c;
+  --modal-bottom: #0a1812;
+  --gold: #d9b65f;
+  --gold-soft: #c9a24b;
+  --gold-bright: #f4e2a6;
+  --cream: #f4efe2;
+  --panel-line: rgba(217, 182, 95, .22);
+  --good: #41d18a;
+  --bad: #e2685f;
+  --font-display: "ThePit Sans", "Segoe UI", sans-serif;
+  --font-ui: "ThePit Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+body[data-theme="midnight"] {
+  --page-highlight: #1a304b;
+  --page-mid: #091827;
+  --page-edge: #030a12;
+  --ambient-glow: rgba(183, 219, 255, .11);
+  --felt-highlight: #2b6288;
+  --felt-1: #174a70;
+  --felt-2: #0b2b47;
+  --felt-edge: #041722;
+  --topbar-top: rgba(5, 14, 25, .94);
+  --topbar-bottom: rgba(5, 14, 25, .58);
+  --modal-top: #11263a;
+  --modal-bottom: #071522;
+}
+
+body[data-theme="bordeaux"] {
+  --page-highlight: #3b1a20;
+  --page-mid: #1b090e;
+  --page-edge: #090305;
+  --ambient-glow: rgba(255, 218, 178, .1);
+  --felt-highlight: #8e3a49;
+  --felt-1: #6e2635;
+  --felt-2: #3e111c;
+  --felt-edge: #1c070e;
+  --topbar-top: rgba(27, 8, 13, .94);
+  --topbar-bottom: rgba(27, 8, 13, .58);
+  --modal-top: #371721;
+  --modal-bottom: #1b090f;
+}
+
+:where(a, button, input, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--gold-bright);
+  outline-offset: 3px;
+}
+
+/* ----------------------- Base ----------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(60% 50% at 50% 22%, var(--ambient-glow), transparent 70%),
+    radial-gradient(40% 40% at 12% 90%, rgba(0,0,0,.5), transparent 60%),
+    radial-gradient(40% 40% at 88% 90%, rgba(0,0,0,.5), transparent 60%);
+}
+
+/* ----------------------- Top bar ----------------------- */
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-mark svg { display: block; }
+.brand-text { display: grid; gap: 4px; min-width: 0; }
+.brand-text h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: clamp(15px, 1.8vw, 20px);
+  line-height: 1;
+  letter-spacing: 3.2px;
+  font-weight: 650;
+  color: rgba(244, 239, 226, .92);
+  white-space: nowrap;
+}
+.brand-word { text-shadow: 0 1px 8px rgba(244, 226, 166, .12); }
+.subtitle::before {
+  content: "";
+  width: 16px;
+  height: 1px;
+  flex: 0 0 auto;
+  background: linear-gradient(90deg, var(--gold), rgba(217,182,95,.2));
+}
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.balance-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 6px 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(217,182,95,.14), rgba(217,182,95,.04));
+  border: 1px solid var(--panel-line);
+  min-width: 116px;
+}
+.balance-label {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(244, 239, 226, .55);
+}
+.currency { opacity: .7; margin-right: 1px; }
+.balance-pill.win-flash { animation: balanceFlash .8s ease; }
+@keyframes balanceFlash {
+  0%, 100% { box-shadow: none; }
+  35% { box-shadow: 0 0 0 1px rgba(226,194,109,.68), 0 5px 16px rgba(0,0,0,.28); }
+}
+.lang-switch {
+  display: flex;
+  border: 1px solid var(--panel-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.lang-btn {
+  background: transparent;
+  color: rgba(244, 239, 226, .6);
+  border: none;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: .18s;
+}
+.lang-btn:not(:disabled):hover { color: var(--cream); }
+.lang-btn.active {
+  background: linear-gradient(180deg, var(--gold), var(--gold-soft));
+  color: #2a1d05;
+}
+.icon-btn {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--panel-line);
+  background: rgba(217,182,95,.06);
+  color: var(--cream);
+  font-size: 18px;
+  cursor: pointer;
+  transition: .18s;
+}
+.icon-btn:not(:disabled):hover { background: rgba(217,182,95,.16); }
+
+/* ----------------------- Buttons ----------------------- */
+.btn-primary {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold-soft));
+  color: #2a1d05;
+  box-shadow: 0 6px 16px rgba(217,182,95,.35);
+}
+
+/* ----------------------- Dialogs and settings ----------------------- */
+.modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; }
+.modal[hidden] { display: none; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(2, 8, 5, .7); backdrop-filter: blur(4px); }
+.modal-head h2 { font-family: var(--font-display); letter-spacing: 1.5px; color: var(--gold-bright); font-size: 20px; }
+.modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.setting-row > label,
+.setting-row > .setting-label { font-size: 14px; color: rgba(244,239,226,.85); }
+.theme-setting { display: flex; flex-direction: column; gap: 9px; }
+.setting-section-label { font-size: 14px; color: rgba(244,239,226,.85); }
+.theme-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.theme-option:hover { transform: translateY(-1px); border-color: rgba(217,182,95,.48); background: rgba(255,255,255,.065); color: var(--cream); }
+.theme-option.active {
+  border-color: var(--gold);
+  background: rgba(217,182,95,.11);
+  color: var(--gold-bright);
+  box-shadow: inset 0 0 0 1px rgba(244,226,166,.08), 0 4px 14px rgba(0,0,0,.2);
+}
+.theme-name {
+  min-height: 26px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.seg { display: flex; border: 1px solid var(--panel-line); border-radius: 10px; overflow: hidden; }
+.seg-btn:hover { color: var(--cream); }
+.seg-btn.active { background: linear-gradient(180deg, var(--gold), var(--gold-soft)); color: #2a1d05; }
+
+/* ----------------------- Play money ----------------------- */
+.deposit-currency { color: var(--gold-bright); font-family: var(--font-display); font-size: 15px; }
+.deposit-input::-webkit-outer-spin-button,
+.deposit-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.deposit-input::placeholder { color: rgba(244,239,226,.35); }
+.deposit-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: -6px; }
+
+/* ----------------------- About ----------------------- */
+.about {
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--panel-line);
+}
+.about p { color: rgba(244, 239, 226, .62); font-size: 12px; line-height: 1.5; }
+.about .about-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding-top: 2px;
+  color: rgba(217, 182, 95, .78);
+  font-size: 11px;
+  letter-spacing: .3px;
+}
+.about-meta a { color: var(--gold-bright); text-underline-offset: 2px; }
+.about-meta a:hover { color: var(--cream); }
+
+/* ----------------------- Toast ----------------------- */
+.toast[hidden] { display: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.win { border-color: var(--good); color: #d6ffe9; }
+.toast.lose { border-color: var(--bad); color: #ffd9d6; }

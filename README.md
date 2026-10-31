@@ -78,7 +78,7 @@ npm run test:browser
 
 There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-blackjack-audio.sh` and `tools/generate-roulette-audio.sh` rebuild each table's sound samples with ffmpeg.
 
-A new table lives in its own folder under `games/`. It loads `shared/js/pit.js` and `shared/js/i18n.js` first and `shared/js/pwa.js` last, adds its own words with `I18n.define()` (a word the pit already has can never be redefined), keeps its own data under `pit.<table>.*`, and joins `Pit.TABLES`, the lobby and the cache list in `sw.js`.
+A new table lives in its own folder under `games/`. It loads `shared/css/pit.css` and `shared/css/table.css` before its own stylesheet, `shared/js/pit.js` and `shared/js/i18n.js` first and `shared/js/pwa.js` last, adds its own words with `I18n.define()` (a word the pit already has can never be redefined), keeps its own data under `pit.<table>.*`, and joins `Pit.TABLES`, the lobby and the cache list in `sw.js`.
 
 ## Files
 
@@ -87,6 +87,8 @@ index.html                 the lobby
 lobby/                     lobby look, its own words (EN/TR) and behaviour
 shared/js/pit.js           what every page shares: the wallet, its lock, the cloth
 shared/js/i18n.js          the language engine and the words every page shares (EN/TR)
+shared/css/pit.css         the look every page shares: font, cloths, top bar, dialogs
+shared/css/table.css       the look every table shares: sound, mixer, rule profiles, chips, buttons
 shared/js/pwa.js           optional service-worker registration and safe updates
 shared/fonts/              local WOFF2 interface font + OFL license
 games/blackjack/           Table 21: page, look, engine, rules, strategy coach, sounds

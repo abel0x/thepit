@@ -168,12 +168,15 @@ test("responsive rules cover phone width, short height, and reduced motion", fun
 });
 
 test("all visual themes define their own table and card-back palette", function () {
-  var css = read("css/styles.css");
-  ["midnight", "bordeaux"].forEach(function (theme) {
-    var block = css.match(new RegExp('body\\[data-theme="' + theme + '"\\]\\s*\\{([\\s\\S]*?)\\}'));
-    assert.ok(block, theme);
-    ["--felt-highlight", "--felt-1", "--felt-2", "--felt-edge", "--card-back-top", "--card-back-bottom"]
-      .forEach(function (variable) { assert.ok(block[1].includes(variable + ":"), theme + " missing " + variable); });
+  // The felt of each cloth is the pit's; the card back that matches it is this table's.
+  var palettes = { "../../shared/css/pit.css": ["--felt-highlight", "--felt-1", "--felt-2", "--felt-edge"], "css/styles.css": ["--card-back-top", "--card-back-bottom"] };
+  Object.keys(palettes).forEach(function (file) {
+    var css = read(file);
+    ["midnight", "bordeaux"].forEach(function (theme) {
+      var block = css.match(new RegExp('body\\[data-theme="' + theme + '"\\]\\s*\\{([\\s\\S]*?)\\}'));
+      assert.ok(block, file + " " + theme);
+      palettes[file].forEach(function (variable) { assert.ok(block[1].includes(variable + ":"), theme + " missing " + variable); });
+    });
   });
 });
 

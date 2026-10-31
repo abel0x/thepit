@@ -111,7 +111,9 @@ test("a coup plays straight from file:// and the Banker pays 19 to 20", async ()
     assert.equal(await page.$$eval("#bigRoad .ring.banker", nodes => nodes.length), 1);
     assert.equal(await balance(page), "10,095");
     const shoe = await stored(page, "pit.baccarat.shoe");
-    assert.ok(shoe.length > 300 && shoe.length < 416 - 4, "the shoe keeps its remaining cards");
+    // The four set cards sit on top of a full shoe, so what is left is that
+    // shoe less its burn: the first card and one to ten more.
+    assert.ok(shoe.length >= 416 - 11 && shoe.length <= 416 - 2, "the shoe keeps its remaining cards: " + shoe.length);
   });
 });
 

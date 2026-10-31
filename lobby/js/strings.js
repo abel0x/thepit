@@ -30,6 +30,8 @@
       threecardSummary: "Ante and Play against the dealer, with the Ante Bonus and the Pair Plus, from a deck shuffled for every hand.",
       slotGame: "Slot machine",
       slotSummary: "Five reels and 20 lines, a wild, scattered stars and ten free spins at triple pay. Returns 95.80%.",
+      crapsGame: "Craps",
+      crapsSummary: "Pass and Don't pass with odds, Come, Place, the Field, the Hardways and the bets in the middle, with real dice rules.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -59,6 +61,8 @@
       threecardSummary: "Krupiyeye karşı Ante ve Play, Ante Bonusu ve Pair Plus ile; her elde yeniden karıştırılan bir desteden.",
       slotGame: "Slot makinesi",
       slotSummary: "Beş makara ve 20 çizgi, joker, dağınık yıldızlar ve üç kat ödemeli on bedava çevirme. Geri dönüş %95,80.",
+      crapsGame: "Craps",
+      crapsSummary: "Oranlarıyla Pass ve Don't pass, Come, Place, Field, zor bahisler ve ortadaki bahisler; gerçek zar kurallarıyla.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

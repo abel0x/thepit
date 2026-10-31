@@ -200,6 +200,10 @@ body {
 .art-side.banker { fill: #ffc0b8; }
 .art-side.dealer { fill: #f3dfa2; }
 
+/* Table 7: two dice on the pass line */
+.art-die { fill: #c8202a; stroke: #f4e2a6; stroke-width: 1.5; }
+.art-pip { fill: #fff8ea; }
+
 /* Slot 5: a window of three reels */
 .art-reels { fill: #120b05; stroke: var(--gold); stroke-width: 3; }
 .art-reel { fill: #fbf8ef; }

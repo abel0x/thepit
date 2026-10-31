@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money craps simulation that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>Table 7 · ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="Table 7 · ThePit" />
+  <meta property="og:description" content="A free, play-money craps simulation that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/games/craps/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The craps table of Table 7 with two dice on the pass line" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="../../shared/css/pit.css" />
+  <link rel="stylesheet" href="../../shared/css/table.css" />
+  <link rel="stylesheet" href="../../shared/css/chip-tables.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-phase="betting" data-theme="emerald" data-animation-speed="normal" data-point="off">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="icon-btn lobby-link" href="../../index.html" aria-label="Back to the lobby" title="Back to the lobby"
+         data-i18n-aria-label="backToLobby" data-i18n-title="backToLobby">
+        <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+      </a>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="cRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#cRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#cRing)" stroke-width="1" opacity=".7"/>
+          <g transform="rotate(-12 24 34)"><rect x="15" y="25" width="17" height="17" rx="3.5" fill="#c8202a" stroke="#f4e2a6" stroke-width=".8"/>
+            <circle cx="19.5" cy="29.5" r="1.7" fill="#fff"/><circle cx="23.5" cy="33.5" r="1.7" fill="#fff"/><circle cx="27.5" cy="37.5" r="1.7" fill="#fff"/></g>
+          <g transform="rotate(14 41 30)"><rect x="33" y="21" width="17" height="17" rx="3.5" fill="#c8202a" stroke="#f4e2a6" stroke-width=".8"/>
+            <circle cx="37.5" cy="25.5" r="1.7" fill="#fff"/><circle cx="45.5" cy="25.5" r="1.7" fill="#fff"/><circle cx="37.5" cy="33.5" r="1.7" fill="#fff"/><circle cx="45.5" cy="33.5" r="1.7" fill="#fff"/></g>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="Table 7" data-i18n-aria-label="brandName">
+          <span class="brand-word">TABLE</span><span class="brand-number" aria-hidden="true">7</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">Craps</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="soundToggle" class="icon-btn sound-control" type="button" aria-pressed="true" aria-label="Mute sound"
+              title="Mute sound" data-i18n-title="muteSound" data-i18n-aria-label="muteSound" aria-keyshortcuts="M">
+        <svg class="sound-glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path class="sound-cone" d="M4.8 11h3.5l4.7-3.9v13.8L8.3 17H4.8Z" />
+          <path class="sound-wave sound-wave-near" d="M16.1 10.2c1 1 1.5 2.3 1.5 3.8s-.5 2.8-1.5 3.8" />
+          <path class="sound-wave sound-wave-far" d="M19.2 7.6c1.8 1.8 2.8 4 2.8 6.4s-1 4.6-2.8 6.4" />
+          <path class="sound-slash" d="M6.5 6.5l15 15" />
+        </svg>
+        <span class="sound-led" aria-hidden="true"></span>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <section class="table" aria-label="Craps table" data-i18n-aria-label="crapsTable">
+      <div class="table-felt" id="tableFelt">
+        <div class="table-rim" aria-hidden="true"></div>
+
+        <div class="felt-head">
+          <div class="dice-zone">
+            <div class="dice" id="dice" role="img" aria-label="Dice waiting for the roll">
+              <span class="die" data-face="5"></span><span class="die" data-face="2"></span>
+            </div>
+            <ol class="history" id="history" aria-label="Last rolls" data-i18n-aria-label="historyLabel"></ol>
+          </div>
+          <div class="banner" id="banner" role="status" aria-live="polite" aria-atomic="true">
+            <span id="bannerText" data-i18n="comeOutLine">Coming out: place your bets</span>
+            <small id="bannerSub"></small>
+          </div>
+          <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
+            <span class="table-spec">
+              <small data-i18n="tableMinLabel">MIN</small>
+              <strong id="tableMin">$5</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableMaxLabel">MAX</small>
+              <strong id="tableMax">$5,000</strong>
+            </span>
+            <span class="table-spec table-point-spec">
+              <small data-i18n="pointLabel">POINT</small>
+              <strong id="tablePoint" data-i18n="puckOff">OFF</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="layout" id="layout" role="group" aria-label="Betting areas" data-i18n-aria-label="bettingAreas">
+          <button class="spot spot-dc" data-bet="dontCome" type="button"><span class="spot-name" data-i18n="dontComeName">Don't come bar</span><span class="spot-pay" data-i18n="payEven">1 TO 1</span><span class="spot-stack" data-stack="dontCome" aria-hidden="true"></span></button>
+          <div class="number-box" data-number="4">
+            <div class="lane lane-dc"><span class="spot-stack" data-stack="dontCome4" aria-hidden="true"></span><button class="mini-spot" data-bet="dontComeOdds4" type="button" hidden><span data-i18n="layShort">LAY</span><span class="spot-stack" data-stack="dontComeOdds4" aria-hidden="true"></span></button></div>
+            <button class="spot spot-place" data-bet="place4" type="button"><span class="box-number">4</span><span class="spot-pay" data-i18n="payPlace4">9 TO 5</span><span class="spot-stack" data-stack="place4" aria-hidden="true"></span></button>
+            <div class="lane lane-come"><span class="spot-stack" data-stack="come4" aria-hidden="true"></span><button class="mini-spot" data-bet="comeOdds4" type="button" hidden><span data-i18n="oddsShort">ODDS</span><span class="spot-stack" data-stack="comeOdds4" aria-hidden="true"></span></button></div>
+            <span class="puck" aria-hidden="true" data-i18n="puckOn">ON</span>
+          </div>
+          <div class="number-box" data-number="5">
+            <div class="lane lane-dc"><span class="spot-stack" data-stack="dontCome5" aria-hidden="true"></span><button class="mini-spot" data-bet="dontComeOdds5" type="button" hidden><span data-i18n="layShort">LAY</span><span class="spot-stack" data-stack="dontComeOdds5" aria-hidden="true"></span></button></div>
+            <button class="spot spot-place" data-bet="place5" type="button"><span class="box-number">5</span><span class="spot-pay" data-i18n="payPlace5">7 TO 5</span><span class="spot-stack" data-stack="place5" aria-hidden="true"></span></button>
+            <div class="lane lane-come"><span class="spot-stack" data-stack="come5" aria-hidden="true"></span><button class="mini-spot" data-bet="comeOdds5" type="button" hidden><span data-i18n="oddsShort">ODDS</span><span class="spot-stack" data-stack="comeOdds5" aria-hidden="true"></span></button></div>
+            <span class="puck" aria-hidden="true" data-i18n="puckOn">ON</span>
+          </div>
+          <div class="number-box" data-number="6">
+            <div class="lane lane-dc"><span class="spot-stack" data-stack="dontCome6" aria-hidden="true"></span><button class="mini-spot" data-bet="dontComeOdds6" type="button" hidden><span data-i18n="layShort">LAY</span><span class="spot-stack" data-stack="dontComeOdds6" aria-hidden="true"></span></button></div>
+            <button class="spot spot-place" data-bet="place6" type="button"><span class="box-number">6</span><span class="spot-pay" data-i18n="payPlace6">7 TO 6</span><span class="spot-stack" data-stack="place6" aria-hidden="true"></span></button>
+            <div class="lane lane-come"><span class="spot-stack" data-stack="come6" aria-hidden="true"></span><button class="mini-spot" data-bet="comeOdds6" type="button" hidden><span data-i18n="oddsShort">ODDS</span><span class="spot-stack" data-stack="comeOdds6" aria-hidden="true"></span></button></div>
+            <span class="puck" aria-hidden="true" data-i18n="puckOn">ON</span>
+          </div>
+          <div class="number-box" data-number="8">
+            <div class="lane lane-dc"><span class="spot-stack" data-stack="dontCome8" aria-hidden="true"></span><button class="mini-spot" data-bet="dontComeOdds8" type="button" hidden><span data-i18n="layShort">LAY</span><span class="spot-stack" data-stack="dontComeOdds8" aria-hidden="true"></span></button></div>
+            <button class="spot spot-place" data-bet="place8" type="button"><span class="box-number">8</span><span class="spot-pay" data-i18n="payPlace6">7 TO 6</span><span class="spot-stack" data-stack="place8" aria-hidden="true"></span></button>
+            <div class="lane lane-come"><span class="spot-stack" data-stack="come8" aria-hidden="true"></span><button class="mini-spot" data-bet="comeOdds8" type="button" hidden><span data-i18n="oddsShort">ODDS</span><span class="spot-stack" data-stack="comeOdds8" aria-hidden="true"></span></button></div>
+            <span class="puck" aria-hidden="true" data-i18n="puckOn">ON</span>
+          </div>
+          <div class="number-box" data-number="9">
+            <div class="lane lane-dc"><span class="spot-stack" data-stack="dontCome9" aria-hidden="true"></span><button class="mini-spot" data-bet="dontComeOdds9" type="button" hidden><span data-i18n="layShort">LAY</span><span class="spot-stack" data-stack="dontComeOdds9" aria-hidden="true"></span></button></div>
+            <button class="spot spot-place" data-bet="place9" type="button"><span class="box-number">9</span><span class="spot-pay" data-i18n="payPlace5">7 TO 5</span><span class="spot-stack" data-stack="place9" aria-hidden="true"></span></button>
+            <div class="lane lane-come"><span class="spot-stack" data-stack="come9" aria-hidden="true"></span><button class="mini-spot" data-bet="comeOdds9" type="button" hidden><span data-i18n="oddsShort">ODDS</span><span class="spot-stack" data-stack="comeOdds9" aria-hidden="true"></span></button></div>
+            <span class="puck" aria-hidden="true" data-i18n="puckOn">ON</span>
+          </div>
+          <div class="number-box" data-number="10">
+            <div class="lane lane-dc"><span class="spot-stack" data-stack="dontCome10" aria-hidden="true"></span><button class="mini-spot" data-bet="dontComeOdds10" type="button" hidden><span data-i18n="layShort">LAY</span><span class="spot-stack" data-stack="dontComeOdds10" aria-hidden="true"></span></button></div>
+            <button class="spot spot-place" data-bet="place10" type="button"><span class="box-number">10</span><span class="spot-pay" data-i18n="payPlace4">9 TO 5</span><span class="spot-stack" data-stack="place10" aria-hidden="true"></span></button>
+            <div class="lane lane-come"><span class="spot-stack" data-stack="come10" aria-hidden="true"></span><button class="mini-spot" data-bet="comeOdds10" type="button" hidden><span data-i18n="oddsShort">ODDS</span><span class="spot-stack" data-stack="comeOdds10" aria-hidden="true"></span></button></div>
+            <span class="puck" aria-hidden="true" data-i18n="puckOn">ON</span>
+          </div>
+          <button class="spot spot-come" data-bet="come" type="button"><span class="spot-name" data-i18n="comeName">Come</span><span class="spot-pay" data-i18n="payEven">1 TO 1</span><span class="spot-stack" data-stack="come" aria-hidden="true"></span></button>
+          <button class="spot spot-field" data-bet="field" type="button"><span class="spot-name" data-i18n="fieldName">Field</span><span class="spot-pay" data-i18n="payField">1 TO 1, 2 TO 1 ON 2, 3 TO 1 ON 12</span><span class="field-numbers" aria-hidden="true"><b class="field-double">2</b> 3 4 9 10 11 <b class="field-triple">12</b></span><span class="field-print" data-i18n="fieldPrint">2 PAYS DOUBLE · 12 PAYS TRIPLE</span><span class="spot-stack" data-stack="field" aria-hidden="true"></span></button>
+          <button class="spot spot-dp" data-bet="dontPass" type="button"><span class="spot-name" data-i18n="dontPassName">Don't pass bar</span><span class="spot-pay" data-i18n="payEven">1 TO 1</span><span class="spot-stack" data-stack="dontPass" aria-hidden="true"></span></button>
+          <button class="spot spot-dodds" data-bet="dontOdds" type="button"><span class="spot-name" data-i18n="dontOddsName">Don't pass odds</span><span class="spot-pay" data-i18n="payTrueOdds">TRUE ODDS</span><span class="spot-stack" data-stack="dontOdds" aria-hidden="true"></span></button>
+          <button class="spot spot-pass" data-bet="pass" type="button"><span class="spot-name" data-i18n="passName">Pass line</span><span class="spot-pay" data-i18n="payEven">1 TO 1</span><span class="spot-stack" data-stack="pass" aria-hidden="true"></span></button>
+          <button class="spot spot-podds" data-bet="passOdds" type="button"><span class="spot-name" data-i18n="passOddsName">Pass odds</span><span class="spot-pay" data-i18n="payTrueOdds">TRUE ODDS</span><span class="spot-stack" data-stack="passOdds" aria-hidden="true"></span></button>
+          <div class="props" role="group">
+            <button class="spot spot-prop prop-hard6" data-bet="hard6" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="3"></span><span class="mini-die" data-face="3"></span></span><span class="spot-name" data-name="hardName" data-i18n-number="6">Hard 6</span><span class="spot-pay" data-i18n="payHard6">9 TO 1</span><span class="spot-stack" data-stack="hard6" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-hard10" data-bet="hard10" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="5"></span><span class="mini-die" data-face="5"></span></span><span class="spot-name" data-name="hardName" data-i18n-number="10">Hard 10</span><span class="spot-pay" data-i18n="payHard4">7 TO 1</span><span class="spot-stack" data-stack="hard10" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-hard8" data-bet="hard8" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="4"></span><span class="mini-die" data-face="4"></span></span><span class="spot-name" data-name="hardName" data-i18n-number="8">Hard 8</span><span class="spot-pay" data-i18n="payHard6">9 TO 1</span><span class="spot-stack" data-stack="hard8" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-hard4" data-bet="hard4" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="2"></span><span class="mini-die" data-face="2"></span></span><span class="spot-name" data-name="hardName" data-i18n-number="4">Hard 4</span><span class="spot-pay" data-i18n="payHard4">7 TO 1</span><span class="spot-stack" data-stack="hard4" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-any7" data-bet="any7" type="button"><span class="spot-name" data-name="any7Name">Any seven</span><span class="spot-pay" data-i18n="payAny7">4 TO 1</span><span class="spot-stack" data-stack="any7" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-two" data-bet="two" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="1"></span><span class="mini-die" data-face="1"></span></span><span class="spot-name" data-name="twoName">Two</span><span class="spot-pay" data-i18n="payTwo">30 TO 1</span><span class="spot-stack" data-stack="two" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-three" data-bet="three" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="1"></span><span class="mini-die" data-face="2"></span></span><span class="spot-name" data-name="threeName">Three</span><span class="spot-pay" data-i18n="payThree">15 TO 1</span><span class="spot-stack" data-stack="three" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-eleven" data-bet="eleven" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="5"></span><span class="mini-die" data-face="6"></span></span><span class="spot-name" data-name="elevenName">Eleven</span><span class="spot-pay" data-i18n="payThree">15 TO 1</span><span class="spot-stack" data-stack="eleven" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-twelve" data-bet="twelve" type="button"><span class="prop-dice" aria-hidden="true"><span class="mini-die" data-face="6"></span><span class="mini-die" data-face="6"></span></span><span class="spot-name" data-name="twelveName">Twelve</span><span class="spot-pay" data-i18n="payTwo">30 TO 1</span><span class="spot-stack" data-stack="twelve" aria-hidden="true"></span></button>
+            <button class="spot spot-prop prop-anyCraps" data-bet="anyCraps" type="button"><span class="spot-name" data-name="anyCrapsName">Any craps</span><span class="spot-pay" data-i18n="payAnyCraps">7 TO 1</span><span class="spot-stack" data-stack="anyCraps" aria-hidden="true"></span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls" data-i18n-aria-label="controlsLabel">
+      <div class="chips-tray" id="chipTray" role="radiogroup" aria-label="Chip value" data-i18n-aria-label="chipsLabel" aria-keyshortcuts="1 2 3 4 5 6">
+        <button class="chip chip-5" data-value="5" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5"><span class="denom">5</span></button>
+        <button class="chip chip-25" data-value="25" type="button" role="radio" aria-checked="true" aria-label="$25"><span class="denom">25</span></button>
+        <button class="chip chip-100" data-value="100" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$100"><span class="denom">100</span></button>
+        <button class="chip chip-500" data-value="500" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$500"><span class="denom">500</span></button>
+        <button class="chip chip-1k" data-value="1000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$1,000"><span class="denom">1K</span></button>
+        <button class="chip chip-5k" data-value="5000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5,000"><span class="denom">5K</span></button>
+      </div>
+
+      <div class="action-row">
+        <div class="bet-actions">
+          <button id="btnUndo" class="btn btn-tool" type="button" aria-keyshortcuts="Z Backspace">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 7 4.5 11.5 9 16" /><path d="M5 11.5h9.5a5 5 0 0 1 0 10H11" /></svg>
+            <span data-i18n="undo">Undo</span>
+          </button>
+          <button id="btnClear" class="btn btn-tool" type="button" aria-keyshortcuts="C">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" /></svg>
+            <span data-i18n="clear">Clear</span>
+          </button>
+          <button id="btnRebet" class="btn btn-tool" type="button" aria-keyshortcuts="R">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M19.8 4.5v4.3h-4.3" /></svg>
+            <span data-i18n="rebet">Rebet</span>
+          </button>
+        </div>
+
+        <div class="bet-total" aria-live="off">
+          <small data-i18n="onLayout">On the layout</small>
+          <strong>$<span id="layoutTotal">0</span></strong>
+          <small class="new-bets"><span data-i18n="newBets">New bets</span> <b>$<span id="pendingTotal">0</span></b></small>
+          <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
+        </div>
+
+        <button id="btnRoll" class="deal-btn roll-btn" type="button" aria-keyshortcuts="Space Enter">
+          <span class="deal-label" data-i18n="roll">Roll</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+            <button class="theme-option" data-set-theme="onyx" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeOnyx">Onyx</span>
+            </button>
+            <button class="theme-option" data-set-theme="amethyst" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeAmethyst">Amethyst</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row animation-setting">
+          <span class="setting-label" id="animationSpeedLabel" data-i18n="animationSpeed">Dice speed</span>
+          <div class="seg animation-seg" role="radiogroup" aria-labelledby="animationSpeedLabel">
+            <button class="seg-btn" data-set-animation="fast" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedFast">Fast</button>
+            <button class="seg-btn active" data-set-animation="normal" type="button" role="radio" aria-checked="true" data-i18n="speedNormal">Normal</button>
+            <button class="seg-btn" data-set-animation="cinematic" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedCinematic">Cinematic</button>
+          </div>
+        </div>
+
+        <div class="sound-settings">
+          <div class="setting-row">
+            <label for="setSound" data-i18n="soundLabel">Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="setSound" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="audio-mixer" id="soundMixer" role="group" aria-label="Sound levels" data-i18n-aria-label="soundMixer">
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundMasterLabel" data-i18n="masterVolume">Master</span><output id="soundMasterValue" for="soundMaster">100%</output></span>
+              <input class="volume-slider" id="soundMaster" data-sound-level="master" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundMasterLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundCardsLabel" data-i18n="diceVolume">Dice</span><output id="soundCardsValue" for="soundCards">100%</output></span>
+              <input class="volume-slider" id="soundCards" data-sound-level="cards" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundCardsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundChipsLabel" data-i18n="chipVolume">Chips</span><output id="soundChipsValue" for="soundChips">100%</output></span>
+              <input class="volume-slider" id="soundChips" data-sound-level="chips" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundChipsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundTableLabel" data-i18n="tableVolume">Table cues</span><output id="soundTableValue" for="soundTable">100%</output></span>
+              <input class="volume-slider" id="soundTable" data-sound-level="table" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundTableLabel" aria-valuetext="100%" />
+            </label>
+          </div>
+        </div>
+
+        <details class="payout-table">
+          <summary data-i18n="payoutsTitle">Bets and payouts</summary>
+          <p class="settings-hint" data-i18n="rulesLine">Pass wins on 7 or 11 when coming out, loses on 2, 3 or 12; any other total is the point, which wins if it comes again before a 7. Don't pass is the reverse, with 12 a tie. Come and Don't come work the same way from the roll after they are made.</p>
+          <p class="settings-hint" data-i18n="rulesOdds">Odds pay the true odds behind a pass or come bet once there is a point: up to 3 times the bet on 4 and 10, 4 times on 5 and 9, 5 times on 6 and 8. Laid odds behind don't bets go up to 6 times the bet.</p>
+          <p class="settings-hint" data-i18n="rulesOff">Place bets and Hardways do not work on the come-out roll, nor do the odds behind a come bet. Field and the bets in the middle are decided by the next roll.</p>
+          <p class="settings-hint" data-i18n="rulesWhole">Amounts use whole dollars and payouts round down: bet Place 6 and 8 in sixes and Place 5 and 9 in fives to be paid in full. A winning Place, Field, Hardway or middle bet stays up for the next roll.</p>
+          <h3 class="rules-title" data-i18n="houseEdgeTitle">House edges</h3>
+          <p class="settings-hint" data-i18n="edgeLine">Pass and Come 1.41% · Don't pass and Don't come 1.36% · Odds 0% · Place 6 and 8 1.52% · Place 5 and 9 4.00% · Place 4 and 10 6.67% · Field 2.78% · Hard 6 and 8 9.09% · Hard 4 and 10 11.11% · Any seven 16.67% · Any craps, 3 and 11 11.11% · 2 and 12 13.89%</p>
+        </details>
+
+        <div class="stats-grid">
+          <h3 data-i18n="sessionStats">Statistics</h3>
+          <div class="stat"><span data-i18n="statRolls">Rolls</span><b id="stRolls">0</b></div>
+          <div class="stat"><span data-i18n="statPointsMade">Points made</span><b id="stPointsMade">0</b></div>
+          <div class="stat"><span data-i18n="statSevenOuts">Seven outs</span><b id="stSevenOuts">0</b></div>
+          <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+          <div class="stat"><span data-i18n="totalWagered">Wagered</span><b id="stWagered">$0</b></div>
+          <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
+          <div class="stat"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
+        </div>
+        <p class="settings-hint" data-i18n="statsHint">For entertainment: every roll is independent, so the last rolls never make a number more or less likely.</p>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="modal-foot">
+          <button id="btnResetStats" class="btn btn-ghost" type="button" data-i18n="resetStats">Reset statistics</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">Table 7 is a craps simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every roll of the dice is drawn at random on your device. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../../shared/js/pit.js"></script>
+  <script src="../../shared/js/i18n.js"></script>
+  <script src="js/strings.js"></script>
+  <script src="../../shared/js/card-sound.js"></script>
+  <script src="../../shared/js/chips.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/game.js"></script>
+  <script src="../../shared/js/pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#15402e"/>
+      <stop offset="58%" stop-color="#0a2419"/>
+      <stop offset="100%" stop-color="#04110b"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7ecc0"/>
+      <stop offset="28%" stop-color="#e6c869"/>
+      <stop offset="52%" stop-color="#b8902f"/>
+      <stop offset="74%" stop-color="#f0dd9a"/>
+      <stop offset="100%" stop-color="#8c6a1c"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffefa"/>
+      <stop offset="100%" stop-color="#ebe6d8"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
+    </filter>
+  </defs>
+
+  <!-- App tile -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Medallion -->
+  <g filter="url(#soft)">
+    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
+    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
+    <circle cx="256" cy="256" r="150" fill="#08231a"/>
+  </g>
+
+  <!-- Two hole cards: a pair of aces -->
+  <g filter="url(#soft)" transform="rotate(-12 236 330)">
+    <rect x="166" y="160" width="124" height="176" rx="14" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
+    <text x="186" y="206" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="#17171a">A</text>
+    <text x="186" y="240" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#17171a">♠</text>
+  </g>
+  <g filter="url(#soft)" transform="rotate(12 276 330)">
+    <rect x="222" y="160" width="128" height="180" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
+    <text x="286" y="296" font-family="Georgia, 'Times New Roman', serif" font-size="112" font-weight="700" fill="#b7151e" text-anchor="middle">A</text>
+    <text x="240" y="206" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#b7151e">♥</text>
+  </g>
+</svg>

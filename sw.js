@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v11";
+var CACHE_VERSION = "pit-v12";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -98,6 +98,16 @@ var ASSETS = [
   "./games/craps/js/engine.js",
   "./games/craps/js/store.js",
   "./games/craps/js/game.js",
+
+  // Table 2 · Casino Hold'em
+  "./games/holdem/",
+  "./games/holdem/index.html",
+  "./games/holdem/icon.svg",
+  "./games/holdem/css/styles.css",
+  "./games/holdem/js/strings.js",
+  "./games/holdem/js/engine.js",
+  "./games/holdem/js/store.js",
+  "./games/holdem/js/game.js",
 
   // Table 37 · Roulette
   "./games/roulette/",

@@ -32,6 +32,8 @@
       slotSummary: "Five reels and 20 lines, a wild, scattered stars and ten free spins at triple pay. Returns 95.80%.",
       crapsGame: "Craps",
       crapsSummary: "Pass and Don't pass with odds, Come, Place, the Field, the Hardways and the bets in the middle, with real dice rules.",
+      holdemGame: "Casino Hold'em",
+      holdemSummary: "Two cards against the dealer's, a board of five, call or fold after the flop, with the AA Bonus.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -63,6 +65,8 @@
       slotSummary: "Beş makara ve 20 çizgi, joker, dağınık yıldızlar ve üç kat ödemeli on bedava çevirme. Geri dönüş %95,80.",
       crapsGame: "Craps",
       crapsSummary: "Oranlarıyla Pass ve Don't pass, Come, Place, Field, zor bahisler ve ortadaki bahisler; gerçek zar kurallarıyla.",
+      holdemGame: "Casino Hold'em",
+      holdemSummary: "Krupiyeye karşı iki kart, beş ortak kart, flop'tan sonra call ya da çekil; AA Bonus ile.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

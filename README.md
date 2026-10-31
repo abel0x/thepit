@@ -7,7 +7,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 
 **[Enter ThePit in your browser](https://abel0x.github.io/thepit/)** · Version 0.1.0 · [GNU AGPL v3](LICENSE) · [![Tests](https://github.com/abel0x/thepit/actions/workflows/tests.yml/badge.svg)](https://github.com/abel0x/thepit/actions/workflows/tests.yml)
 
-![The lobby of ThePit with Table 21, Table 37 and Table 9 on green felt](assets/social-preview.jpg)
+![The lobby of ThePit with Table 21, Table 37, Table 9 and Table 3 on green felt](assets/social-preview.jpg)
 
 ## Play
 
@@ -52,11 +52,20 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **The scoreboards**: the bead plate and the big road, with its dragon tails and tie marks, follow the shoe and start again with every new one.
 - **Keyboard shortcuts**: `Space`/`Enter` deal · `1`–`6` chips · `P` Player · `B` Banker · `T` Tie · `Z` or `Backspace` undo · `C` clear · `D` double · `R` rebet · `M` sound.
 
+### Table 3 · Three Card Poker
+
+- **Ante and Play against the dealer**: one deck, shuffled with `crypto.getRandomValues` for every hand. See your three cards, then play by matching the Ante or fold.
+- **The dealer qualifies with Queen high**: if not, the Ante pays 1:1 and the Play bet is returned; if so, the better hand wins both at 1:1 and a tie returns both. A straight beats a flush, and A-2-3 is the lowest straight.
+- **Ante Bonus and Pair Plus**: straight flush 5:1, three of a kind 4:1 and straight 1:1 on every hand played; Pair Plus pays 40, 30, 6, 4 and 1 to 1 on the player's hand alone. An exhaustive check of all 407,170,400 deals gives the published house edges: 3.37% of the Ante with the best strategy, 2.32% on Pair Plus.
+- **An optional strategy hint**: play Queen-6-4 or better, fold anything less, shown on the banner and on the button it picks.
+- **Saved at every step**: the hand and its stake before the first card, the decision and the Play bet before the dealer's cards. A reload brings the same cards back to the decision, or settles a decided hand.
+- **Keyboard shortcuts**: `Space`/`Enter` deal or play · `1`–`6` chips · `A` Ante · `S` Pair Plus · `P` play · `F` fold · `Z` or `Backspace` undo · `C` clear · `D` double · `R` rebet · `M` sound.
+
 ## One pit
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
 - **One round at a time**: a hand or a spin left unfinished is saved before it is played, so a reload, a crash, a closed tab or a trip back to the lobby resumes it with the same cards or the same result. Until it is played out, its stake stays on that table: the lobby marks the table, and the other tables wait instead of spending it.
-- **One set of chips**: every table bets with the same clay chips, and every value keeps one colour wherever it appears, in a tray, on the felt or in a payout: $1 white, $5 red, $10 brown, $25 green, $50 orange, $100 black, $500 purple, $1K yellow, $5K blue, $25K pink, $100K silver, and All-in bordeaux. Each table offers its own tray of them: Table 21 from $100, Table 37 and Table 9 from $5.
+- **One set of chips**: every table bets with the same clay chips, and every value keeps one colour wherever it appears, in a tray, on the felt or in a payout: $1 white, $5 red, $10 brown, $25 green, $50 orange, $100 black, $500 purple, $1K yellow, $5K blue, $25K pink, $100K silver, and All-in bordeaux. Each table offers its own tray of them: Table 21 from $100, Table 37 and Table 9 from $5, Table 3 from $10.
 - **The lobby**: the balance, every table with its rules and limits, and the settings the whole pit shares. *Add play money* only adds free chips.
 - **Five cloths, one language**: Emerald, Midnight, Bordeaux, Onyx and Amethyst, each with its own card back at the blackjack table, and the English or Turkish language follow the player from the lobby to every table and back.
 - **One installable app**: one manifest and one offline cache for the lobby and every table. Updates wait until no round is in play and do not force another open tab to reload.
@@ -75,9 +84,9 @@ The core test suite uses only Node's built-in test runner (Node.js 22.12 or newe
 npm test                 # node --test "tests/**/*.test.js" "tests/**/*.test.cjs"
 ```
 
-The suite currently executes **661 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
+The suite currently executes **690 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
 
-The optional real-browser suite adds **215 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
+The optional real-browser suite adds **233 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
 
 ```bash
 npm install              # also downloads the Chrome build Puppeteer drives
@@ -110,6 +119,7 @@ shared/fonts/              local WOFF2 interface font + OFL license
 games/blackjack/           Table 21: page, look, engine, rules, strategy coach
 games/roulette/            Table 37: page, look, engine, layout, wheel, sounds
 games/baccarat/            Table 9: page, look, engine, saved state
+games/threecard/           Table 3: page, look, engine, saved state
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)

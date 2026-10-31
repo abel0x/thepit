@@ -22,7 +22,7 @@
   <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="The lobby of ThePit with Table 21 blackjack, Table 37 roulette and Table 9 baccarat on green felt" />
+  <meta property="og:image:alt" content="The lobby of ThePit with Table 21 blackjack, Table 37 roulette, Table 9 baccarat and Table 3 Three Card Poker on green felt" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -212,6 +212,48 @@
           <p class="table-card-summary" data-i18n="baccaratSummary">Punto Banco from an eight-deck shoe: Player, Banker, Tie and both pairs, with the bead plate and the big road.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$5</strong></span>
+            <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
+            <span class="table-card-cta" aria-hidden="true"><span data-i18n="takeSeat">Take a seat</span></span>
+          </div>
+        </div>
+      </li>
+      <li class="table-card" data-game="threecard">
+        <div class="table-card-felt" aria-hidden="true">
+          <svg class="table-card-art" viewBox="0 0 240 150" focusable="false">
+            <text class="art-side dealer" x="120" y="22">DEALER</text>
+            <g class="art-card" transform="translate(62 30) rotate(-14 22 31)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank red" x="5" y="13">Q</text>
+              <text class="art-pip red" x="22" y="40">♥</text>
+            </g>
+            <g class="art-card" transform="translate(98 26)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank red" x="5" y="13">K</text>
+              <text class="art-pip red" x="22" y="40">♥</text>
+            </g>
+            <g class="art-card" transform="translate(134 30) rotate(14 22 31)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank red" x="5" y="13">A</text>
+              <text class="art-pip red" x="22" y="40">♥</text>
+            </g>
+            <path class="art-print" d="M40 108 H200" />
+            <g class="art-chips" transform="translate(120 128)">
+              <ellipse class="art-chip chip-a" cx="0" cy="6" rx="15" ry="5" />
+              <ellipse class="art-chip chip-b" cx="0" cy="1" rx="15" ry="5" />
+              <ellipse class="art-chip-face" cx="0" cy="1" rx="9" ry="3" />
+            </g>
+          </svg>
+        </div>
+        <div class="table-card-body">
+          <h3>
+            <a class="table-card-link" href="games/threecard/index.html">
+              <span class="table-lockup"><span class="table-word">TABLE</span><span class="table-number">3</span></span>
+              <span class="table-game" data-i18n="threecardGame">Three Card Poker</span>
+            </a>
+          </h3>
+          <p class="table-card-summary" data-i18n="threecardSummary">Ante and Play against the dealer, with the Ante Bonus and the Pair Plus, from a deck shuffled for every hand.</p>
+          <div class="table-card-foot">
+            <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$10</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
             <span class="table-card-cta" aria-hidden="true"><span data-i18n="takeSeat">Take a seat</span></span>
           </div>

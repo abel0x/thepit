@@ -26,6 +26,8 @@
       rouletteSummary: "A single-zero wheel with European and French rules, the racetrack and all 157 bets.",
       baccaratGame: "Baccarat",
       baccaratSummary: "Punto Banco from an eight-deck shoe: Player, Banker, Tie and both pairs, with the bead plate and the big road.",
+      threecardGame: "Three Card Poker",
+      threecardSummary: "Ante and Play against the dealer, with the Ante Bonus and the Pair Plus, from a deck shuffled for every hand.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -51,6 +53,8 @@
       rouletteSummary: "Avrupa ve Fransız kurallarıyla tek sıfırlı çark, yarış pisti ve 157 bahsin tamamı.",
       baccaratGame: "Bakara",
       baccaratSummary: "Sekiz desteli ayakkabıdan Punto Banco: Oyuncu, Banko, Beraberlik ve iki çift; boncuk tablosu ve büyük yol ile.",
+      threecardGame: "Üç Kartlı Poker",
+      threecardSummary: "Krupiyeye karşı Ante ve Play, Ante Bonusu ve Pair Plus ile; her elde yeniden karıştırılan bir desteden.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

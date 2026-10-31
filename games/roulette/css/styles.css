@@ -1023,6 +1023,8 @@ body[data-phase="spinning"] .spin-ring { animation: ringTurn 1.2s linear infinit
 }
 .theme-option[data-set-theme="midnight"] { --preview-felt-top: #2b6288; --preview-felt-bottom: #0b2b47; }
 .theme-option[data-set-theme="bordeaux"] { --preview-felt-top: #8e3a49; --preview-felt-bottom: #3e111c; }
+.theme-option[data-set-theme="onyx"] { --preview-felt-top: #5d6268; --preview-felt-bottom: #2a2d31; }
+.theme-option[data-set-theme="amethyst"] { --preview-felt-top: #7a54a8; --preview-felt-bottom: #36215a; }
 
 .seg-btn {
   background: transparent; border: none; color: rgba(244,239,226,.6);

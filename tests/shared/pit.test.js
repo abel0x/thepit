@@ -53,8 +53,8 @@ test("balances stay whole, non-negative and below the shared ceiling", function 
   assert.ok(Number.isSafeInteger(Pit.MAX_BANKROLL * 64));
 });
 
-test("the cloth is one of three and falls back to emerald", function () {
-  assert.deepEqual(Pit.THEMES, ["emerald", "midnight", "bordeaux"]);
+test("the cloth is one of five and falls back to emerald", function () {
+  assert.deepEqual(Pit.THEMES, ["emerald", "midnight", "bordeaux", "onyx", "amethyst"]);
   Pit.THEMES.forEach(function (theme) {
     assert.equal(Pit.normalizeTheme(theme), theme);
     assert.match(Pit.THEME_COLORS[theme], /^#[0-9a-f]{6}$/);

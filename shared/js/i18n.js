@@ -47,6 +47,8 @@
       themeEmerald: "Emerald",
       themeMidnight: "Midnight",
       themeBordeaux: "Bordeaux",
+      themeOnyx: "Onyx",
+      themeAmethyst: "Amethyst",
 
       // Sound and pace
       soundLabel: "Sound",
@@ -99,6 +101,8 @@
       themeEmerald: "Zümrüt",
       themeMidnight: "Gece mavisi",
       themeBordeaux: "Bordo",
+      themeOnyx: "Oniks",
+      themeAmethyst: "Ametist",
 
       // Sound and pace
       soundLabel: "Ses",

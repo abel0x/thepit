@@ -144,19 +144,21 @@ test("every literal translation key resolves in English and Turkish", function (
   });
 });
 
-test("all three table and card-back themes are available without assets", function () {
+test("every cloth of the pit has a table and a card back, drawn without assets", function () {
   var html = read("index.html");
   var css = read("css/styles.css");
   var game = read("js/game.js");
+  var Pit = require("../../shared/js/pit.js");
   var themes = Array.from(html.matchAll(/data-set-theme=["']([^"']+)["']/g), function (match) {
     return match[1];
-  }).sort();
+  });
 
-  assert.deepEqual(themes, ["bordeaux", "emerald", "midnight"]);
+  assert.deepEqual(themes, Pit.THEMES);
   assert.match(game, /ALLOWED_THEMES\s*=\s*Pit\.THEMES;/);
-  assert.deepEqual(require("../../shared/js/pit.js").THEMES, ["emerald", "midnight", "bordeaux"]);
-  assert.match(css, /body\[data-theme="midnight"\]/);
-  assert.match(css, /body\[data-theme="bordeaux"\]/);
+  Pit.THEMES.filter(function (theme) { return theme !== Pit.DEFAULT_THEME; }).forEach(function (theme) {
+    assert.match(css, new RegExp('body\\[data-theme="' + theme + '"\\]'), theme);
+    assert.match(css, new RegExp('\\.theme-option\\[data-set-theme="' + theme + '"\\]'), theme + " preview");
+  });
 });
 
 test("number cards show exactly their value in the central pip field", function () {

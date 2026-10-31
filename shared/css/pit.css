@@ -79,6 +79,38 @@ body[data-theme="bordeaux"] {
   --modal-bottom: #1b090f;
 }
 
+/* Charcoal felt under steel-grey light. */
+body[data-theme="onyx"] {
+  --page-highlight: #2a2c30;
+  --page-mid: #141517;
+  --page-edge: #08090a;
+  --ambient-glow: rgba(226, 230, 238, .09);
+  --felt-highlight: #5d6268;
+  --felt-1: #474b51;
+  --felt-2: #2a2d31;
+  --felt-edge: #141618;
+  --topbar-top: rgba(12, 13, 15, .94);
+  --topbar-bottom: rgba(12, 13, 15, .58);
+  --modal-top: #26282c;
+  --modal-bottom: #131416;
+}
+
+/* Violet felt for a quieter, deeper room. */
+body[data-theme="amethyst"] {
+  --page-highlight: #2f1d46;
+  --page-mid: #150c22;
+  --page-edge: #08040e;
+  --ambient-glow: rgba(228, 206, 255, .1);
+  --felt-highlight: #7a54a8;
+  --felt-1: #5e3d8c;
+  --felt-2: #36215a;
+  --felt-edge: #190d2c;
+  --topbar-top: rgba(19, 10, 31, .94);
+  --topbar-bottom: rgba(19, 10, 31, .58);
+  --modal-top: #2b1b42;
+  --modal-bottom: #150c22;
+}
+
 :where(a, button, input, summary, [tabindex]):focus-visible {
   outline: 3px solid var(--gold-bright);
   outline-offset: 3px;
@@ -195,7 +227,8 @@ body[data-theme="bordeaux"] {
 .setting-row > .setting-label { font-size: 14px; color: rgba(244,239,226,.85); }
 .theme-setting { display: flex; flex-direction: column; gap: 9px; }
 .setting-section-label { font-size: 14px; color: rgba(244,239,226,.85); }
-.theme-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+/* As many cloths in a row as the dialog has room for. */
+.theme-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 8px; }
 .theme-option:hover { transform: translateY(-1px); border-color: rgba(217,182,95,.48); background: rgba(255,255,255,.065); color: var(--cream); }
 .theme-option.active {
   border-color: var(--gold);

@@ -11,6 +11,8 @@ The first version of the pit: two tables, one wallet, one lobby.
 - One play-money balance shared by every table, guarded by a single Web Lock across pages and tabs; without Web Locks each tab keeps its own session balance, as before.
 - One round at a time across the pit: a hand or a spin left unfinished at one table is played out there before another table takes a bet, and the lobby marks that table.
 - The cloth and the language chosen anywhere follow the player to every page.
+- Two new cloths, Onyx and Amethyst, beside Emerald, Midnight and Bordeaux; at Table 21 Onyx deals from green backs and Amethyst from antique gold.
+- One language engine and one set of shared words, and two shared stylesheets, for the lobby and every table.
 - One installable app with one offline cache for the lobby and both tables, plus the zero-setup `file://` route.
 - Roulette's top bar no longer runs into the balance on the narrowest phones.
 - Play money only, with a disclaimer on every page and in the README.

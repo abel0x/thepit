@@ -32,10 +32,10 @@
   // Far above any balance a session reaches, and far enough below 2^53 that
   // payouts on the largest allowed bets stay exact integers.
   var MAX_BANKROLL = 1e12;
-  var THEMES = ["emerald", "midnight", "bordeaux"];
+  var THEMES = ["emerald", "midnight", "bordeaux", "onyx", "amethyst"];
   var DEFAULT_THEME = "emerald";
   // Browser chrome colour that matches each cloth.
-  var THEME_COLORS = { emerald: "#0b3d2e", midnight: "#102c49", bordeaux: "#4a1822" };
+  var THEME_COLORS = { emerald: "#0b3d2e", midnight: "#102c49", bordeaux: "#4a1822", onyx: "#26292d", amethyst: "#3a2361" };
 
   // Balances are whole play-money dollars. A missing, unreadable or negative
   // value starts the player over with the opening stake.

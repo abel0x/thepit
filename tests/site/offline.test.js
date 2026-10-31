@@ -231,3 +231,26 @@ test("every icon is a self-contained scalable vector", function () {
     assert.doesNotMatch(icon, /\b(?:href|src)=["'](?:https?:)?\/\//i, file);
   });
 });
+
+test("every cloth dresses every page, with a swatch in each picker", function () {
+  var shared = read("shared/css/pit.css");
+  var tableLook = read("shared/css/table.css");
+  Pit.THEMES.filter(function (theme) { return theme !== Pit.DEFAULT_THEME; }).forEach(function (theme) {
+    var block = new RegExp('body\\[data-theme="' + theme + '"\\]\\s*\\{([^}]*)\\}');
+    var felt = shared.match(block);
+    assert.ok(felt, "pit.css dresses " + theme);
+    ["--page-highlight", "--page-mid", "--page-edge", "--felt-1", "--felt-2", "--topbar-top", "--modal-top", "--modal-bottom"].forEach(function (token) {
+      assert.ok(felt[1].indexOf(token + ":") !== -1, theme + " " + token);
+    });
+    assert.match(tableLook, block, "table.css dresses " + theme);
+  });
+  PAGES.forEach(function (page) {
+    var html = read(page);
+    var offered = Array.from(html.matchAll(/data-set-theme="([^"]+)"/g), function (match) { return match[1]; });
+    assert.deepEqual(offered, Pit.THEMES, page);
+    var css = stylesheets(page).map(read).join("\n");
+    Pit.THEMES.filter(function (theme) { return theme !== Pit.DEFAULT_THEME; }).forEach(function (theme) {
+      assert.match(css, new RegExp('\\.theme-option\\[data-set-theme="' + theme + '"\\]'), page + " swatch for " + theme);
+    });
+  });
+});

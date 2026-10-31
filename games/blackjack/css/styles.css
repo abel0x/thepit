@@ -61,6 +61,41 @@ body[data-theme="bordeaux"] {
   --shoe-card-back: #25251f;
   --shoe-mouth-card: #1c1d18;
 }
+/* Onyx deals from deep green backs that stand out on the charcoal felt. */
+body[data-theme="onyx"] {
+  --surface-top: rgba(40, 43, 47, .96);
+  --surface-bottom: rgba(20, 22, 25, .96);
+  --card-pattern-dark: rgba(2, 18, 10, .24);
+  --card-back-top: #2f7354;
+  --card-back-mid: #19503a;
+  --card-back-bottom: #0b3324;
+  --card-back-inset: rgba(3, 26, 16, .74);
+  --card-back-line: rgba(4, 34, 21, .64);
+  --card-back-line-soft: rgba(4, 34, 21, .42);
+  --card-medallion-top: #357a5a;
+  --card-medallion-bottom: #12432f;
+  --card-medallion-inset: rgba(3, 30, 18, .48);
+  --shoe-card-back: #19503a;
+  --shoe-mouth-card: #154632;
+}
+/* Amethyst deals from antique gold backs. */
+body[data-theme="amethyst"] {
+  --surface-top: rgba(52, 33, 76, .96);
+  --surface-bottom: rgba(25, 14, 40, .96);
+  --card-pattern-light: rgba(255, 246, 217, .065);
+  --card-pattern-dark: rgba(40, 24, 0, .24);
+  --card-back-top: #a07a32;
+  --card-back-mid: #6e511c;
+  --card-back-bottom: #3f2c0c;
+  --card-back-inset: rgba(34, 22, 3, .74);
+  --card-back-line: rgba(46, 30, 4, .62);
+  --card-back-line-soft: rgba(46, 30, 4, .4);
+  --card-medallion-top: #a88236;
+  --card-medallion-bottom: #5a4115;
+  --card-medallion-inset: rgba(36, 24, 4, .46);
+  --shoe-card-back: #6e511c;
+  --shoe-mouth-card: #634818;
+}
 
 html { height: 100%; }
 
@@ -1710,6 +1745,18 @@ body[data-phase="insurance"] .controls > :not(.ins-overlay) { opacity: 0; pointe
   --preview-felt-bottom: #3e111c;
   --preview-card-top: #555147;
   --preview-card-bottom: #0c0f0d;
+}
+.theme-option[data-set-theme="onyx"] {
+  --preview-felt-top: #5d6268;
+  --preview-felt-bottom: #2a2d31;
+  --preview-card-top: #2f7354;
+  --preview-card-bottom: #0b3324;
+}
+.theme-option[data-set-theme="amethyst"] {
+  --preview-felt-top: #7a54a8;
+  --preview-felt-bottom: #36215a;
+  --preview-card-top: #a07a32;
+  --preview-card-bottom: #3f2c0c;
 }
 
 .active-rules {

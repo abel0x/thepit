@@ -37,6 +37,24 @@ body[data-theme="bordeaux"] {
   --action-hover-bottom: rgba(69, 21, 35, .95);
 }
 
+body[data-theme="onyx"] {
+  --tray-top: rgba(26, 28, 31, .92);
+  --tray-bottom: rgba(9, 10, 12, .94);
+  --action-top: rgba(52, 56, 61, .95);
+  --action-bottom: rgba(31, 33, 37, .95);
+  --action-hover-top: rgba(70, 75, 81, .95);
+  --action-hover-bottom: rgba(42, 45, 50, .95);
+}
+
+body[data-theme="amethyst"] {
+  --tray-top: rgba(38, 22, 58, .92);
+  --tray-bottom: rgba(17, 9, 28, .94);
+  --action-top: rgba(73, 44, 108, .95);
+  --action-bottom: rgba(43, 25, 68, .95);
+  --action-hover-top: rgba(95, 59, 138, .95);
+  --action-hover-bottom: rgba(56, 33, 88, .95);
+}
+
 /* ----------------------- The table fills the window ----------------------- */
 html, body { height: 100%; }
 body {

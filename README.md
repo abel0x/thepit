@@ -48,7 +48,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
 - **One round at a time**: a hand or a spin left unfinished is saved before it is played, so a reload, a crash, a closed tab or a trip back to the lobby resumes it with the same cards or the same result. Until it is played out, its stake stays on that table: the lobby marks the table, and the other tables wait instead of spending it.
 - **The lobby**: the balance, every table with its rules and limits, and the settings the whole pit shares. *Add play money* only adds free chips.
-- **Shared look and language**: Emerald, Midnight and Bordeaux cloths and the English or Turkish language follow the player from the lobby to every table and back.
+- **Five cloths, one language**: Emerald, Midnight, Bordeaux, Onyx and Amethyst, each with its own card back at the blackjack table, and the English or Turkish language follow the player from the lobby to every table and back.
 - **One installable app**: one manifest and one offline cache for the lobby and every table. Updates wait until no round is in play and do not force another open tab to reload.
 - **Built for every screen**: from 320 px phones to large desktops, with keyboard play, contained dialog focus, available zoom and reduced motion.
 - **Local sound and typography**: Ogg Vorbis samples with AAC (`.m4a`) twins for Safari, and a locally bundled OFL‑licensed WOFF2 font family.

@@ -6,8 +6,8 @@
    Loaded after shared/css/pit.css and before the table's own
    stylesheet: sound control and mixer, rule profiles, switches,
    chips and buttons that every table draws the same way. The same
-   rule as pit.css decides what may move here; that is why each table
-   still colours its own chips after its own chip defaults.
+   rule as pit.css decides what may move here. Chips take their colours
+   from the pit's one palette in shared/js/chips.js, never from CSS.
    ========================================================= */
 :root {
   --tray-top: rgba(10, 25, 18, .9);
@@ -237,6 +237,83 @@ body {
 .chip-svg-innerline { fill: none; stroke: rgba(0,0,0,.32); stroke-width: 1; }
 .chip-svg-shade { fill: rgba(0,0,0,.11); }
 .chip-svg-shine { fill: rgba(255,255,255,.13); }
+
+/* A chip lying on the felt: the low cylinder drawn by ChipArt.cylinder.
+   The table sizes it with --stack-w, --stack-face and --stack-t. */
+.stack-chip {
+  --stack-shift: 0px;
+  --stack-chip-turn: 0deg;
+  position: absolute;
+  left: calc(50% + var(--stack-shift));
+  bottom: calc(var(--stack-t) * var(--level, 0));
+  width: var(--stack-w);
+  height: calc(var(--stack-face) + var(--stack-t));
+  transform: translateX(-50%) rotate(var(--stack-chip-turn));
+  transform-origin: 50% 72%;
+  pointer-events: none;
+}
+.stack-chip-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  shape-rendering: geometricPrecision;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.34));
+}
+.stack-chip.cap .stack-chip-art { filter: drop-shadow(0 2px 1.5px rgba(0,0,0,.38)); }
+.stack-svg-side {
+  fill: var(--body);
+  stroke: rgba(0,0,0,.58);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.stack-svg-side-spot { fill: var(--spot); }
+.stack-svg-side-spot.spot-b { fill: var(--spot-alt, var(--spot)); }
+.stack-svg-side-shade { fill: rgba(0,0,0,.24); }
+.stack-svg-side-glint {
+  fill: none;
+  stroke: rgba(255,255,255,.18);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.stack-svg-bottom-rim {
+  fill: none;
+  stroke: rgba(0,0,0,.62);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.stack-svg-top {
+  fill: var(--body);
+  stroke: rgba(0,0,0,.56);
+  stroke-width: 1.8;
+}
+.stack-svg-spots {
+  fill: none;
+  stroke-width: 17;
+  stroke-dasharray: 6.25 18.75;
+}
+.stack-svg-spots.spot-a { stroke: var(--spot); }
+.stack-svg-spots.spot-b { stroke: var(--spot-alt, var(--spot)); stroke-dashoffset: -12.5; }
+.stack-svg-body-ring {
+  fill: var(--body);
+  stroke: rgba(0,0,0,.22);
+  stroke-width: 1;
+}
+.stack-svg-groove { fill: var(--ringline); }
+.stack-svg-inlay {
+  fill: var(--inlay);
+  stroke: rgba(255,255,255,.16);
+  stroke-width: .8;
+}
+.stack-svg-innerline {
+  fill: none;
+  stroke: rgba(0,0,0,.34);
+  stroke-width: 1;
+}
+.stack-svg-face-shade { fill: rgba(0,0,0,.14); }
+.stack-svg-face-shine { fill: rgba(255,255,255,.11); }
 
 /* ----------------------- Buttons ----------------------- */
 .btn {

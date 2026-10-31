@@ -4,11 +4,11 @@
 /* =========================================================
    ThePit — the look the chip tables share
    Loaded after shared/css/table.css (and cards.css, at a card table)
-   by every table that bets with ChipArt (shared/js/chips.js): the
-   frame of the page and its dialogs, the tray, the colour of each
-   denomination, the stacks on the felt and the tools that change a
-   bet (undo, clear, double, rebet). How a table lays them out and
-   paces its chips stays with the table.
+   by every table where a chip is picked from the tray and then placed
+   on a layout: the frame of the page and its dialogs, the tray, the
+   stacks on the felt and the tools that change a bet (undo, clear,
+   double, rebet). How a table lays them out and paces its chips stays
+   with the table.
    ========================================================= */
 
 /* ----------------------- Page ----------------------- */
@@ -262,13 +262,7 @@
 .chip:active { transform: translateY(-2px) rotate(var(--chip-turn)) scale(.96); }
 .chip:disabled { opacity: .32; cursor: not-allowed; filter: saturate(.6); }
 .chip.unaffordable:not(:disabled) { opacity: .5; filter: saturate(.7); }
-/* Per-denomination colours — casino convention; mirrored in COLORS (chips.js). */
-.chip-5   { --body:#a8232d; --spot:#f0e6cf; --inlay:#bc3039; --ringline:#e0bd72; --ink:#fff4dc; --edge:#6a141b; --edge-dark:#430b10; }
-.chip-25  { --body:#24704e; --spot:#eee5cf; --inlay:#2d805b; --ringline:#d4b55c; --ink:#fff5d9; --edge:#134631; --edge-dark:#0a2c1e; }
-.chip-100 { --body:#23232b; --spot:#ececf2; --inlay:#30303a; --ringline:#cbb069; --ink:#f4efe2; --edge:#0d0d11; --edge-dark:#040406; }
-.chip-500 { --body:#5e2a90; --spot:#f0cf63; --inlay:#6e36a6; --ringline:#f0dca8; --ink:#fbf4ff; --edge:#3a1a5c; --edge-dark:#260f3e; }
-.chip-1k  { --body:#c9a23a; --spot:#2a1510; --inlay:#ddb24e; --ringline:#5a3a10; --ink:#2a1c04; --edge:#8a6c1c; --edge-dark:#5e4910; }
-.chip-5k  { --body:#1a4775; --spot:#edf4f8; --spot-alt:#78b8d8; --inlay:#245987; --ringline:#c2d4df; --ink:#f8fbfd; --edge:#0d3152; --edge-dark:#071d31; }
+/* Each chip's colours come from the pit's one palette (shared/js/chips.js). */
 /* Shared anti-aliased vector anatomy for every chip face. */
 .chip-art { shape-rendering: geometricPrecision; }
 .chip-svg-groove { fill: var(--ringline, #cbb069); }
@@ -287,62 +281,42 @@
 .chip-svg-value.long { font-size: 19px; }
 
 /* ----------------------- Stacks on the felt ----------------------- */
+/* One column of the clay cylinders of Table 21 (ChipArt.stack). The
+   point a table gives with left/top is where the bottom chip's face sits;
+   the column rises from it. --seat lifts the box onto that point. */
 .bet-chip {
   --chip: 30px;
+  --stack-w: var(--chip);
+  --stack-face: calc(var(--chip) * .66);
+  --stack-t: calc(var(--chip) * .13);
+  --seat: calc(-100% + (var(--stack-face) + var(--stack-t)) * .62);
   position: absolute;
-  width: var(--chip);
-  height: var(--chip);
-  transform: translate(-50%, calc(-50% - (var(--layers, 1) - 1) * var(--chip) * .045));
+  width: var(--stack-w);
+  height: calc(var(--stack-face) + var(--stack-t) * var(--layers, 1));
+  transform: translate(-50%, var(--seat));
+  filter: drop-shadow(0 calc(var(--chip) * .08) calc(var(--chip) * .07) rgba(0,0,0,.45));
   pointer-events: none;
   z-index: 2;
 }
-.bet-chip-edge,
-.bet-chip-face {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-}
-.bet-chip-edge {
-  background: var(--edge, #222);
-  transform: translateY(calc(var(--depth) * var(--chip) * .09));
-  box-shadow:
-    inset 0 calc(var(--chip) * -.05) 0 var(--body),
-    inset 0 0 0 1px rgba(0,0,0,.4),
-    0 1px 2px rgba(0,0,0,.45);
-}
-.bet-chip-edge::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: repeating-conic-gradient(from 11deg, var(--spot) 0 12deg, transparent 12deg 45deg);
-  mask: radial-gradient(circle, transparent 60%, #000 61%);
-  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%);
-  opacity: .9;
-}
-.bet-chip-face {
-  filter: drop-shadow(0 calc(var(--chip) * .06) calc(var(--chip) * .06) rgba(0,0,0,.5));
-}
-.bet-chip-face .chip-art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.bet-chip.placed .bet-chip-face { animation: chipDrop .26s cubic-bezier(.3, .8, .4, 1.25); }
+.bet-chip.placed .stack-chip.cap { animation: chipDrop .26s cubic-bezier(.3, .8, .4, 1.25); }
 @keyframes chipDrop {
-  0% { transform: translateY(-38%) scale(1.15); opacity: .4; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
+  0% { transform: translate(-50%, -60%) scale(1.15); opacity: .4; }
+  100% { transform: translateX(-50%); opacity: 1; }
 }
 .bet-chip.losing { animation: chipSweep .55s cubic-bezier(.5, 0, .75, .4) forwards; }
 @keyframes chipSweep {
   0% { opacity: 1; }
-  100% { opacity: 0; transform: translate(calc(-50% + var(--sweep-x, 0px)), calc(-50% + var(--sweep-y, -60px))) scale(.6); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--sweep-x, 0px)), calc(var(--seat) + var(--sweep-y, -60px))) scale(.6); }
 }
-.bet-chip.winning .bet-chip-face { box-shadow: 0 0 0 2px rgba(255, 240, 190, .9), 0 0 14px rgba(255, 226, 140, .7); }
+.bet-chip.winning { filter: drop-shadow(0 0 2px rgba(255, 240, 190, .95)) drop-shadow(0 0 8px rgba(255, 226, 140, .65)); }
 .bet-chip.payout { z-index: 3; animation: payoutIn .5s cubic-bezier(.18, .76, .22, 1) both; }
 @keyframes payoutIn {
-  0% { opacity: 0; transform: translate(calc(-50% + var(--from-x, 0px)), calc(-50% + var(--from-y, -80px))) scale(.6); }
+  0% { opacity: 0; transform: translate(calc(-50% + var(--from-x, 0px)), calc(var(--seat) + var(--from-y, -80px))) scale(.6); }
   100% { opacity: 1; }
 }
 .bet-chip.collect { animation: chipCollect .62s cubic-bezier(.22, .7, .3, 1) forwards; }
 @keyframes chipCollect {
-  100% { opacity: 0; transform: translate(-50%, calc(-50% + 140px)) scale(.9); }
+  100% { opacity: 0; transform: translate(-50%, calc(var(--seat) + 140px)) scale(.9); }
 }
 
 /* ----------------------- Bet tools ----------------------- */

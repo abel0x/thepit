@@ -17,10 +17,12 @@ test("a stack breaks into real chips, largest first, adding up exactly", functio
     for (var i = 1; i < chips.length; i++) assert.ok(chips[i] <= chips[i - 1]);
   });
   assert.deepEqual(Chips.breakdown(130), [100, 25, 5]);
+  assert.deepEqual(Chips.breakdown(185), [100, 50, 25, 10]);
+  assert.deepEqual(Chips.breakdown(150000), [100000, 25000, 25000]);
   assert.deepEqual(Chips.breakdown(0), []);
   assert.deepEqual(Chips.breakdown(-5), []);
   assert.equal(Chips.topDenomination(130), 100);
-  assert.equal(Chips.topDenomination(0), 5);
+  assert.equal(Chips.topDenomination(0), 1);
 });
 
 test("chip labels stay short enough for the face", function () {
@@ -32,40 +34,67 @@ test("chip labels stay short enough for the face", function () {
   });
 });
 
-test("every possible chip colour is defined", function () {
-  Chips.DENOMS.forEach(function (value) {
+test("the pit has one colour per chip, and no two chips share it", function () {
+  var keys = Chips.DENOMS.concat(["allin"]);
+  assert.deepEqual(Object.keys(Chips.COLORS).sort(), keys.map(String).sort());
+  keys.forEach(function (value) {
     var color = Chips.COLORS[value];
-    ["body", "spot", "ring", "inlay", "ink", "edge"].forEach(function (part) {
+    ["body", "spot", "ring", "inlay", "ink", "edge", "edgeDark"].forEach(function (part) {
       assert.match(color[part], /^#[0-9a-f]{6}$/, value + " " + part);
     });
+    if (color.spotAlt) assert.match(color.spotAlt, /^#[0-9a-f]{6}$/, value + " spotAlt");
   });
-  Chips.TRAY.forEach(function (value) { assert.ok(Chips.DENOMS.indexOf(value) !== -1); });
+  var bodies = keys.map(function (value) { return Chips.COLORS[value].body; });
+  var names = keys.map(function (value) { return Chips.COLORS[value].name; });
+  assert.equal(new Set(bodies).size, keys.length, "every chip has its own clay");
+  assert.equal(new Set(names).size, keys.length, "every chip has its own colour name");
+  // The classic casino colours of the common chips.
+  assert.equal(Chips.COLORS[1].name, "white");
+  assert.equal(Chips.COLORS[5].name, "red");
+  assert.equal(Chips.COLORS[25].name, "green");
+  assert.equal(Chips.COLORS[100].name, "black");
+  assert.equal(Chips.COLORS[500].name, "purple");
 });
 
-test("the tray chips in the stylesheet match the stack colours", function () {
-  var css = fs.readFileSync(path.join(__dirname, "../../shared/css/chip-tables.css"), "utf8");
-  var names = { 5: "5", 25: "25", 100: "100", 500: "500", 1000: "1k", 5000: "5k" };
-  Chips.TRAY.forEach(function (value) {
-    var rule = css.match(new RegExp("\\.chip-" + names[value] + "\\s*\\{([^}]*)\\}"));
-    assert.ok(rule, "rule for " + value);
-    var color = Chips.COLORS[value];
-    assert.match(rule[1], new RegExp("--body:\\s*" + color.body), value + " body");
-    assert.match(rule[1], new RegExp("--spot:\\s*" + color.spot), value + " spot");
-    assert.match(rule[1], new RegExp("--inlay:\\s*" + color.inlay), value + " inlay");
-    assert.match(rule[1], new RegExp("--ringline:\\s*" + color.ring), value + " ring");
-    assert.match(rule[1], new RegExp("--ink:\\s*" + color.ink), value + " ink");
+test("no table or stylesheet paints a chip with colours of its own", function () {
+  var root = path.join(__dirname, "../..");
+  var files = [];
+  (function walk(dir) {
+    fs.readdirSync(path.join(root, dir), { withFileTypes: true }).forEach(function (entry) {
+      var file = path.posix.join(dir, entry.name);
+      if (entry.isDirectory()) walk(file);
+      else if (/\.(css|js|html)$/.test(entry.name)) files.push(file);
+    });
+  })("games");
+  ["shared/css", "lobby"].forEach(function (dir) {
+    fs.readdirSync(path.join(root, dir)).forEach(function (name) { if (/\.css$/.test(name)) files.push(dir + "/" + name); });
+  });
+  files.forEach(function (file) {
+    var text = fs.readFileSync(path.join(root, file), "utf8");
+    assert.doesNotMatch(text, /\.chip-(?:\d+k?|allin)\s*\{[^}]*--body/, file + " colours a chip in CSS");
+    assert.doesNotMatch(text, /CHIP_COLORS/, file + " keeps a palette of its own");
   });
 });
 
-test("every chip table offers exactly the tray the chips are painted for", function () {
-  var tables = Object.keys(Pit.TABLES).filter(function (id) {
-    return fs.readFileSync(path.join(__dirname, "../../games/" + id + "/index.html"), "utf8").indexOf("shared/js/chips.js") !== -1;
-  });
-  assert.ok(tables.indexOf("roulette") !== -1);
-  tables.forEach(function (id) {
+test("every table offers its own tray of the pit's chips, smallest first", function () {
+  Object.keys(Pit.TABLES).forEach(function (id) {
     var html = fs.readFileSync(path.join(__dirname, "../../games/" + id + "/index.html"), "utf8");
-    assert.match(html, /shared\/css\/chip-tables\.css/, id + " loads the chip look");
-    var tray = (html.match(/class="chip chip-\w+" data-value="(\d+)"/g) || []).map(function (m) { return Number(m.match(/data-value="(\d+)"/)[1]); });
-    assert.deepEqual(tray, Chips.TRAY, id);
+    var game = fs.readFileSync(path.join(__dirname, "../../games/" + id + "/js/game.js"), "utf8");
+    assert.match(html, /shared\/js\/chips\.js/, id + " loads the pit's chips");
+    assert.match(game, /Chips\.decorateTray\(/, id + " paints its tray from the palette");
+    var tray = (html.match(/class="chip chip-\w+"\s+data-value="(\d+)"/g) || []).map(function (m) { return Number(m.match(/data-value="(\d+)"/)[1]); });
+    assert.ok(tray.length >= 5, id);
+    tray.forEach(function (value, index) {
+      assert.ok(Chips.COLORS[value], id + " offers a chip the pit has no colour for: " + value);
+      if (index) assert.ok(value > tray[index - 1], id + " tray order");
+    });
   });
+});
+
+test("a tray reads its values from the page and skips All-in", function () {
+  var chips = [5, 25, "allin"].map(function (value) {
+    return { getAttribute: function () { return String(value); } };
+  });
+  var tray = { querySelectorAll: function () { return chips; } };
+  assert.deepEqual(Chips.trayValues(tray), [5, 25]);
 });

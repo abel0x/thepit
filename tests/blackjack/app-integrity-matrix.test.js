@@ -61,7 +61,7 @@ test("runtime scripts load in dependency order", function () {
   });
   assert.deepEqual(scripts, [
     "../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "../../shared/js/card-sound.js", "../../shared/js/cards.js", "js/engine.js", "js/rules.js",
-    "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js", "../../shared/js/pwa.js"
+    "../../shared/js/chips.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js", "../../shared/js/pwa.js"
   ]);
 });
 
@@ -179,7 +179,10 @@ test("arbitrary whole-dollar deposits match exact chip settlement support", func
   var html = read("index.html");
   var game = read("js/game.js");
   assert.match(html, /id="depositAmount"[^>]*min="1" step="1"/);
-  assert.match(game, /CHIP_DENOMS = \[25000, 5000, 1000, 500, 100, 50, 25, 10, 5, 1\]/);
+  // Stakes and payouts break into the pit's own chips, down to the $1 chip.
+  assert.match(game, /CHIP_DENOMS = Chips\.DENOMS;/);
+  var Chips = require("../../shared/js/chips.js");
+  assert.equal(Chips.DENOMS[Chips.DENOMS.length - 1], 1);
 });
 
 test("per-hand high-limit stacks use a narrow row contract", function () {

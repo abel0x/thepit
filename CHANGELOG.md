@@ -14,6 +14,7 @@ The first version of the pit: three tables, one wallet, one lobby.
 - Table 9, a Punto Banco baccarat table: an eight-deck shoe with a burn and a cut card, the complete drawing tableau, Player, Banker, Tie and both pairs under Classic or No-commission rules, the bead plate and the big road, unfinished coups settled on the next visit.
 - Two new cloths, Onyx and Amethyst, beside Emerald, Midnight and Bordeaux; at Table 21 Onyx deals from green backs and Amethyst from antique gold.
 - One language engine and one set of shared words, shared stylesheets, and shared cards, card sounds and chips for the lobby and every table.
+- One set of chips for the whole pit: the clay chips of Table 21 at every table, in the tray and stacked on the felt, and one colour per value everywhere, from the white $1 to the silver $100K; each table keeps its own tray.
 - One installable app with one offline cache for the lobby and both tables, plus the zero-setup `file://` route.
 - Roulette's top bar no longer runs into the balance on the narrowest phones.
 - Play money only, with a disclaimer on every page and in the README.

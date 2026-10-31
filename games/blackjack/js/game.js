@@ -15,6 +15,8 @@
   if (!Rules) throw new Error("TableRules must load before game.js");
   var BetChipStack = global.BetChipStack;
   if (!BetChipStack) throw new Error("BetChipStack must load before game.js");
+  var Chips = global.ChipArt;
+  if (!Chips) throw new Error("ChipArt must load before game.js");
   var Strategy = global.BlackjackStrategy;
   if (!Strategy) throw new Error("BlackjackStrategy must load before game.js");
   var RoundStore = global.RoundStore;
@@ -260,22 +262,9 @@
     }
   };
 
-  // Placed-bet chip palette. Kept BYTE-FOR-BYTE in sync with the .chip-* CSS
-  // variables so a 100 chip in the tray and a 100 chip on the felt are identical.
-  // body = clay colour · spot/spotAlt = edge blocks · ring = groove · inlay = centre · ink = value
-  var CHIP_COLORS = {
-    1:     { body: "#ece9df", spot: "#315b8a", ring: "#817b6b", inlay: "#f7f3e8", ink: "#25231f" },
-    5:     { body: "#a8232d", spot: "#f0e6cf", ring: "#e0bd72", inlay: "#bc3039", ink: "#fff4dc" },
-    10:    { body: "#235b96", spot: "#f1e7d2", ring: "#d8b85e", inlay: "#2e69a6", ink: "#fff6df" },
-    25:    { body: "#24704e", spot: "#eee5cf", ring: "#d4b55c", inlay: "#2d805b", ink: "#fff5d9" },
-    50:    { body: "#c7c8c3", spot: "#7e1f2c", ring: "#6e6653", inlay: "#e4e2d8", ink: "#28251f" },
-    100:   { body: "#23232b", spot: "#ececf2", ring: "#cbb069", inlay: "#30303a", ink: "#f4efe2" },
-    500:   { body: "#5e2a90", spot: "#f0cf63", ring: "#f0dca8", inlay: "#6e36a6", ink: "#fbf4ff" },
-    1000:  { body: "#c9a23a", spot: "#2a1510", ring: "#5a3a10", inlay: "#ddb24e", ink: "#2a1c04" },
-    5000:  { body: "#1a4775", spot: "#edf4f8", spotAlt: "#78b8d8", ring: "#c2d4df", inlay: "#245987", ink: "#f8fbfd" },
-    25000: { body: "#0d674a", spot: "#ecd28a", spotAlt: "#f4efe1", ring: "#e0c36d", inlay: "#176e53", ink: "#fff4cb" }
-  };
-  var CHIP_DENOMS = [25000, 5000, 1000, 500, 100, 50, 25, 10, 5, 1];
+  // Every chip on the felt breaks down into the pit's own denominations and
+  // colours (shared/js/chips.js), the same at every table.
+  var CHIP_DENOMS = Chips.DENOMS;
 
   /* ---------------- Helpers ---------------- */
   var t = function (k, p) { return I18n.t(k, p); };
@@ -671,104 +660,6 @@
     renderBetStack();
   }
 
-  var SVG_NS = "http://www.w3.org/2000/svg";
-  function chipSvgShape(name, className, attributes) {
-    var node = document.createElementNS(SVG_NS, name);
-    node.setAttribute("class", className);
-    Object.keys(attributes).forEach(function (key) {
-      node.setAttribute(key, String(attributes[key]));
-    });
-    return node;
-  }
-
-  // Vector geometry keeps chip rings and edge inserts smooth on low-DPI screens.
-  function createChipArt(className, label) {
-    var svg = document.createElementNS(SVG_NS, "svg");
-    svg.setAttribute("class", className);
-    svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("preserveAspectRatio", "none");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("focusable", "false");
-
-    svg.appendChild(chipSvgShape("circle", "chip-svg-base", { cx: 50, cy: 50, r: 48 }));
-    svg.appendChild(chipSvgShape("circle", "chip-svg-spots spot-a", { cx: 50, cy: 50, r: 39 }));
-    svg.appendChild(chipSvgShape("circle", "chip-svg-spots spot-b", { cx: 50, cy: 50, r: 39 }));
-    svg.appendChild(chipSvgShape("circle", "chip-svg-body-ring", { cx: 50, cy: 50, r: 30.5 }));
-    svg.appendChild(chipSvgShape("circle", "chip-svg-groove", { cx: 50, cy: 50, r: 25.5 }));
-    svg.appendChild(chipSvgShape("circle", "chip-svg-inlay", { cx: 50, cy: 50, r: 22 }));
-    svg.appendChild(chipSvgShape("circle", "chip-svg-innerline", { cx: 50, cy: 50, r: 18.5 }));
-    svg.appendChild(chipSvgShape("ellipse", "chip-svg-shade", { cx: 50, cy: 70, rx: 27, ry: 12 }));
-    svg.appendChild(chipSvgShape("ellipse", "chip-svg-shine", { cx: 39, cy: 27, rx: 23, ry: 10 }));
-    if (label) {
-      var value = chipSvgShape("text", "chip-svg-value", { x: 50, y: 52 });
-      value.textContent = label;
-      svg.appendChild(value);
-    }
-    return svg;
-  }
-
-  // A chip on the felt is not merely a squashed tray chip: this vector draws
-  // the complete low cylinder (curved wall, edge inserts and perspective face).
-  // Every layer gets one, so small offsets expose real surfaces instead of
-  // rectangular CSS bands while the deterministic z-order prevents bleed.
-  function createStackChipArt(label) {
-    var svg = document.createElementNS(SVG_NS, "svg");
-    svg.setAttribute("class", "stack-chip-art");
-    svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("preserveAspectRatio", "none");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("focusable", "false");
-
-    var wall = "M2 36 L2 63 C2 83 23 98 50 98 C77 98 98 83 98 63 L98 36 Z";
-    svg.appendChild(chipSvgShape("path", "stack-svg-side", { d: wall }));
-    [
-      "M4 66 L16 72 L16 91 Q9 86 4 78 Z",
-      "M28 78 Q34 81 40 82 L40 97 Q34 95 28 92 Z",
-      "M60 82 Q66 81 72 78 L72 92 Q66 95 60 97 Z",
-      "M84 72 L96 66 L96 78 Q91 86 84 91 Z"
-    ].forEach(function (path, index) {
-      svg.appendChild(chipSvgShape("path", "stack-svg-side-spot spot-" + (index % 2 ? "b" : "a"), { d: path }));
-    });
-    svg.appendChild(chipSvgShape("path", "stack-svg-side-shade", { d: wall }));
-    svg.appendChild(chipSvgShape("path", "stack-svg-side-glint", {
-      d: "M5 69 C17 87 34 95 50 95"
-    }));
-    svg.appendChild(chipSvgShape("path", "stack-svg-bottom-rim", {
-      d: "M2 63 C2 83 23 98 50 98 C77 98 98 83 98 63"
-    }));
-
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-top", { cx: 50, cy: 38, rx: 48, ry: 36 }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-spots spot-a", {
-      cx: 50, cy: 38, rx: 39, ry: 28.5, pathLength: 100
-    }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-spots spot-b", {
-      cx: 50, cy: 38, rx: 39, ry: 28.5, pathLength: 100
-    }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-body-ring", { cx: 50, cy: 38, rx: 30.5, ry: 22.5 }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-groove", { cx: 50, cy: 38, rx: 25.5, ry: 18.8 }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-inlay", { cx: 50, cy: 38, rx: 22, ry: 16 }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-innerline", { cx: 50, cy: 38, rx: 18.5, ry: 13.2 }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-face-shade", { cx: 50, cy: 52, rx: 27, ry: 11 }));
-    svg.appendChild(chipSvgShape("ellipse", "stack-svg-face-shine", { cx: 39, cy: 19, rx: 22, ry: 8 }));
-    if (label) {
-      var value = chipSvgShape("text", "chip-svg-value stack-svg-value", { x: 50, y: 39 });
-      value.textContent = label;
-      svg.appendChild(value);
-    }
-    return svg;
-  }
-
-  function chipDisplayValue(value) {
-    if (value >= 1000) return (value / 1000) + "K";
-    return String(value);
-  }
-
-  function decorateTrayChips() {
-    document.querySelectorAll(".chip").forEach(function (chip) {
-      if (!chip.querySelector(".chip-art")) chip.insertBefore(createChipArt("chip-art"), chip.firstChild);
-    });
-  }
-
   function renderChipPile(target, amount, className) {
     target.className = className;
     target.innerHTML = "";
@@ -823,21 +714,16 @@
         colChips.forEach(function (d, idx) {
           var c = document.createElement("div");
           var isTop = idx === colChips.length - 1;
-          c.className = "stack-chip stack-level-" + idx + (isTop ? " cap" : "");
-          var color = CHIP_COLORS[d] || CHIP_COLORS[100];
-          c.style.setProperty("--body", color.body);
-          c.style.setProperty("--spot", color.spot);
-          c.style.setProperty("--spot-alt", color.spotAlt || color.spot);
-          c.style.setProperty("--ring", color.ring);
-          c.style.setProperty("--inlay", color.inlay);
-          c.style.setProperty("--ink", color.ink);
+          c.className = "stack-chip" + (isTop ? " cap" : "");
+          Chips.paint(c, d);
+          c.style.setProperty("--level", String(idx));
           c.style.zIndex = String(idx);                  // top chip paints above the rest
           var visualIndex = (ci * 2 + idx) % 5;
           var shifts = [0, -.75, .55, -.35, .8];
           var turns = [-.18, .28, -.22, .2, -.12];
           c.style.setProperty("--stack-shift", shifts[visualIndex] + "px");
           c.style.setProperty("--stack-chip-turn", turns[visualIndex] + "deg");
-          c.appendChild(createStackChipArt(isTop ? chipDisplayValue(d) : ""));
+          c.appendChild(Chips.cylinder(document, isTop ? Chips.label(d) : ""));
           col.appendChild(c);
         });
         row.appendChild(col);
@@ -2131,7 +2017,7 @@
     // Apply saved language to DOM
     I18n.apply(document);
     syncLangButtons();
-    decorateTrayChips();
+    Chips.decorateTray($("chipTray"));
 
     // Sound preference
     var soundOn = load(KEYS.sound, true);

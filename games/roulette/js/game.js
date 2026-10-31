@@ -21,7 +21,9 @@
   }
 
   var SVG_NS = "http://www.w3.org/2000/svg";
-  var MIN_CHIP = Chips.TRAY[0];
+  // The chips this table offers, as its tray shows them; the smallest is the table minimum.
+  var TRAY = Chips.trayValues(document.getElementById("chipTray"));
+  var MIN_CHIP = TRAY[0];
   var HISTORY_STRIP = 16;
   var ANIMATION_SCALES = { fast: 0.6, normal: 1, cinematic: 1.35 };
   var SPIN_PACE = { fast: 0.62, normal: 1, cinematic: 1.4 };
@@ -406,7 +408,7 @@
   }
 
   function selectChip(value) {
-    if (Chips.TRAY.indexOf(value) === -1) return;
+    if (TRAY.indexOf(value) === -1) return;
     state.chip = value;
     el.chipTray.querySelectorAll(".chip").forEach(function (chip) {
       var on = Number(chip.getAttribute("data-value")) === value;
@@ -1758,7 +1760,7 @@
     if (key === "Escape") { hideHover(); return; }
     if (key === "Backspace" && !onControl) { event.preventDefault(); undo(); return; }
     var lower = key.length === 1 ? key.toLowerCase() : key;
-    if (lower >= "1" && lower <= "6") { selectChip(Chips.TRAY[Number(lower) - 1]); return; }
+    if (lower >= "1" && lower <= "6") { selectChip(TRAY[Number(lower) - 1]); return; }
     switch (lower) {
       case "z": undo(); break;
       case "c": clearBets(); break;
@@ -1794,6 +1796,7 @@
     applyTheme();
     applySpeed();
     applyNeighbours();
+    Chips.decorateTray(el.chipTray);
     selectChip(state.chip);
     I18n.onChange(translateAll);
     translateAll();

@@ -977,28 +977,6 @@ body:not([data-phase="betting"]) .bet-circle-value { opacity: 0; }
 .bet-stack .chip-col.stack-count-6 { height: calc(var(--stack-face) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
 .bet-stack .chip-col.stack-count-7 { height: calc(var(--stack-face) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
 .bet-stack .chip-col.stack-count-8 { height: calc(var(--stack-face) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
-.bet-stack .stack-chip {
-  --body: #23232b; --spot: #ececf2; --ring: #cbb069; --inlay: #30303a;
-  --w: var(--stack-w);
-  --t: var(--stack-t);
-  --stack-shift: 0px;
-  --stack-chip-turn: 0deg;
-  position: absolute;
-  left: calc(50% + var(--stack-shift));
-  bottom: 0;
-  width: var(--w);
-  height: calc(var(--stack-face) + var(--stack-t));
-  transform: translateX(-50%) rotate(var(--stack-chip-turn));
-  transform-origin: 50% 72%;
-  pointer-events: none;
-}
-.bet-stack .stack-level-1 { bottom: var(--stack-t); }
-.bet-stack .stack-level-2 { bottom: calc(var(--stack-t) + var(--stack-t)); }
-.bet-stack .stack-level-3 { bottom: calc(var(--stack-t) + var(--stack-t) + var(--stack-t)); }
-.bet-stack .stack-level-4 { bottom: calc(var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
-.bet-stack .stack-level-5 { bottom: calc(var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
-.bet-stack .stack-level-6 { bottom: calc(var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
-.bet-stack .stack-level-7 { bottom: calc(var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t) + var(--stack-t)); }
 .bet-stack.payout-stack {
   --stack-w: clamp(38px, 5.3vh, 48px);
   --stack-t: clamp(5px, .68vh, 7px);
@@ -1024,69 +1002,6 @@ body:not([data-phase="betting"]) .bet-circle-value { opacity: 0; }
   0% { opacity: 1; transform: translateX(calc(-50% + 22px)) translateY(-3px) scale(.92); }
   100% { opacity: 0; transform: translateX(calc(-50% + 18px)) translateY(120px) scale(.98); }
 }
-.stack-chip-art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-  shape-rendering: geometricPrecision;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,.34));
-}
-.stack-chip.cap .stack-chip-art { filter: drop-shadow(0 2px 1.5px rgba(0,0,0,.38)); }
-.stack-svg-side {
-  fill: var(--body);
-  stroke: rgba(0,0,0,.58);
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-}
-.stack-svg-side-spot { fill: var(--spot); }
-.stack-svg-side-spot.spot-b { fill: var(--spot-alt, var(--spot)); }
-.stack-svg-side-shade { fill: rgba(0,0,0,.24); }
-.stack-svg-side-glint {
-  fill: none;
-  stroke: rgba(255,255,255,.18);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-}
-.stack-svg-bottom-rim {
-  fill: none;
-  stroke: rgba(0,0,0,.62);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-}
-.stack-svg-top {
-  fill: var(--body);
-  stroke: rgba(0,0,0,.56);
-  stroke-width: 1.8;
-}
-.stack-svg-spots {
-  fill: none;
-  stroke-width: 17;
-  stroke-dasharray: 6.25 18.75;
-}
-.stack-svg-spots.spot-a { stroke: var(--spot); }
-.stack-svg-spots.spot-b { stroke: var(--spot-alt, var(--spot)); stroke-dashoffset: -12.5; }
-.stack-svg-body-ring {
-  fill: var(--body);
-  stroke: rgba(0,0,0,.22);
-  stroke-width: 1;
-}
-.stack-svg-groove { fill: var(--ring); }
-.stack-svg-inlay {
-  fill: var(--inlay);
-  stroke: rgba(255,255,255,.16);
-  stroke-width: .8;
-}
-.stack-svg-innerline {
-  fill: none;
-  stroke: rgba(0,0,0,.34);
-  stroke-width: 1;
-}
-.stack-svg-face-shade { fill: rgba(0,0,0,.14); }
-.stack-svg-face-shine { fill: rgba(255,255,255,.11); }
-.stack-svg-value { font-size: 20px; letter-spacing: -.15px; }
 
 /* Shared anti-aliased vector anatomy for the circular tray chips. */
 .chip-art,
@@ -1285,18 +1200,7 @@ body[data-phase="insurance"] .controls > :not(.ins-overlay) { opacity: 0; pointe
 .chip:active { transform: translateY(-1px) rotate(var(--chip-turn)) scale(.96); }
 .chip:disabled { opacity: .32; cursor: not-allowed; transform: rotate(var(--chip-turn)); filter: saturate(.6); }
 
-/* ---- Per-denomination colours — casino convention; mirrored in CHIP_COLORS (game.js) ----
-   body=clay · spot=edge blocks · inlay=matte centre · ringline=groove · ink=value · edge*=side */
-.chip-100  { --body:#23232b; --spot:#ececf2; --inlay:#30303a; --ringline:#cbb069; --ink:#f4efe2; --edge:#0d0d11; --edge-dark:#040406; }  /* black / white   */
-.chip-500  { --body:#5e2a90; --spot:#f0cf63; --inlay:#6e36a6; --ringline:#f0dca8; --ink:#fbf4ff; --edge:#3a1a5c; --edge-dark:#260f3e; }  /* purple / gold   */
-.chip-1k   { --body:#c9a23a; --spot:#2a1510; --inlay:#ddb24e; --ringline:#5a3a10; --ink:#2a1c04; --edge:#8a6c1c; --edge-dark:#5e4910; }  /* gold / dark     */
-.chip-5k   { --body:#1a4775; --spot:#edf4f8; --spot-alt:#78b8d8; --inlay:#245987; --ringline:#c2d4df; --ink:#f8fbfd; --edge:#0d3152; --edge-dark:#071d31; } /* sapphire / ice */
-.chip-25k  { --body:#0d674a; --spot:#ecd28a; --spot-alt:#f4efe1; --inlay:#176e53; --ringline:#e0c36d; --ink:#fff4cb; --edge:#064735; --edge-dark:#032b21; } /* emerald / champagne */
-/* ALL-IN: deep-bordo royal chip with a metallic gold + cream edge (its own visual language) */
-.chip-allin {
-  --body:#6f1622; --spot:#f4d77a; --spot-alt:#f7ecc0; --inlay:#8a1f2c; --ringline:#f4e2a6; --ink:#fff4cf;
-  --edge:#440d15; --edge-dark:#2c080d;
-}
+/* Each chip's colours come from the pit's one palette (shared/js/chips.js). */
 /* Two compact lines keep the royal label inside the centre inlay at every size. */
 .chip-allin .denom {
   width: 42%;

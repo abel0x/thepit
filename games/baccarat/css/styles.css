@@ -356,7 +356,7 @@ body[data-theme="bordeaux"] {
   width: 0;
   height: 0;
 }
-.spot-stack .bet-chip { --chip: clamp(26px, 3.8vh, 38px); left: 0; top: 0; }
+.spot-stack .bet-chip { --chip: clamp(30px, 4.6vh, 44px); left: 0; top: 0; }
 .spot-stack .bet-chip.payout { left: calc(var(--chip) * 1.05); }
 .spot.won { border-color: var(--gold-bright); box-shadow: 0 0 0 1px rgba(244, 226, 166, .5), 0 0 22px rgba(244, 226, 166, .25); }
 .spot:disabled { cursor: default; }
@@ -590,9 +590,9 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .spot-banker-pair { grid-area: bp; }
   .spot-player { grid-area: player; }
   .spot-banker { grid-area: banker; }
-  .spot { min-height: 60px; padding-bottom: 32px; }
-  .spot-main { min-height: 70px; }
-  .spot-stack .bet-chip { --chip: 24px; }
+  .spot { min-height: 66px; padding-bottom: 38px; }
+  .spot-main { min-height: 78px; }
+  .spot-stack .bet-chip { --chip: 28px; }
   .spot-stack { bottom: 15px; }
   .road-bead { width: calc(var(--cell) * 8 + 1px); }
   .roads { --bead: clamp(10px, 3vw, 15px); padding: 5px 8px; }
@@ -641,10 +641,10 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .roads { display: none; }
   .spots { grid-template-columns: .8fr 1.35fr 1fr 1.35fr .8fr; grid-template-areas: none; }
   .spot-player-pair, .spot-tie, .spot-banker-pair, .spot-player, .spot-banker { grid-area: auto; }
-  .spot, .spot-main { min-height: 44px; padding: 4px 4px 24px; }
+  .spot, .spot-main { min-height: 58px; padding: 4px 4px 36px; }
   .spot-name, .spot-main .spot-name { font-size: 11px; letter-spacing: 1px; }
   .spot-stack { bottom: 12px; }
-  .spot-stack .bet-chip { --chip: 22px; }
+  .spot-stack .bet-chip { --chip: 26px; }
   .controls { flex-wrap: nowrap; gap: 8px; }
   .chips-tray { width: auto; padding: 6px 8px; }
   .chips-tray .chip { --size: 34px; }

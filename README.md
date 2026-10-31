@@ -56,6 +56,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
 - **One round at a time**: a hand or a spin left unfinished is saved before it is played, so a reload, a crash, a closed tab or a trip back to the lobby resumes it with the same cards or the same result. Until it is played out, its stake stays on that table: the lobby marks the table, and the other tables wait instead of spending it.
+- **One set of chips**: every table bets with the same clay chips, and every value keeps one colour wherever it appears, in a tray, on the felt or in a payout: $1 white, $5 red, $10 brown, $25 green, $50 orange, $100 black, $500 purple, $1K yellow, $5K blue, $25K pink, $100K silver, and All-in bordeaux. Each table offers its own tray of them: Table 21 from $100, Table 37 and Table 9 from $5.
 - **The lobby**: the balance, every table with its rules and limits, and the settings the whole pit shares. *Add play money* only adds free chips.
 - **Five cloths, one language**: Emerald, Midnight, Bordeaux, Onyx and Amethyst, each with its own card back at the blackjack table, and the English or Turkish language follow the player from the lobby to every table and back.
 - **One installable app**: one manifest and one offline cache for the lobby and every table. Updates wait until no round is in play and do not force another open tab to reload.
@@ -74,7 +75,7 @@ The core test suite uses only Node's built-in test runner (Node.js 22.12 or newe
 npm test                 # node --test "tests/**/*.test.js" "tests/**/*.test.cjs"
 ```
 
-The suite currently executes **660 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
+The suite currently executes **661 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
 
 The optional real-browser suite adds **215 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
 
@@ -101,7 +102,7 @@ shared/css/table.css       the look every table shares: sound, mixer, rule profi
 shared/css/cards.css       the look of a playing card, with a back for every cloth
 shared/js/cards.js         the card maker every card table draws its cards with
 shared/js/card-sound.js    card, chip and shuffle sounds with Web Audio cues for card tables
-shared/js/chips.js         chip denominations, colours and vector faces for the chip tables
+shared/js/chips.js         the pit's one chip palette and the clay chip drawn at every table
 shared/css/chip-tables.css the look the chip tables share: frame, dialogs, tray, stacks, bet tools
 shared/audio/              the card-table samples (Ogg + AAC)
 shared/js/pwa.js           optional service-worker registration and safe updates

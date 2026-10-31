@@ -171,11 +171,14 @@ test("every table loads the shared table look between the pit's and its own", fu
     var own = path.posix.dirname(page) + "/css/styles.css";
     assert.deepEqual(sheets.slice(0, 2), ["shared/css/pit.css", "shared/css/table.css"], page);
     assert.equal(sheets[sheets.length - 1], own, page + " ends with its own look");
-    // A card table also draws the pit's playing cards, and a chip table the
-    // pit's chips; each loads their look together with the script that uses it.
+    // Every table draws the pit's chips. A card table also draws the pit's
+    // playing cards, and a table where a chip is picked from the tray and then
+    // placed on a layout shares that frame; each look comes with its script.
     var extras = [];
+    var html = read(page);
+    assert.ok(scripts(page).indexOf("shared/js/chips.js") !== -1, page + " draws the pit's chips");
     if (scripts(page).indexOf("shared/js/cards.js") !== -1) extras.push("shared/css/cards.css");
-    if (scripts(page).indexOf("shared/js/chips.js") !== -1) extras.push("shared/css/chip-tables.css");
+    if (/class="chips-tray"[^>]*role="radiogroup"/.test(html)) extras.push("shared/css/chip-tables.css");
     assert.deepEqual(sheets.slice(2, -1), extras, page);
   });
   assert.deepEqual(stylesheets("index.html"), ["shared/css/pit.css", "lobby/css/styles.css"]);

@@ -22,7 +22,9 @@
     throw new Error("Table modules must load before game.js");
   }
 
-  var MIN_CHIP = Chips.TRAY[0];
+  // The chips this table offers, as its tray shows them; the smallest is the table minimum.
+  var TRAY = Chips.trayValues(document.getElementById("chipTray"));
+  var MIN_CHIP = TRAY[0];
   var PACE = { fast: 0.55, normal: 1, cinematic: 1.45 };
   var BET_NAMES = { player: "playerName", banker: "bankerName", tie: "tieName", playerPair: "playerPairName", bankerPair: "bankerPairName" };
   var reducedMotion = global.matchMedia ? global.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
@@ -238,7 +240,7 @@
   }
 
   function selectChip(value) {
-    if (Chips.TRAY.indexOf(value) === -1) return;
+    if (TRAY.indexOf(value) === -1) return;
     state.chip = value;
     el.chipTray.querySelectorAll(".chip").forEach(function (chip) {
       var on = Number(chip.getAttribute("data-value")) === value;
@@ -949,7 +951,7 @@
     if ((key === " " || key === "Enter") && !onControl) { event.preventDefault(); deal(); return; }
     if (key === "Backspace" && !onControl) { event.preventDefault(); undo(); return; }
     var lower = key.length === 1 ? key.toLowerCase() : key;
-    if (lower >= "1" && lower <= "6") { selectChip(Chips.TRAY[Number(lower) - 1]); return; }
+    if (lower >= "1" && lower <= "6") { selectChip(TRAY[Number(lower) - 1]); return; }
     switch (lower) {
       case "p": addChip("player"); break;
       case "b": addChip("banker"); break;
@@ -983,6 +985,7 @@
     if (volumes) Sound.setVolumes(volumes);
     Sound.setEnabled(soundEnabled);
     renderLimits();
+    Chips.decorateTray(el.chipTray);
     selectChip(state.chip);
     translateAll();
     bindControls();

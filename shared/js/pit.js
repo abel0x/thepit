@@ -22,7 +22,7 @@
 
   var KEY_PREFIX = "pit.";
   // Every table in the pit, by the id its storage keys use.
-  var TABLES = { blackjack: "Table 21", roulette: "Table 37" };
+  var TABLES = { blackjack: "Table 21", roulette: "Table 37", baccarat: "Table 9" };
   var KEYS = {
     bankroll: "pit.bankroll",
     theme: "pit.theme"

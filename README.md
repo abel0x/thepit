@@ -7,7 +7,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 
 **[Enter ThePit in your browser](https://abel0x.github.io/thepit/)** · Version 0.1.0 · [GNU AGPL v3](LICENSE) · [![Tests](https://github.com/abel0x/thepit/actions/workflows/tests.yml/badge.svg)](https://github.com/abel0x/thepit/actions/workflows/tests.yml)
 
-![The lobby of ThePit with Table 21 and Table 37 on green felt](assets/social-preview.jpg)
+![The lobby of ThePit with Table 21, Table 37 and Table 9 on green felt](assets/social-preview.jpg)
 
 ## Play
 
@@ -43,6 +43,15 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Results and statistics**: recent numbers, hot and cold numbers and distributions over the last 500 spins.
 - **Keyboard shortcuts**: `Space`/`Enter` spin · `1`–`6` chips · `Z` or `Backspace` undo · `C` clear · `D` double · `R` rebet · `T` racetrack · `I` statistics · `M` sound · `Esc` close.
 
+### Table 9 · Baccarat
+
+- **Punto Banco from an eight-deck shoe**: shuffled with `crypto.getRandomValues`, a fresh shoe burns as many cards as its first card counts, and the cut card sits fourteen cards from the end.
+- **The complete tableau**: naturals stop the coup, the Player draws on 0 to 5, and the Banker's third card follows its total and the Player's third card, exactly as at a real table. An exhaustive check of every coup an eight-deck shoe can deal gives the published odds: Banker 45.86%, Player 44.62%, Tie 9.52%.
+- **Every bet**: Player 1:1, Banker 19:20 (*Classic*, 5% commission) or 1:1 with a six paying 1:2 (*No commission*), Tie 8:1 and both pairs 11:1. A tie returns the Player and Banker bets.
+- **Dealt as the croupier does**: four cards face down, the Player's hand turned, then the Banker's, and any third card laid sideways; losing chips are swept away and winnings paid beside the stake.
+- **The scoreboards**: the bead plate and the big road, with its dragon tails and tie marks, follow the shoe and start again with every new one.
+- **Keyboard shortcuts**: `Space`/`Enter` deal · `1`–`6` chips · `P` Player · `B` Banker · `T` Tie · `Z` or `Backspace` undo · `C` clear · `D` double · `R` rebet · `M` sound.
+
 ## One pit
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
@@ -65,9 +74,9 @@ The core test suite uses only Node's built-in test runner (Node.js 22.12 or newe
 npm test                 # node --test "tests/**/*.test.js" "tests/**/*.test.cjs"
 ```
 
-The suite currently executes **639 deterministic cases**. It covers both tables' engines, rules, payouts and strategy charts, the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
+The suite currently executes **660 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
 
-The optional real-browser suite adds **198 Chromium tests**: `file://` play, the shared balance between the lobby and both tables, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
+The optional real-browser suite adds **215 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
 
 ```bash
 npm install              # also downloads the Chrome build Puppeteer drives
@@ -99,6 +108,7 @@ shared/js/pwa.js           optional service-worker registration and safe updates
 shared/fonts/              local WOFF2 interface font + OFL license
 games/blackjack/           Table 21: page, look, engine, rules, strategy coach
 games/roulette/            Table 37: page, look, engine, layout, wheel, sounds
+games/baccarat/            Table 9: page, look, engine, saved state
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)

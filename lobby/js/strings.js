@@ -24,6 +24,8 @@
       blackjackSummary: "Blackjack pays 3:2. Las Vegas, Atlantic City and European rules, with an optional basic-strategy coach.",
       rouletteGame: "Roulette",
       rouletteSummary: "A single-zero wheel with European and French rules, the racetrack and all 157 bets.",
+      baccaratGame: "Baccarat",
+      baccaratSummary: "Punto Banco from an eight-deck shoe: Player, Banker, Tie and both pairs, with the bead plate and the big road.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -47,6 +49,8 @@
       blackjackSummary: "Blackjack 2'ye 3 öder. Las Vegas, Atlantic City ve Avrupa kuralları, isteğe bağlı temel strateji koçuyla.",
       rouletteGame: "Rulet",
       rouletteSummary: "Avrupa ve Fransız kurallarıyla tek sıfırlı çark, yarış pisti ve 157 bahsin tamamı.",
+      baccaratGame: "Bakara",
+      baccaratSummary: "Sekiz desteli ayakkabıdan Punto Banco: Oyuncu, Banko, Beraberlik ve iki çift; boncuk tablosu ve büyük yol ile.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

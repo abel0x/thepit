@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v6";
+var CACHE_VERSION = "pit-v7";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -58,6 +58,16 @@ var ASSETS = [
   "./games/blackjack/js/strategy.js",
   "./games/blackjack/js/round.js",
   "./games/blackjack/js/game.js",
+
+  // Table 9 · Baccarat
+  "./games/baccarat/",
+  "./games/baccarat/index.html",
+  "./games/baccarat/icon.svg",
+  "./games/baccarat/css/styles.css",
+  "./games/baccarat/js/strings.js",
+  "./games/baccarat/js/engine.js",
+  "./games/baccarat/js/store.js",
+  "./games/baccarat/js/game.js",
 
   // Table 37 · Roulette
   "./games/roulette/",

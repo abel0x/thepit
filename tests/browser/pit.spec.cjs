@@ -131,7 +131,7 @@ async function toast(page, pattern) {
   await page.waitForFunction(source => new RegExp(source, "i").test(document.getElementById("toast").textContent), {}, pattern.source);
 }
 
-test("from file:// the lobby leads to each table and each table back to the lobby", async () => {
+test("from file:// the lobby leads to each of the three tables and each back to the lobby", async () => {
   await scene({}, async page => {
     assert.equal(await page.title(), "ThePit");
     assert.equal(await balance(page), "10,000");
@@ -144,6 +144,11 @@ test("from file:// the lobby leads to each table and each table back to the lobb
     await enterTable(page, "roulette");
     assert.equal(await page.title(), "Table 37 · ThePit");
     await rouletteReady(page);
+    await backToLobby(page);
+    await enterTable(page, "baccarat");
+    assert.equal(await page.title(), "Table 9 · ThePit");
+    await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false");
+    assert.equal(await balance(page), "10,000");
     await backToLobby(page);
     assert.match(page.url(), /\/index\.html$/);
   });

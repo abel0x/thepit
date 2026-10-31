@@ -22,7 +22,7 @@
   <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="The lobby of ThePit with Table 21 blackjack and Table 37 roulette on green felt" />
+  <meta property="og:image:alt" content="The lobby of ThePit with Table 21 blackjack, Table 37 roulette and Table 9 baccarat on green felt" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="icon.svg" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -162,6 +162,54 @@
             </a>
           </h3>
           <p class="table-card-summary" data-i18n="rouletteSummary">A single-zero wheel with European and French rules, the racetrack and all 157 bets.</p>
+          <div class="table-card-foot">
+            <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$5</strong></span>
+            <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
+            <span class="table-card-cta" aria-hidden="true"><span data-i18n="takeSeat">Take a seat</span></span>
+          </div>
+        </div>
+      </li>
+      <li class="table-card" data-game="baccarat">
+        <div class="table-card-felt" aria-hidden="true">
+          <svg class="table-card-art" viewBox="0 0 240 150" focusable="false">
+            <path class="art-print" d="M120 22 V108" />
+            <text class="art-side player" x="66" y="30">PLAYER</text>
+            <text class="art-side banker" x="174" y="30">BANKER</text>
+            <g class="art-card" transform="translate(36 44) rotate(-6 22 31)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank black" x="5" y="13">K</text>
+              <text class="art-pip black" x="22" y="40">♠</text>
+            </g>
+            <g class="art-card" transform="translate(70 46) rotate(5 22 31)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank red" x="5" y="13">9</text>
+              <text class="art-pip red" x="22" y="40">♥</text>
+            </g>
+            <g class="art-card" transform="translate(130 46) rotate(-4 22 31)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank red" x="5" y="13">4</text>
+              <text class="art-pip red" x="22" y="40">♦</text>
+            </g>
+            <g class="art-card" transform="translate(164 44) rotate(7 22 31)">
+              <rect width="44" height="62" rx="5" />
+              <text class="art-rank black" x="5" y="13">2</text>
+              <text class="art-pip black" x="22" y="40">♣</text>
+            </g>
+            <g class="art-chips" transform="translate(120 128)">
+              <ellipse class="art-chip chip-a" cx="0" cy="6" rx="15" ry="5" />
+              <ellipse class="art-chip chip-b" cx="0" cy="1" rx="15" ry="5" />
+              <ellipse class="art-chip-face" cx="0" cy="1" rx="9" ry="3" />
+            </g>
+          </svg>
+        </div>
+        <div class="table-card-body">
+          <h3>
+            <a class="table-card-link" href="games/baccarat/index.html">
+              <span class="table-lockup"><span class="table-word">TABLE</span><span class="table-number">9</span></span>
+              <span class="table-game" data-i18n="baccaratGame">Baccarat</span>
+            </a>
+          </h3>
+          <p class="table-card-summary" data-i18n="baccaratSummary">Punto Banco from an eight-deck shoe: Player, Banker, Tie and both pairs, with the bead plate and the big road.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$5</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>

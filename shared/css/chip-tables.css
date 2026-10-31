@@ -1,0 +1,371 @@
+/* ThePit · Copyright (C) 2026 abel0x
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
+/* =========================================================
+   ThePit — the look the chip tables share
+   Loaded after shared/css/table.css (and cards.css, at a card table)
+   by every table that bets with ChipArt (shared/js/chips.js): the
+   frame of the page and its dialogs, the tray, the colour of each
+   denomination, the stacks on the felt and the tools that change a
+   bet (undo, clear, double, rebet). How a table lays them out and
+   paces its chips stays with the table.
+   ========================================================= */
+
+/* ----------------------- Page ----------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ----------------------- Top bar ----------------------- */
+.topbar {
+  position: relative;
+  z-index: 5;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: clamp(7px, 1.3vh, 13px) clamp(14px, 3vw, 34px);
+  padding-top: max(clamp(7px, 1.3vh, 13px), env(safe-area-inset-top));
+  background: linear-gradient(180deg, var(--topbar-top), var(--topbar-bottom));
+  border-bottom: 1px solid var(--panel-line);
+  backdrop-filter: blur(6px);
+}
+.brand-mark {
+  display: inline-flex;
+  flex: 0 0 auto;
+  line-height: 0;
+  filter: drop-shadow(0 3px 8px rgba(217, 182, 95, .3));
+}
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(244, 239, 226, .55);
+  white-space: nowrap;
+}
+.balance-value {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700; color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.icon-btn:disabled { opacity: .38; cursor: not-allowed; }
+
+/* ----------------------- Dialogs ----------------------- */
+.modal-card {
+  position: relative;
+  width: min(500px, 92vw);
+  max-height: 88vh;
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, var(--modal-top), var(--modal-bottom));
+  border: 1px solid var(--panel-line);
+  border-radius: 18px;
+  box-shadow: 0 30px 60px rgba(0,0,0,.6);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217,182,95,.62) rgba(0,0,0,.22);
+}
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--panel-line);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--modal-top);
+}
+.theme-option {
+  --preview-felt-top: #207653;
+  --preview-felt-bottom: #0c3d2a;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: stretch;
+  padding: 6px 6px 8px;
+  border: 1px solid rgba(217,182,95,.22);
+  border-radius: 11px;
+  background: rgba(255,255,255,.035);
+  color: rgba(244,239,226,.7);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  transition: border-color .18s ease, background .18s ease, transform .18s ease, color .18s ease;
+}
+.theme-preview {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(5deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
+    radial-gradient(110% 100% at 45% 0%, var(--preview-felt-top), var(--preview-felt-bottom) 72%);
+  box-shadow: inset 0 0 17px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.seg-btn {
+  background: transparent; border: none; color: rgba(244,239,226,.6);
+  padding: 8px 14px; cursor: pointer; font-size: 13px; font-weight: 600; transition: .16s;
+  font-family: var(--font-ui);
+}
+.payout-table {
+  padding-top: 14px;
+  border-top: 1px solid var(--panel-line);
+}
+.payout-table summary {
+  cursor: pointer;
+  color: rgba(244,239,226,.85);
+  font-size: 14px;
+  list-style-position: inside;
+}
+.payout-table table {
+  width: 100%;
+  margin: 12px 0 14px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.payout-table th,
+.payout-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(217,182,95,.12);
+  text-align: left;
+  font-weight: 400;
+  color: rgba(244,239,226,.62);
+}
+.payout-table th { color: rgba(244,239,226,.88); font-weight: 600; }
+.payout-table td:last-child { text-align: right; color: var(--gold-bright); font-weight: 700; font-variant-numeric: tabular-nums; }
+.payout-table .settings-hint { margin-top: 0; }
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--panel-line);
+}
+.stats-grid h3,
+.about h3,
+.stats-block h3 {
+  grid-column: 1 / -1;
+  font-family: var(--font-display);
+  font-size: 15px; letter-spacing: 1px; color: var(--gold-bright);
+}
+.stat {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 12px; border-radius: 9px; background: rgba(0,0,0,.25);
+  font-size: 13px;
+}
+.stat b { font-variant-numeric: tabular-nums; color: var(--gold-bright); white-space: nowrap; }
+.stat b.positive { color: #8ff0bd; }
+.stat b.negative { color: #ffb4ad; }
+.deposit-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--panel-line);
+  border-radius: 10px;
+  padding: 4px 4px 4px 12px;
+  background: rgba(0,0,0,.28);
+}
+
+/* ----------------------- Toast ----------------------- */
+.toast {
+  position: fixed;
+  top: 84px; left: 50%;
+  transform: translateX(-50%) translateY(-14px);
+  z-index: 30;
+  max-width: min(92vw, 560px);
+  padding: 11px 24px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: .5px;
+  text-align: center;
+  background: rgba(0,0,0,.82);
+  border: 1px solid var(--gold);
+  color: var(--gold-bright);
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+}
+
+/* ----------------------- Chip tray ----------------------- */
+/* Realistic clay casino chip: solid body, 8 edge spots, centre inlay, bevel. */
+.chip {
+  --size: clamp(42px, min(5.4vw, 7vh), 60px);
+  --body: #23232b;
+  --spot: #ececf2;
+  --spot-alt: var(--spot);
+  --inlay: #30303a;
+  --ringline: #cbb069;
+  --ink: #f4efe2;
+  --edge: #101015;
+  --edge-dark: #050507;
+  --chip-turn: 0deg;
+  width: var(--size); height: var(--size);
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.42);
+  cursor: pointer;
+  position: relative;
+  isolation: isolate;
+  background: var(--body);
+  box-shadow:
+    0 5px 0 var(--edge),
+    0 6px 0 var(--edge-dark),
+    0 10px 16px rgba(0,0,0,.48);
+  color: var(--ink);
+  transform: rotate(var(--chip-turn));
+  transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+  display: grid;
+  place-items: center;
+}
+.chip .denom {
+  position: relative;
+  z-index: 3;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: calc(var(--size) * .24);
+  font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
+  text-shadow: 0 1px 1px rgba(0,0,0,.42), 0 -1px rgba(255,255,255,.1);
+}
+.chip:not(:disabled):hover { transform: translateY(-4px) rotate(var(--chip-turn)); }
+.chip[aria-checked="true"] {
+  transform: translateY(-9px) rotate(var(--chip-turn));
+  box-shadow:
+    0 5px 0 var(--edge),
+    0 6px 0 var(--edge-dark),
+    0 0 0 3px rgba(244, 226, 166, .85),
+    0 0 18px 4px rgba(244, 226, 166, .35),
+    0 18px 22px rgba(0,0,0,.55);
+}
+.chip:active { transform: translateY(-2px) rotate(var(--chip-turn)) scale(.96); }
+.chip:disabled { opacity: .32; cursor: not-allowed; filter: saturate(.6); }
+.chip.unaffordable:not(:disabled) { opacity: .5; filter: saturate(.7); }
+/* Per-denomination colours — casino convention; mirrored in COLORS (chips.js). */
+.chip-5   { --body:#a8232d; --spot:#f0e6cf; --inlay:#bc3039; --ringline:#e0bd72; --ink:#fff4dc; --edge:#6a141b; --edge-dark:#430b10; }
+.chip-25  { --body:#24704e; --spot:#eee5cf; --inlay:#2d805b; --ringline:#d4b55c; --ink:#fff5d9; --edge:#134631; --edge-dark:#0a2c1e; }
+.chip-100 { --body:#23232b; --spot:#ececf2; --inlay:#30303a; --ringline:#cbb069; --ink:#f4efe2; --edge:#0d0d11; --edge-dark:#040406; }
+.chip-500 { --body:#5e2a90; --spot:#f0cf63; --inlay:#6e36a6; --ringline:#f0dca8; --ink:#fbf4ff; --edge:#3a1a5c; --edge-dark:#260f3e; }
+.chip-1k  { --body:#c9a23a; --spot:#2a1510; --inlay:#ddb24e; --ringline:#5a3a10; --ink:#2a1c04; --edge:#8a6c1c; --edge-dark:#5e4910; }
+.chip-5k  { --body:#1a4775; --spot:#edf4f8; --spot-alt:#78b8d8; --inlay:#245987; --ringline:#c2d4df; --ink:#f8fbfd; --edge:#0d3152; --edge-dark:#071d31; }
+/* Shared anti-aliased vector anatomy for every chip face. */
+.chip-art { shape-rendering: geometricPrecision; }
+.chip-svg-groove { fill: var(--ringline, #cbb069); }
+.chip-svg-value {
+  fill: var(--ink, #f4efe2);
+  stroke: rgba(0,0,0,.26);
+  stroke-width: .8;
+  paint-order: stroke fill;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -.3px;
+}
+.chip-svg-value.long { font-size: 19px; }
+
+/* ----------------------- Stacks on the felt ----------------------- */
+.bet-chip {
+  --chip: 30px;
+  position: absolute;
+  width: var(--chip);
+  height: var(--chip);
+  transform: translate(-50%, calc(-50% - (var(--layers, 1) - 1) * var(--chip) * .045));
+  pointer-events: none;
+  z-index: 2;
+}
+.bet-chip-edge,
+.bet-chip-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.bet-chip-edge {
+  background: var(--edge, #222);
+  transform: translateY(calc(var(--depth) * var(--chip) * .09));
+  box-shadow:
+    inset 0 calc(var(--chip) * -.05) 0 var(--body),
+    inset 0 0 0 1px rgba(0,0,0,.4),
+    0 1px 2px rgba(0,0,0,.45);
+}
+.bet-chip-edge::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 11deg, var(--spot) 0 12deg, transparent 12deg 45deg);
+  mask: radial-gradient(circle, transparent 60%, #000 61%);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%);
+  opacity: .9;
+}
+.bet-chip-face {
+  filter: drop-shadow(0 calc(var(--chip) * .06) calc(var(--chip) * .06) rgba(0,0,0,.5));
+}
+.bet-chip-face .chip-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bet-chip.placed .bet-chip-face { animation: chipDrop .26s cubic-bezier(.3, .8, .4, 1.25); }
+@keyframes chipDrop {
+  0% { transform: translateY(-38%) scale(1.15); opacity: .4; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.bet-chip.losing { animation: chipSweep .55s cubic-bezier(.5, 0, .75, .4) forwards; }
+@keyframes chipSweep {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--sweep-x, 0px)), calc(-50% + var(--sweep-y, -60px))) scale(.6); }
+}
+.bet-chip.winning .bet-chip-face { box-shadow: 0 0 0 2px rgba(255, 240, 190, .9), 0 0 14px rgba(255, 226, 140, .7); }
+.bet-chip.payout { z-index: 3; animation: payoutIn .5s cubic-bezier(.18, .76, .22, 1) both; }
+@keyframes payoutIn {
+  0% { opacity: 0; transform: translate(calc(-50% + var(--from-x, 0px)), calc(-50% + var(--from-y, -80px))) scale(.6); }
+  100% { opacity: 1; }
+}
+.bet-chip.collect { animation: chipCollect .62s cubic-bezier(.22, .7, .3, 1) forwards; }
+@keyframes chipCollect {
+  100% { opacity: 0; transform: translate(-50%, calc(-50% + 140px)) scale(.9); }
+}
+
+/* ----------------------- Bet tools ----------------------- */
+.btn-tool {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 62px;
+  padding: 7px 10px 6px;
+  background: linear-gradient(180deg, var(--action-top), var(--action-bottom));
+  border-color: rgba(217,182,95,.36);
+  color: var(--gold-bright);
+  font-size: 10.5px;
+  letter-spacing: .4px;
+}
+.btn-tool .icon { width: 20px; height: 20px; }
+.btn-tool:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  background: linear-gradient(180deg, var(--action-hover-top), var(--action-hover-bottom));
+}
+.btn-tool[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(217,182,95,.32), rgba(217,182,95,.12));
+  color: #fff4cf;
+}

@@ -23,69 +23,6 @@ body[data-theme="bordeaux"] {
   --red: #c3202a;
 }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.icon {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* ----------------------- Top bar ----------------------- */
-.topbar {
-  position: relative;
-  z-index: 5;
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: clamp(7px, 1.3vh, 13px) clamp(14px, 3vw, 34px);
-  padding-top: max(clamp(7px, 1.3vh, 13px), env(safe-area-inset-top));
-  background: linear-gradient(180deg, var(--topbar-top), var(--topbar-bottom));
-  border-bottom: 1px solid var(--panel-line);
-  backdrop-filter: blur(6px);
-}
-
-.brand-mark {
-  display: inline-flex;
-  flex: 0 0 auto;
-  line-height: 0;
-  filter: drop-shadow(0 3px 8px rgba(217, 182, 95, .3));
-}
-
-.subtitle {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 9px;
-  line-height: 1;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: rgba(244, 239, 226, .55);
-  white-space: nowrap;
-}
-
-.balance-value {
-  font-family: var(--font-display);
-  font-size: 20px; font-weight: 700; color: var(--gold-bright);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.icon-btn:disabled { opacity: .38; cursor: not-allowed; }
-
 /* ----------------------- Table ----------------------- */
 .table-wrap {
   position: relative;
@@ -695,30 +632,6 @@ body[data-phase="settling"] .racetrack { pointer-events: none; }
 
 .btn-primary:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(217,182,95,.45); }
 
-.btn-tool {
-  display: grid;
-  justify-items: center;
-  gap: 3px;
-  min-width: 62px;
-  padding: 7px 10px 6px;
-  background: linear-gradient(180deg, var(--action-top), var(--action-bottom));
-  border-color: rgba(217,182,95,.36);
-  color: var(--gold-bright);
-  font-size: 10.5px;
-  letter-spacing: .4px;
-}
-.btn-tool .icon { width: 20px; height: 20px; }
-.btn-tool:not(:disabled):hover {
-  transform: translateY(-2px);
-  border-color: var(--gold);
-  background: linear-gradient(180deg, var(--action-hover-top), var(--action-hover-bottom));
-}
-.btn-tool[aria-pressed="true"] {
-  border-color: var(--gold);
-  background: linear-gradient(180deg, rgba(217,182,95,.32), rgba(217,182,95,.12));
-  color: #fff4cf;
-}
-
 .bet-total {
   display: grid;
   justify-items: end;
@@ -798,61 +711,6 @@ body[data-phase="spinning"] .spin-ring { animation: ringTurn 1.2s linear infinit
   50% { box-shadow: 0 0 0 4px rgba(20, 13, 4, .55), 0 0 0 5px rgba(240, 215, 143, .9), 0 0 24px 6px rgba(240, 215, 143, .35), inset 0 -6px 10px rgba(110, 76, 14, .55), inset 0 3px 6px rgba(255, 255, 255, .45); }
 }
 
-/* ----------------------- Modal ----------------------- */
-.modal-card {
-  position: relative;
-  width: min(500px, 92vw);
-  max-height: 88vh;
-  max-height: 88dvh;
-  overflow-y: auto;
-  background: linear-gradient(180deg, var(--modal-top), var(--modal-bottom));
-  border: 1px solid var(--panel-line);
-  border-radius: 18px;
-  box-shadow: 0 30px 60px rgba(0,0,0,.6);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(217,182,95,.62) rgba(0,0,0,.22);
-}
-
-.modal-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--panel-line);
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: var(--modal-top);
-}
-
-.theme-option {
-  --preview-felt-top: #207653;
-  --preview-felt-bottom: #0c3d2a;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  align-items: stretch;
-  padding: 6px 6px 8px;
-  border: 1px solid rgba(217,182,95,.22);
-  border-radius: 11px;
-  background: rgba(255,255,255,.035);
-  color: rgba(244,239,226,.7);
-  cursor: pointer;
-  font-family: var(--font-ui);
-  transition: border-color .18s ease, background .18s ease, transform .18s ease, color .18s ease;
-}
-
-.theme-preview {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 50px;
-  overflow: hidden;
-  border-radius: 8px;
-  background:
-    repeating-linear-gradient(5deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
-    radial-gradient(110% 100% at 45% 0%, var(--preview-felt-top), var(--preview-felt-bottom) 72%);
-  box-shadow: inset 0 0 17px rgba(0,0,0,.42), inset 0 0 0 1px rgba(255,255,255,.06);
-}
 /* A tiny wheel and a strip of the layout printed on each cloth. */
 .theme-preview::before {
   content: "";
@@ -887,12 +745,6 @@ body[data-phase="spinning"] .spin-ring { animation: ringTurn 1.2s linear infinit
 .theme-option[data-set-theme="onyx"] { --preview-felt-top: #5d6268; --preview-felt-bottom: #2a2d31; }
 .theme-option[data-set-theme="amethyst"] { --preview-felt-top: #7a54a8; --preview-felt-bottom: #36215a; }
 
-.seg-btn {
-  background: transparent; border: none; color: rgba(244,239,226,.6);
-  padding: 8px 14px; cursor: pointer; font-size: 13px; font-weight: 600; transition: .16s;
-  font-family: var(--font-ui);
-}
-
 .stepper {
   display: flex;
   align-items: center;
@@ -922,67 +774,6 @@ body[data-phase="spinning"] .spin-ring { animation: ringTurn 1.2s linear infinit
 }
 
 .volume-slider::-moz-range-track { height: 4px; border: 0; border-radius: 999px; background: rgba(255,255,255,.14); }
-
-.payout-table {
-  padding-top: 14px;
-  border-top: 1px solid var(--panel-line);
-}
-.payout-table summary {
-  cursor: pointer;
-  color: rgba(244,239,226,.85);
-  font-size: 14px;
-  list-style-position: inside;
-}
-.payout-table table {
-  width: 100%;
-  margin: 12px 0 14px;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-.payout-table th,
-.payout-table td {
-  padding: 6px 4px;
-  border-bottom: 1px solid rgba(217,182,95,.12);
-  text-align: left;
-  font-weight: 400;
-  color: rgba(244,239,226,.62);
-}
-.payout-table th { color: rgba(244,239,226,.88); font-weight: 600; }
-.payout-table td:last-child { text-align: right; color: var(--gold-bright); font-weight: 700; font-variant-numeric: tabular-nums; }
-.payout-table .settings-hint { margin-top: 0; }
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid var(--panel-line);
-}
-.stats-grid h3,
-.about h3,
-.stats-block h3 {
-  grid-column: 1 / -1;
-  font-family: var(--font-display);
-  font-size: 15px; letter-spacing: 1px; color: var(--gold-bright);
-}
-.stat {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding: 8px 12px; border-radius: 9px; background: rgba(0,0,0,.25);
-  font-size: 13px;
-}
-.stat b { font-variant-numeric: tabular-nums; color: var(--gold-bright); white-space: nowrap; }
-.stat b.positive { color: #8ff0bd; }
-.stat b.negative { color: #ffb4ad; }
-
-.deposit-field {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--panel-line);
-  border-radius: 10px;
-  padding: 4px 4px 4px 12px;
-  background: rgba(0,0,0,.28);
-}
 
 .deposit-btn { padding: 7px 16px; font-size: 13px; }
 
@@ -1033,27 +824,6 @@ body[data-phase="spinning"] .spin-ring { animation: ringTurn 1.2s linear infinit
 .recent-grid { list-style: none; display: flex; flex-wrap: wrap; gap: 5px; }
 .recent-grid .hist { --size: 26px; margin: 0; }
 .recent-grid .hist:first-child { --size: 26px; box-shadow: 0 0 0 2px #f0d78f; }
-
-/* ----------------------- Toast ----------------------- */
-.toast {
-  position: fixed;
-  top: 84px; left: 50%;
-  transform: translateX(-50%) translateY(-14px);
-  z-index: 30;
-  max-width: min(92vw, 560px);
-  padding: 11px 24px;
-  border-radius: 999px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  letter-spacing: .5px;
-  text-align: center;
-  background: rgba(0,0,0,.82);
-  border: 1px solid var(--gold);
-  color: var(--gold-bright);
-  opacity: 0;
-  transition: opacity .3s, transform .3s;
-  pointer-events: none;
-}
 
 /* Animation pace changes the physical table motion; hover feedback stays snappy. */
 body[data-animation-speed="fast"] .bet-chip.losing { animation-duration: .36s; }

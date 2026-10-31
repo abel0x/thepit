@@ -43,7 +43,7 @@ test("every possible chip colour is defined", function () {
 });
 
 test("the tray chips in the stylesheet match the stack colours", function () {
-  var css = fs.readFileSync(path.join(__dirname, "../../shared/css/chips.css"), "utf8");
+  var css = fs.readFileSync(path.join(__dirname, "../../shared/css/chip-tables.css"), "utf8");
   var names = { 5: "5", 25: "25", 100: "100", 500: "500", 1000: "1k", 5000: "5k" };
   Chips.TRAY.forEach(function (value) {
     var rule = css.match(new RegExp("\\.chip-" + names[value] + "\\s*\\{([^}]*)\\}"));
@@ -64,7 +64,7 @@ test("every chip table offers exactly the tray the chips are painted for", funct
   assert.ok(tables.indexOf("roulette") !== -1);
   tables.forEach(function (id) {
     var html = fs.readFileSync(path.join(__dirname, "../../games/" + id + "/index.html"), "utf8");
-    assert.match(html, /shared\/css\/chips\.css/, id + " loads the chip look");
+    assert.match(html, /shared\/css\/chip-tables\.css/, id + " loads the chip look");
     var tray = (html.match(/class="chip chip-\w+" data-value="(\d+)"/g) || []).map(function (m) { return Number(m.match(/data-value="(\d+)"/)[1]); });
     assert.deepEqual(tray, Chips.TRAY, id);
   });

@@ -175,7 +175,7 @@ test("every table loads the shared table look between the pit's and its own", fu
     // pit's chips; each loads their look together with the script that uses it.
     var extras = [];
     if (scripts(page).indexOf("shared/js/cards.js") !== -1) extras.push("shared/css/cards.css");
-    if (scripts(page).indexOf("shared/js/chips.js") !== -1) extras.push("shared/css/chips.css");
+    if (scripts(page).indexOf("shared/js/chips.js") !== -1) extras.push("shared/css/chip-tables.css");
     assert.deepEqual(sheets.slice(2, -1), extras, page);
   });
   assert.deepEqual(stylesheets("index.html"), ["shared/css/pit.css", "lobby/css/styles.css"]);

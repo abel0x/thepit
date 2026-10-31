@@ -17,7 +17,7 @@ var ASSETS = [
   "./shared/css/pit.css",
   "./shared/css/table.css",
   "./shared/css/cards.css",
-  "./shared/css/chips.css",
+  "./shared/css/chip-tables.css",
   "./shared/js/pit.js",
   "./shared/js/i18n.js",
   "./shared/js/pwa.js",

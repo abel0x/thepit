@@ -92,6 +92,8 @@ shared/css/table.css       the look every table shares: sound, mixer, rule profi
 shared/css/cards.css       the look of a playing card, with a back for every cloth
 shared/js/cards.js         the card maker every card table draws its cards with
 shared/js/card-sound.js    card, chip and shuffle sounds with Web Audio cues for card tables
+shared/js/chips.js         chip denominations, colours and vector faces for the chip tables
+shared/css/chips.css       the chip tray and the stacks on the felt of the chip tables
 shared/audio/              the card-table samples (Ogg + AAC)
 shared/js/pwa.js           optional service-worker registration and safe updates
 shared/fonts/              local WOFF2 interface font + OFL license

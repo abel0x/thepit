@@ -2,10 +2,11 @@
    SPDX-License-Identifier: AGPL-3.0-or-later
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* =========================================================
-   Table 37 — casino chips
+   ThePit — casino chips for the chip tables
    Denominations, colours and the vector chip face shared by the
-   tray and the layout. Pure helpers work in Node for the tests;
-   the SVG helpers need a document. Exposed as window.ChipArt.
+   tray and the felt of every table that bets with them (roulette,
+   baccarat). Pure helpers work in Node for the tests; the SVG
+   helpers need a document. Exposed as window.ChipArt.
    ========================================================= */
 (function (root, factory) {
   "use strict";
@@ -23,7 +24,7 @@
   // Every colour a stack can show, largest first (1 only appears in payouts).
   var DENOMS = [100000, 25000, 5000, 1000, 500, 100, 25, 5, 1];
 
-  // Kept in step with the .chip-* rules in css/styles.css.
+  // Kept in step with the .chip-* rules in shared/css/chips.css.
   // body = clay · spot/spotAlt = edge inserts · ring = groove · inlay = centre · ink = value
   var COLORS = {
     1:      { body: "#ece9df", spot: "#315b8a", ring: "#817b6b", inlay: "#f7f3e8", ink: "#25231f", edge: "#a9a596" },

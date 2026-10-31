@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v5";
+var CACHE_VERSION = "pit-v6";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -17,11 +17,13 @@ var ASSETS = [
   "./shared/css/pit.css",
   "./shared/css/table.css",
   "./shared/css/cards.css",
+  "./shared/css/chips.css",
   "./shared/js/pit.js",
   "./shared/js/i18n.js",
   "./shared/js/pwa.js",
   "./shared/js/cards.js",
   "./shared/js/card-sound.js",
+  "./shared/js/chips.js",
   "./shared/fonts/thepit-sans-regular.woff2",
   "./shared/fonts/thepit-sans-semibold.woff2",
   "./shared/audio/card-slide-1.ogg",
@@ -67,7 +69,6 @@ var ASSETS = [
   "./games/roulette/js/engine.js",
   "./games/roulette/js/layout.js",
   "./games/roulette/js/spin.js",
-  "./games/roulette/js/chips.js",
   "./games/roulette/js/store.js",
   "./games/roulette/js/wheel.js",
   "./games/roulette/js/game.js",

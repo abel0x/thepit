@@ -7,7 +7,8 @@ var test = require("node:test");
 var assert = require("node:assert/strict");
 var fs = require("node:fs");
 var path = require("node:path");
-var Chips = require("../../games/roulette/js/chips.js");
+var Chips = require("../../shared/js/chips.js");
+var Pit = require("../../shared/js/pit.js");
 
 test("a stack breaks into real chips, largest first, adding up exactly", function () {
   [1, 4, 5, 25, 130, 999, 12345, 2500000].forEach(function (amount) {
@@ -42,7 +43,7 @@ test("every possible chip colour is defined", function () {
 });
 
 test("the tray chips in the stylesheet match the stack colours", function () {
-  var css = fs.readFileSync(path.join(__dirname, "../../games/roulette/css/styles.css"), "utf8");
+  var css = fs.readFileSync(path.join(__dirname, "../../shared/css/chips.css"), "utf8");
   var names = { 5: "5", 25: "25", 100: "100", 500: "500", 1000: "1k", 5000: "5k" };
   Chips.TRAY.forEach(function (value) {
     var rule = css.match(new RegExp("\\.chip-" + names[value] + "\\s*\\{([^}]*)\\}"));
@@ -54,7 +55,17 @@ test("the tray chips in the stylesheet match the stack colours", function () {
     assert.match(rule[1], new RegExp("--ringline:\\s*" + color.ring), value + " ring");
     assert.match(rule[1], new RegExp("--ink:\\s*" + color.ink), value + " ink");
   });
-  var html = fs.readFileSync(path.join(__dirname, "../../games/roulette/index.html"), "utf8");
-  var tray = (html.match(/data-value="(\d+)"/g) || []).map(function (m) { return Number(m.match(/\d+/)[0]); });
-  assert.deepEqual(tray, Chips.TRAY);
+});
+
+test("every chip table offers exactly the tray the chips are painted for", function () {
+  var tables = Object.keys(Pit.TABLES).filter(function (id) {
+    return fs.readFileSync(path.join(__dirname, "../../games/" + id + "/index.html"), "utf8").indexOf("shared/js/chips.js") !== -1;
+  });
+  assert.ok(tables.indexOf("roulette") !== -1);
+  tables.forEach(function (id) {
+    var html = fs.readFileSync(path.join(__dirname, "../../games/" + id + "/index.html"), "utf8");
+    assert.match(html, /shared\/css\/chips\.css/, id + " loads the chip look");
+    var tray = (html.match(/class="chip chip-\w+" data-value="(\d+)"/g) || []).map(function (m) { return Number(m.match(/data-value="(\d+)"/)[1]); });
+    assert.deepEqual(tray, Chips.TRAY, id);
+  });
 });

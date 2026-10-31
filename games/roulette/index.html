@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money European roulette simulation that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>Table 37 · ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="Table 37 · ThePit" />
+  <meta property="og:description" content="A free, play-money European roulette simulation that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/games/roulette/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The roulette wheel and betting layout of Table 37 on green felt" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-phase="betting" data-theme="emerald" data-layout="wide" data-profile="european" data-animation-speed="normal" data-view="board">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="icon-btn lobby-link" href="../../index.html" aria-label="Back to the lobby" title="Back to the lobby"
+         data-i18n-aria-label="backToLobby" data-i18n-title="backToLobby">
+        <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+      </a>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="bRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#bRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="21.5" fill="none" stroke="#7d1219" stroke-width="7" stroke-dasharray="3.65 3.65"/>
+          <circle cx="32" cy="32" r="21.5" fill="none" stroke="#151516" stroke-width="7" stroke-dasharray="3.65 3.65" stroke-dashoffset="3.65"/>
+          <circle cx="32" cy="32" r="25.2" fill="none" stroke="url(#bRing)" stroke-width="1"/>
+          <circle cx="32" cy="32" r="17.8" fill="none" stroke="url(#bRing)" stroke-width="1"/>
+          <circle cx="32" cy="32" r="14" fill="#3b1e0d"/>
+          <path d="M32 21v22M21 32h22" stroke="url(#bRing)" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="32" cy="32" r="4" fill="url(#bRing)"/>
+          <circle cx="44.5" cy="20.5" r="2.6" fill="#f6f2e8"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="Table 37" data-i18n-aria-label="brandName">
+          <span class="brand-word">TABLE</span><span class="brand-number" aria-hidden="true">37</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">European Roulette</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="statsBtn" class="icon-btn" type="button" aria-label="Statistics" title="Statistics"
+              data-i18n-title="statistics" data-i18n-aria-label="statistics" aria-haspopup="dialog" aria-keyshortcuts="I">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M5 19V11M10 19V6M15 19v-6M20 19V9" />
+        </svg>
+      </button>
+
+      <button id="soundToggle" class="icon-btn sound-control" type="button" aria-pressed="true" aria-label="Mute sound"
+              title="Mute sound" data-i18n-title="muteSound" data-i18n-aria-label="muteSound" aria-keyshortcuts="M">
+        <svg class="sound-glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path class="sound-cone" d="M4.8 11h3.5l4.7-3.9v13.8L8.3 17H4.8Z" />
+          <path class="sound-wave sound-wave-near" d="M16.1 10.2c1 1 1.5 2.3 1.5 3.8s-.5 2.8-1.5 3.8" />
+          <path class="sound-wave sound-wave-far" d="M19.2 7.6c1.8 1.8 2.8 4 2.8 6.4s-1 4.6-2.8 6.4" />
+          <path class="sound-slash" d="M6.5 6.5l15 15" />
+        </svg>
+        <span class="sound-led" aria-hidden="true"></span>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <section class="table" aria-label="Roulette table" data-i18n-aria-label="rouletteTable">
+      <div class="table-felt" id="tableFelt">
+        <div class="table-rim" aria-hidden="true"></div>
+
+        <div class="wheel-zone" id="wheelZone">
+          <div class="wheel-well" id="wheelWell">
+            <div class="wheel" id="wheel" role="img" aria-label="Roulette wheel" data-i18n-aria-label="rouletteWheel"></div>
+            <div class="result-medal" id="resultMedal" aria-hidden="true">
+              <span class="result-number" id="resultNumber"></span>
+              <span class="result-word" id="resultWord"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-zone">
+          <div class="history" role="group" aria-labelledby="historyLabel">
+            <span class="history-label" id="historyLabel" data-i18n="lastResults">Last results</span>
+            <ol class="history-strip" id="historyStrip"></ol>
+          </div>
+          <div class="banner" id="banner" role="status" aria-live="polite" aria-atomic="true">
+            <span id="bannerText" data-i18n="placeBets">Place your bets</span>
+            <small id="bannerSub"></small>
+          </div>
+          <div class="info-total">
+            <span><small data-i18n="totalBet">Total bet</small> <b>$<span id="totalBetMini">0</span></b></span>
+            <span><small data-i18n="lastWin">Last win</small> <b>$<span id="lastWinMini">0</span></b></span>
+          </div>
+          <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
+            <span class="table-spec">
+              <small data-i18n="tableMinLabel">MIN</small>
+              <strong id="tableMin">$5</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableMaxLabel">MAX</small>
+              <strong id="tableMax">$2,500</strong>
+            </span>
+            <span class="table-spec table-profile-spec">
+              <small data-i18n="tableRulesLabel">RULES</small>
+              <strong id="tableProfile">EUROPEAN</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="layout-zone" id="layoutZone">
+          <div class="board-stage" id="boardStage">
+            <div class="board" id="board" tabindex="0" role="group" aria-roledescription="betting layout"
+                 data-i18n-aria-roledescription="bettingLayoutRole"
+                 aria-label="Betting layout. Arrow keys choose a bet, Enter places a chip, Delete removes one."
+                 data-i18n-aria-label="boardLabel" aria-describedby="boardFocus">
+              <svg class="board-print" id="boardSvg" aria-hidden="true" focusable="false"></svg>
+              <div class="board-chips" id="boardChips" aria-hidden="true"></div>
+              <div class="board-ghost" id="boardGhost" aria-hidden="true" hidden></div>
+              <div class="dolly" id="dolly" aria-hidden="true" hidden><span class="dolly-crown"></span></div>
+            </div>
+            <div class="bet-tip" id="betTip" aria-hidden="true" hidden></div>
+            <div class="win-display" id="winDisplay" aria-hidden="true" hidden>
+              <span class="win-label">WIN</span>
+              <span class="win-amount"></span>
+            </div>
+          </div>
+          <div class="track-stage" id="trackStage">
+            <div class="racetrack" id="racetrack" role="group" aria-label="Racetrack" data-i18n-aria-label="racetrack">
+              <svg class="track-print" id="trackSvg" focusable="false"></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls" data-i18n-aria-label="controlsLabel">
+      <div class="chips-tray" id="chipTray" role="radiogroup" aria-label="Chip value" data-i18n-aria-label="chipsLabel" aria-keyshortcuts="1 2 3 4 5 6">
+        <button class="chip chip-5" data-value="5" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5"><span class="denom">5</span></button>
+        <button class="chip chip-25" data-value="25" type="button" role="radio" aria-checked="true" aria-label="$25"><span class="denom">25</span></button>
+        <button class="chip chip-100" data-value="100" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$100"><span class="denom">100</span></button>
+        <button class="chip chip-500" data-value="500" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$500"><span class="denom">500</span></button>
+        <button class="chip chip-1k" data-value="1000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$1,000"><span class="denom">1K</span></button>
+        <button class="chip chip-5k" data-value="5000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5,000"><span class="denom">5K</span></button>
+      </div>
+
+      <div class="action-row">
+        <div class="bet-actions">
+          <button id="btnUndo" class="btn btn-tool" type="button" aria-keyshortcuts="Z Backspace">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 7 4.5 11.5 9 16" /><path d="M5 11.5h9.5a5 5 0 0 1 0 10H11" /></svg>
+            <span data-i18n="undo">Undo</span>
+          </button>
+          <button id="btnClear" class="btn btn-tool" type="button" aria-keyshortcuts="C">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" /></svg>
+            <span data-i18n="clear">Clear</span>
+          </button>
+          <button id="btnDouble" class="btn btn-tool" type="button" aria-keyshortcuts="D">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 8l6 8M10.5 8l-6 8" /><path d="M13.5 9.2a3 3 0 1 1 5.2 2.1L13.5 16h6" /></svg>
+            <span data-i18n="double">Double</span>
+          </button>
+          <button id="btnRebet" class="btn btn-tool" type="button" aria-keyshortcuts="R">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M19.8 4.5v4.3h-4.3" /></svg>
+            <span data-i18n="rebet">Rebet</span>
+          </button>
+          <button id="btnTrack" class="btn btn-tool" type="button" aria-pressed="false" aria-keyshortcuts="T">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.8" y="6.5" width="18.4" height="11" rx="5.5" /><rect x="7" y="10" width="10" height="4" rx="2" /></svg>
+            <span data-i18n="racetrack">Racetrack</span>
+          </button>
+        </div>
+
+        <div class="bet-total" aria-live="off">
+          <small data-i18n="totalBet">Total bet</small>
+          <strong>$<span id="totalBet">0</span></strong>
+          <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
+        </div>
+
+        <button id="btnSpin" class="spin-btn" type="button" aria-keyshortcuts="Space Enter">
+          <svg class="spin-ring" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <circle cx="32" cy="32" r="28" />
+          </svg>
+          <span class="spin-label" data-i18n="spin">Spin</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="rule-profile-setting">
+          <div class="setting-section-label" id="profileLabel" data-i18n="tableRules">Table rules</div>
+          <div class="rule-profile-picker" role="radiogroup" aria-labelledby="profileLabel" aria-describedby="profileHint">
+            <button class="rule-profile" data-profile="european" type="button" role="radio" aria-checked="true">
+              <span class="rule-profile-code" aria-hidden="true">EU</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileEuropean">European</strong>
+                <small data-i18n="profileEuropeanSummary">Single zero · Every bet loses on zero · House edge 2.70%</small>
+              </span>
+            </button>
+            <button class="rule-profile" data-profile="french" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="rule-profile-code" aria-hidden="true">FR</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileFrench">French</strong>
+                <small data-i18n="profileFrenchSummary">Single zero · La Partage returns half of even-money bets on zero · House edge 1.35% on those bets · French terms on the cloth</small>
+              </span>
+            </button>
+          </div>
+          <p class="settings-hint" id="profileHint" data-i18n="profileHint">Rules change between spins. Amounts use whole dollars; half of an odd stake rounds down.</p>
+        </div>
+
+        <div class="setting-row animation-setting">
+          <span class="setting-label" id="animationSpeedLabel" data-i18n="animationSpeed">Spin speed</span>
+          <div class="seg animation-seg" role="radiogroup" aria-labelledby="animationSpeedLabel">
+            <button class="seg-btn" data-set-animation="fast" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedFast">Fast</button>
+            <button class="seg-btn active" data-set-animation="normal" type="button" role="radio" aria-checked="true" data-i18n="speedNormal">Normal</button>
+            <button class="seg-btn" data-set-animation="cinematic" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedCinematic">Cinematic</button>
+          </div>
+        </div>
+
+        <div class="setting-row neighbours-setting">
+          <span class="setting-label" id="neighboursLabel" data-i18n="neighboursSetting">Racetrack neighbours</span>
+          <div class="stepper" role="group" aria-labelledby="neighboursLabel">
+            <button class="stepper-btn" id="neighboursDown" type="button" aria-label="Fewer neighbours" data-i18n-aria-label="fewerNeighbours">−</button>
+            <output id="neighboursValue" aria-live="polite">2</output>
+            <button class="stepper-btn" id="neighboursUp" type="button" aria-label="More neighbours" data-i18n-aria-label="moreNeighbours">+</button>
+          </div>
+        </div>
+        <p class="settings-hint" data-i18n="neighboursHint">A number on the racetrack bets it and this many neighbours on each side of the wheel.</p>
+
+        <div class="sound-settings">
+          <div class="setting-row">
+            <label for="setSound" data-i18n="soundLabel">Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="setSound" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="audio-mixer" id="soundMixer" role="group" aria-label="Sound levels" data-i18n-aria-label="soundMixer">
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundMasterLabel" data-i18n="masterVolume">Master</span><output id="soundMasterValue" for="soundMaster">100%</output></span>
+              <input class="volume-slider" id="soundMaster" data-sound-level="master" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundMasterLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundWheelLabel" data-i18n="wheelVolume">Wheel &amp; ball</span><output id="soundWheelValue" for="soundWheel">100%</output></span>
+              <input class="volume-slider" id="soundWheel" data-sound-level="wheel" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundWheelLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundChipsLabel" data-i18n="chipVolume">Chips</span><output id="soundChipsValue" for="soundChips">100%</output></span>
+              <input class="volume-slider" id="soundChips" data-sound-level="chips" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundChipsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundTableLabel" data-i18n="tableVolume">Table cues</span><output id="soundTableValue" for="soundTable">100%</output></span>
+              <input class="volume-slider" id="soundTable" data-sound-level="table" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundTableLabel" aria-valuetext="100%" />
+            </label>
+          </div>
+        </div>
+
+        <details class="payout-table">
+          <summary data-i18n="payoutsTitle">Bets and payouts</summary>
+          <table>
+            <tbody>
+              <tr><th scope="row" data-i18n="betStraight">Straight up</th><td data-i18n="betStraightCovers">1 number</td><td>35:1</td></tr>
+              <tr><th scope="row" data-i18n="betSplit">Split</th><td data-i18n="betSplitCovers">2 numbers</td><td>17:1</td></tr>
+              <tr><th scope="row" data-i18n="betStreet">Street</th><td data-i18n="betStreetCovers">3 numbers in a row</td><td>11:1</td></tr>
+              <tr><th scope="row" data-i18n="betTrio">Trio</th><td data-i18n="betTrioCovers">0 with 1-2 or 2-3</td><td>11:1</td></tr>
+              <tr><th scope="row" data-i18n="betCorner">Corner</th><td data-i18n="betCornerCovers">4 numbers</td><td>8:1</td></tr>
+              <tr><th scope="row" data-i18n="betFirstFour">First four</th><td data-i18n="betFirstFourCovers">0, 1, 2 and 3</td><td>8:1</td></tr>
+              <tr><th scope="row" data-i18n="betSixLine">Six line</th><td data-i18n="betSixLineCovers">2 rows, 6 numbers</td><td>5:1</td></tr>
+              <tr><th scope="row" data-i18n="betColumnDozen">Column · Dozen</th><td data-i18n="betColumnDozenCovers">12 numbers</td><td>2:1</td></tr>
+              <tr><th scope="row" data-i18n="betEvenMoney">Red/Black · Odd/Even · 1-18/19-36</th><td data-i18n="betEvenMoneyCovers">18 numbers</td><td>1:1</td></tr>
+            </tbody>
+          </table>
+          <p class="settings-hint" data-i18n="announcedHint">Racetrack call bets place their chips on the layout: Voisins du Zéro 9 chips, Tiers du Cylindre 6, Orphelins 5, Jeu Zéro 4.</p>
+        </details>
+
+        <div class="stats-grid">
+          <h3 data-i18n="sessionStats">Statistics</h3>
+          <div class="stat"><span data-i18n="spinsPlayed">Spins</span><b id="stSpins">0</b></div>
+          <div class="stat"><span data-i18n="winningSpins">Winning spins</span><b id="stWinRate">0%</b></div>
+          <div class="stat"><span data-i18n="totalWagered">Wagered</span><b id="stWagered">$0</b></div>
+          <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
+          <div class="stat"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
+          <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+        </div>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="modal-foot">
+          <button id="btnResetStats" class="btn btn-ghost" type="button" data-i18n="resetStats">Reset statistics</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">Table 37 is a roulette simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every result is drawn at random on your device and the wheel is animated to show it. Past results never change the odds of the next spin. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div id="statsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card stats-card" role="dialog" aria-modal="true" aria-labelledby="statsTitle" aria-describedby="statsSample">
+      <div class="modal-head">
+        <h2 id="statsTitle" data-i18n="statistics">Statistics</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="stats-sample" id="statsSample"></p>
+        <div class="stats-split">
+          <section class="stats-block">
+            <h3 data-i18n="hotNumbers">Hot numbers</h3>
+            <ol class="number-list" id="hotNumbers"></ol>
+          </section>
+          <section class="stats-block">
+            <h3 data-i18n="coldNumbers">Cold numbers</h3>
+            <ol class="number-list" id="coldNumbers"></ol>
+          </section>
+        </div>
+        <section class="stats-block">
+          <h3 data-i18n="distribution">Distribution</h3>
+          <div class="dist-list" id="distribution"></div>
+        </section>
+        <section class="stats-block">
+          <h3 data-i18n="recentSpins">Recent spins</h3>
+          <ol class="recent-grid" id="recentGrid"></ol>
+        </section>
+        <p class="settings-hint" data-i18n="statsHint">For entertainment: every spin is independent, so earlier results never make a number more or less likely.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+  <p id="boardFocus" class="sr-only" aria-live="polite"></p>
+
+  <script src="../../shared/js/pit.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/spin.js"></script>
+  <script src="js/chips.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/wheel.js"></script>
+  <script src="js/game.js"></script>
+  <script src="../../shared/js/pwa.js"></script>
+</body>
+</html>

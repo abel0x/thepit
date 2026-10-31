@@ -623,8 +623,9 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
 @media (max-height: 640px) and (max-width: 760px) {
   .roads { grid-template-columns: minmax(0, 1fr); --bead: 9px; }
   .road-big { display: none; }
-  .spot { min-height: 46px; padding-bottom: 26px; }
-  .spot-main { min-height: 54px; }
+  .spot { min-height: 52px; padding-bottom: 32px; }
+  /* A full stack of five chips needs its whole lane. */
+  .spot-main { min-height: 72px; padding-bottom: 40px; }
 }
 
 /* Phones on their side: only the hands, the spots and the controls. */

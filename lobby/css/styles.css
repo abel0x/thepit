@@ -84,12 +84,14 @@ body[data-theme="bordeaux"] {
   outline-offset: 3px;
 }
 
-html { height: 100%; }
+/* The lobby scrolls; its cloth-coloured backdrop follows the whole page. */
+html { min-height: 100%; }
 body {
   font-family: var(--font-ui);
   color: var(--cream);
   background:
-    radial-gradient(120% 120% at 50% -10%, var(--page-highlight) 0%, var(--page-mid) 45%, var(--page-edge) 100%) fixed;
+    radial-gradient(120% 120% at 50% -10%, var(--page-highlight) 0%, var(--page-mid) 45%, var(--page-edge) 100%);
+  background-color: var(--page-edge);
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;

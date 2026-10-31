@@ -143,10 +143,10 @@
   /* ---------------- Settings dialog ---------------- */
   var dialogReturn = null;
 
+  // What Tab reaches inside a dialog, in order; radio groups keep one stop.
   function focusables(modal) {
-    return Array.prototype.slice.call(modal.querySelectorAll(
-      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    )).filter(function (node) { return !node.closest("[hidden]"); });
+    return Array.prototype.slice.call(modal.querySelectorAll("a[href], button, input, [tabindex]"))
+      .filter(function (node) { return !node.disabled && node.tabIndex >= 0 && !node.closest("[hidden]"); });
   }
 
   function openSettings() {

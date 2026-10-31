@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v9";
+var CACHE_VERSION = "pit-v10";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -78,6 +78,16 @@ var ASSETS = [
   "./games/threecard/js/engine.js",
   "./games/threecard/js/store.js",
   "./games/threecard/js/game.js",
+
+  // Slot 5 · Slot machine
+  "./games/slot/",
+  "./games/slot/index.html",
+  "./games/slot/icon.svg",
+  "./games/slot/css/styles.css",
+  "./games/slot/js/strings.js",
+  "./games/slot/js/engine.js",
+  "./games/slot/js/store.js",
+  "./games/slot/js/game.js",
 
   // Table 37 · Roulette
   "./games/roulette/",

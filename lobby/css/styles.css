@@ -123,20 +123,20 @@ body {
 }
 .floor-intro p { color: rgba(244, 239, 226, .62); font-size: 14px; line-height: 1.5; }
 
-/* The tables in whole rows: one on a phone, two by two on a tablet or a
-   small laptop, and all four side by side on a wide screen. */
+/* The tables in rows: one on a phone, two on a tablet or a small laptop,
+   four on a wide screen. A last row that is not full stays centred. */
 .table-list {
+  --cols: 1;
+  --gap: clamp(14px, 2.4vw, 26px);
   list-style: none;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(14px, 2.4vw, 26px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap);
 }
-@media (min-width: 640px) {
-  .table-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (min-width: 1200px) {
-  .table-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
+.table-list > .table-card { flex: 0 0 calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); min-width: 0; }
+@media (min-width: 640px) { .table-list { --cols: 2; } }
+@media (min-width: 1200px) { .table-list { --cols: 4; } }
 
 /* Each table is one card: a miniature of its felt above its name and rules.
    The link inside the heading stretches over the whole card. */
@@ -199,6 +199,11 @@ body {
 .art-side.player { fill: #b9d0ff; }
 .art-side.banker { fill: #ffc0b8; }
 .art-side.dealer { fill: #f3dfa2; }
+
+/* Slot 5: a window of three reels */
+.art-reels { fill: #120b05; stroke: var(--gold); stroke-width: 3; }
+.art-reel { fill: #fbf8ef; }
+.art-seven { font-family: Georgia, "Times New Roman", serif; font-size: 40px; font-weight: 700; text-anchor: middle; fill: #c8202a; stroke: #e6c35a; stroke-width: 1.2; paint-order: stroke; }
 
 /* Table 37: the wheel */
 .art-bowl { fill: #4e2711; }

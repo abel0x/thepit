@@ -98,8 +98,9 @@ test("every table of the pit has a card that leads to its page", function () {
     assert.ok(link, id + " link");
     assert.equal(link[1], "games/" + id + "/index.html");
     assert.ok(fs.existsSync(path.join(root, link[1])), link[1]);
-    var number = Pit.TABLES[id].replace("Table ", "");
-    assert.match(card[0], new RegExp('<span class="table-number">' + number + "</span>"), id);
+    // "Table 21", "Slot 5": the card's lockup shows the word and the number.
+    var name = Pit.TABLES[id].split(" ");
+    assert.match(card[0], new RegExp('<span class="table-word">' + name[0].toUpperCase() + '</span><span class="table-number">' + name[1] + "</span>"), id);
     assert.match(card[0], /data-i18n="roundOpen"/, id + " can show an unfinished round");
   });
   assert.equal((html.match(/class="table-card" data-game=/g) || []).length, Object.keys(Pit.TABLES).length);

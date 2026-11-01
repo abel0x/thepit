@@ -22,10 +22,13 @@ test("the machine keeps its own data, the balance is the pit's", function () {
   Object.keys(Store.KEYS).forEach(function (name) { assert.match(Store.KEYS[name], /^pit\./, name); });
 });
 
-test("settings keep a line bet the machine offers", function () {
+test("settings keep a line bet and a symbol set the machine offers", function () {
   assert.deepEqual(Store.normalizeSettings(null), Store.DEFAULT_SETTINGS);
-  assert.deepEqual(Store.normalizeSettings({ animationSpeed: "fast", lineBet: 25 }), { animationSpeed: "fast", lineBet: 25 });
-  assert.deepEqual(Store.normalizeSettings({ animationSpeed: "warp", lineBet: 3 }), Store.DEFAULT_SETTINGS);
+  assert.deepEqual(Store.normalizeSettings({ animationSpeed: "fast", lineBet: 25, symbolSet: "fruit" }),
+    { animationSpeed: "fast", lineBet: 25, symbolSet: "fruit" });
+  assert.deepEqual(Store.normalizeSettings({ animationSpeed: "warp", lineBet: 3, symbolSet: "veg" }), Store.DEFAULT_SETTINGS);
+  assert.equal(Store.DEFAULT_SETTINGS.symbolSet, "classic", "the card letters stay the default");
+  assert.deepEqual(Store.SYMBOL_SETS, ["classic", "fruit"]);
   Engine.LINE_BETS.forEach(function (bet) { assert.equal(Store.normalizeSettings({ lineBet: bet }).lineBet, bet); });
 });
 

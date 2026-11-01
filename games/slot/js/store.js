@@ -35,7 +35,9 @@
   var ACCOUNT_KEYS = ["bankroll", "stats", "round"];
 
   var SPEEDS = ["fast", "normal", "cinematic"];
-  var DEFAULT_SETTINGS = { animationSpeed: "normal", lineBet: 5 };
+  // The faces the reels wear: the card letters, or fruits in their place.
+  var SYMBOL_SETS = ["classic", "fruit"];
+  var DEFAULT_SETTINGS = { animationSpeed: "normal", lineBet: 5, symbolSet: "classic" };
   var DEFAULT_STATS = { spins: 0, winningSpins: 0, features: 0, freeSpinsWon: 0, wagered: 0, returned: 0, biggestWin: 0 };
 
   function safeCount(value) {
@@ -47,7 +49,8 @@
     value = value && typeof value === "object" ? value : {};
     return {
       animationSpeed: SPEEDS.indexOf(value.animationSpeed) !== -1 ? value.animationSpeed : DEFAULT_SETTINGS.animationSpeed,
-      lineBet: Engine.isLineBet(value.lineBet) ? value.lineBet : DEFAULT_SETTINGS.lineBet
+      lineBet: Engine.isLineBet(value.lineBet) ? value.lineBet : DEFAULT_SETTINGS.lineBet,
+      symbolSet: SYMBOL_SETS.indexOf(value.symbolSet) !== -1 ? value.symbolSet : DEFAULT_SETTINGS.symbolSet
     };
   }
 
@@ -146,6 +149,7 @@
     GAME: GAME,
     KEYS: KEYS,
     SPEEDS: SPEEDS,
+    SYMBOL_SETS: SYMBOL_SETS,
     DEFAULT_SETTINGS: DEFAULT_SETTINGS,
     DEFAULT_STATS: DEFAULT_STATS,
     START_BANKROLL: Pit.START_BANKROLL,

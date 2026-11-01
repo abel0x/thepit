@@ -21,6 +21,10 @@
 
       symWild: "Wild", symStar: "Star", symSeven: "Seven", symDiamond: "Diamond", symBell: "Bell",
       symHorseshoe: "Horseshoe", symAce: "Ace", symKing: "King", symQueen: "Queen", symJack: "Jack",
+      symWatermelon: "Watermelon", symGrapes: "Grapes", symLemon: "Lemon", symCherry: "Cherry",
+      symbolSet: "Symbols",
+      symbolsClassic: "Cards",
+      symbolsFruit: "Fruits",
 
       placeBet: "Pick a chip for each line and spin",
       goodLuck: "Good luck",
@@ -89,6 +93,10 @@
 
       symWild: "Joker", symStar: "Yıldız", symSeven: "Yedi", symDiamond: "Elmas", symBell: "Çan",
       symHorseshoe: "Nal", symAce: "As", symKing: "Papaz", symQueen: "Kız", symJack: "Vale",
+      symWatermelon: "Karpuz", symGrapes: "Üzüm", symLemon: "Limon", symCherry: "Kiraz",
+      symbolSet: "Semboller",
+      symbolsClassic: "Kartlar",
+      symbolsFruit: "Meyveler",
 
       placeBet: "Her çizgi için bir jeton seçin ve çevirin",
       goodLuck: "Bol şans",

@@ -80,6 +80,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 ### Slot 5 · Slot machine
 
 - **Five reels, three rows, 20 lines**: an original machine with sevens, diamonds, bells, horseshoes and card ranks, every reel stopped with `crypto.getRandomValues`.
+- **Cards or fruits**: in the settings the card ranks can turn into watermelons, grapes, lemons and cherries; only the faces change, so the seven, the pays and the return stay the same.
 - **Wild and stars**: the wild stands in for every symbol but the star; stars pay anywhere and three or more bring ten free spins at triple pay, drawn with the paid spin.
 - **A return worked out exactly**: the reel strips and pays give 95.80% over the long run, confirmed by counting all 33,554,432 stops of the reels; free spins come about once in 140 paid spins.
 - **Chips for the bet**: a chip from $1 to $100 sets the bet on each of the 20 lines, and the total stands on the bet plate as the pit's chips.

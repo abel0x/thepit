@@ -29,6 +29,11 @@
     wild: "symWild", star: "symStar", seven: "symSeven", diamond: "symDiamond", bell: "symBell",
     horseshoe: "symHorseshoe", ace: "symAce", king: "symKing", queen: "symQueen", jack: "symJack"
   };
+  // The fruit set dresses the four card letters as fruits. Only the faces
+  // change: every symbol keeps its place on the strips and its pays, and the
+  // seven stays the top symbol of the reels.
+  var FRUITS = { ace: "watermelon", king: "grapes", queen: "lemon", jack: "cherry" };
+  var FRUIT_WORDS = { watermelon: "symWatermelon", grapes: "symGrapes", lemon: "symLemon", cherry: "symCherry" };
   // The colour each line is drawn in when it wins.
   var LINE_COLORS = ["#f4d77a", "#6fb7ff", "#ff7a70", "#7be0a4", "#d49cff"];
   var reducedMotion = global.matchMedia ? global.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
@@ -133,7 +138,7 @@
     if (!params) return params;
     var out = {};
     Object.keys(params).forEach(function (key) {
-      out[key] = key === "amount" ? money(params[key]) : key === "symbol" ? t(SYMBOL_WORDS[params[key]]) : params[key];
+      out[key] = key === "amount" ? money(params[key]) : key === "symbol" ? symbolName(params[key]) : params[key];
     });
     return out;
   }
@@ -192,6 +197,16 @@
     el.tableRtp.textContent = (Engine.returnToPlayer().total * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
   }
 
+  // The face a symbol shows in the chosen set, and its name.
+  function faceOf(symbol) {
+    return state.settings.symbolSet === "fruit" && FRUITS[symbol] ? FRUITS[symbol] : symbol;
+  }
+
+  function symbolName(symbol) {
+    var face = faceOf(symbol);
+    return t(face === symbol ? SYMBOL_WORDS[symbol] : FRUIT_WORDS[face]);
+  }
+
   function symbolCell(symbol) {
     var cell = document.createElement("span");
     cell.className = "cell sym-" + symbol;
@@ -201,7 +216,7 @@
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
     var use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    use.setAttribute("href", "#sym-" + symbol);
+    use.setAttribute("href", "#sym-" + faceOf(symbol));
     svg.appendChild(use);
     cell.appendChild(svg);
     return cell;
@@ -221,7 +236,7 @@
 
   function labelReels(grid) {
     var columns = grid.map(function (column, reel) {
-      return t("reelColumn", { reel: reel + 1, symbols: column.map(function (s) { return t(SYMBOL_WORDS[s]); }).join(", ") });
+      return t("reelColumn", { reel: reel + 1, symbols: column.map(symbolName).join(", ") });
     });
     el.reels.setAttribute("aria-label", t("reelsLabel", { symbols: columns.join("; ") }));
   }
@@ -645,6 +660,29 @@
     });
   }
 
+  // Dresses the reels, the pays table and the picker in the chosen set.
+  function applySymbolSet() {
+    var set = state.settings.symbolSet;
+    body.setAttribute("data-symbol-set", set);
+    document.querySelectorAll("[data-set-symbols]").forEach(function (button) {
+      var on = button.getAttribute("data-set-symbols") === set;
+      button.classList.toggle("active", on);
+      button.setAttribute("aria-checked", String(on));
+      button.tabIndex = on ? 0 : -1;
+    });
+    document.querySelectorAll("#paysTable tr[data-symbol]").forEach(function (row) {
+      var symbol = row.getAttribute("data-symbol");
+      row.querySelector("use").setAttribute("href", "#sym-" + faceOf(symbol));
+      row.querySelector("th span").textContent = symbolName(symbol);
+    });
+    el.strips.forEach(function (strip) {
+      strip.querySelectorAll(".cell use").forEach(function (use) {
+        use.setAttribute("href", "#sym-" + faceOf(use.closest(".cell").getAttribute("data-symbol")));
+      });
+    });
+    labelReels(Engine.windowAt(state.stops));
+  }
+
   function applyLanguageUI() {
     document.querySelectorAll("[data-lang], [data-set-lang]").forEach(function (button) {
       var on = (button.getAttribute("data-lang") || button.getAttribute("data-set-lang")) === I18n.get();
@@ -781,6 +819,17 @@
     });
     radioKeys(speedPicker, "[data-set-animation]", function (button) { button.click(); });
 
+    var symbolPicker = document.querySelector(".symbol-seg");
+    symbolPicker.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-set-symbols]");
+      if (!button || button.getAttribute("data-set-symbols") === state.settings.symbolSet) return;
+      state.settings.symbolSet = button.getAttribute("data-set-symbols");
+      saveSettings();
+      applySymbolSet();
+      renderWinList();
+    });
+    radioKeys(symbolPicker, "[data-set-symbols]", function (button) { button.click(); });
+
     var depositInput = $("depositAmount");
     $("btnDeposit").addEventListener("click", function () {
       deposit(depositInput.value);
@@ -835,7 +884,7 @@
     renderWinList();
     renderFeature();
     renderPays();
-    labelReels(Engine.windowAt(state.stops));
+    applySymbolSet();
     renderStats();
   }
 

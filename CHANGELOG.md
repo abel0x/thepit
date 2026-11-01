@@ -16,7 +16,7 @@ The first version of the pit: six tables, a slot machine and a video poker machi
 - Table 7, a craps table: Pass and Don't pass with odds, Come and Don't come, Place, the Field, the Hardways and the one-roll bets, the puck and the last rolls, under real table rules and with every house edge checked exactly.
 - Table 2, a Casino Hold'em table: Ante and Call against a dealer who qualifies with a pair of fours, the board turned flop, turn and river, the AA Bonus, and a hand left waiting for its decision brought back with the same cards.
 - Poker 11, a Jacks or Better video poker machine: one to five coins of a chip's value, hold and draw once, the 9/6 or 8/5 pay table returning 99.54% or 97.30% with the best play, an exact strategy hint, and a hand left waiting for its hold brought back with the same cards.
-- Slot 5, a five-reel slot machine with 20 lines, a wild, scattered stars and ten free spins at triple pay, returning exactly 95.80%, with the bet on each line set by the pit's chips.
+- Slot 5, a five-reel slot machine with 20 lines, a wild, scattered stars and ten free spins at triple pay, returning exactly 95.80%, with the bet on each line set by the pit's chips, and a fruit set that dresses the card ranks as watermelons, grapes, lemons and cherries without changing a single pay.
 - A lobby that lays its tables out in rows: one on a phone, two on a tablet, four on a wide screen, with a last row that is not full centred.
 - Two new cloths, Onyx and Amethyst, beside Emerald, Midnight and Bordeaux; at Table 21 Onyx deals from green backs and Amethyst from antique gold.
 - One language engine and one set of shared words, shared stylesheets, and shared cards, card sounds and chips for the lobby and every table.

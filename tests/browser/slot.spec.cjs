@@ -213,6 +213,48 @@ test("Turkish names the bet, the symbols and the wins", async () => {
   });
 });
 
+test("the fruit set dresses the letters as fruits and pays the same", async () => {
+  await scene({ spins: [{ stops: WIN }, { stops: WIN }], settings: { symbolSet: "fruit" } }, async page => {
+    await spinAndSettle(page);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 775, "fruit pays what the cards pay");
+    const lines = await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent));
+    assert.deepEqual(lines, ["Line 1: 4 × Seven, $750", "Line 18: 3 × Cherry, $25"]);
+    const faces = await page.$$eval(".reel .cell", cells => cells.map(c => [c.dataset.symbol, c.querySelector("use").getAttribute("href")]));
+    const fruit = { ace: "watermelon", king: "grapes", queen: "lemon", jack: "cherry" };
+    faces.forEach(([symbol, href]) => assert.equal(href, "#sym-" + (fruit[symbol] || symbol)));
+    assert.ok(faces.some(([symbol]) => symbol === "seven"), "the seven is still on the reels");
+    assert.match(await page.$eval(".reels", node => node.getAttribute("aria-label")), /Cherry/);
+    await page.click("#settingsBtn");
+    assert.equal(await page.$eval('#paysTable tr[data-symbol="ace"] th span', n => n.textContent), "Watermelon");
+    assert.equal(await page.$eval('#paysTable tr[data-symbol="seven"] use', n => n.getAttribute("href")), "#sym-seven");
+    await page.screenshot({ path: path.join(artifacts, "fruit-pays.png") });
+
+    // Back to cards: the reels, the list and the table follow at once, and stay.
+    await page.click('[data-set-symbols="classic"]');
+    assert.equal(await page.$eval('#paysTable tr[data-symbol="jack"] th span', n => n.textContent), "Jack");
+    assert.equal(await page.$$eval('.reel .cell[data-symbol="jack"] use', nodes => nodes.every(n => n.getAttribute("href") === "#sym-jack")), true);
+    assert.deepEqual(await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent)), ["Line 1: 4 × Seven, $750", "Line 18: 3 × Jack, $25"]);
+    assert.equal((await stored(page, "pit.slot.settings")).symbolSet, "classic");
+    await page.click('[data-set-symbols="fruit"]');
+    await page.reload({ waitUntil: "load" });
+    await page.waitForFunction(() => document.body.dataset.busy === "false");
+    assert.equal(await page.$eval("body", b => b.dataset.symbolSet), "fruit");
+    assert.equal(await page.$eval('[data-set-symbols="fruit"]', b => b.getAttribute("aria-checked")), "true");
+  });
+});
+
+test("Turkish names the fruits", async () => {
+  await scene({ spins: [{ stops: WIN }], lang: "tr", settings: { symbolSet: "fruit" } }, async page => {
+    await spinAndSettle(page);
+    const lines = await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent));
+    assert.deepEqual(lines, ["1. çizgi: 4 × Yedi, $750", "18. çizgi: 3 × Kiraz, $25"]);
+    assert.equal(await page.$eval('#paysTable tr[data-symbol="king"] th span', n => n.textContent), "Üzüm");
+    assert.equal(await text(page, '[data-set-symbols="fruit"]'), "Meyveler");
+    await page.setViewport({ width: 390, height: 844 });
+    await page.screenshot({ path: path.join(artifacts, "fruit-reels.png") });
+  });
+});
+
 test("a round left open at another table holds the spin back", async () => {
   await scene({ seed: { "pit.blackjack.round": { v: 1, resume: "player" } } }, async page => {
     await page.click("#btnSpin");

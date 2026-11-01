@@ -48,6 +48,18 @@
       <linearGradient id="gSilver" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#b9c2cb"/><stop offset="1" stop-color="#6a737c"/>
       </linearGradient>
+      <radialGradient id="gCherry" cx=".35" cy=".3" r=".75">
+        <stop offset="0" stop-color="#ff8a86"/><stop offset=".45" stop-color="#d3142c"/><stop offset="1" stop-color="#660513"/>
+      </radialGradient>
+      <linearGradient id="gLemon" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff8b5"/><stop offset=".5" stop-color="#f6d321"/><stop offset="1" stop-color="#b8890a"/>
+      </linearGradient>
+      <radialGradient id="gGrape" cx=".35" cy=".3" r=".75">
+        <stop offset="0" stop-color="#e2b8ff"/><stop offset=".5" stop-color="#8236c4"/><stop offset="1" stop-color="#3b0d68"/>
+      </radialGradient>
+      <linearGradient id="gMelon" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ff9a8f"/><stop offset="1" stop-color="#e3233a"/>
+      </linearGradient>
       <radialGradient id="gChip" cx=".4" cy=".35" r=".7">
         <stop offset="0" stop-color="#a3283a"/><stop offset="1" stop-color="#5a101b"/>
       </radialGradient>
@@ -81,6 +93,37 @@
     </symbol>
     <symbol id="sym-jack" viewBox="0 0 100 100">
       <text x="50" y="74" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="700" fill="#5ea6f0" stroke="#0e2f55" stroke-width="3" paint-order="stroke">J</text>
+    </symbol>
+    <symbol id="sym-watermelon" viewBox="0 0 100 100">
+      <path d="M8 30 H92 A42 42 0 0 1 8 30 Z" fill="#2f8f3a" stroke="#123f18" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M13 30 H87 A37 37 0 0 1 13 30 Z" fill="#e4f3c8"/>
+      <path d="M17 30 H83 A33 33 0 0 1 17 30 Z" fill="url(#gMelon)"/>
+      <g fill="#2a1410"><ellipse cx="32" cy="40" rx="2.6" ry="4"/><ellipse cx="50" cy="44" rx="2.6" ry="4"/><ellipse cx="68" cy="40" rx="2.6" ry="4"/>
+        <ellipse cx="40" cy="53" rx="2.6" ry="4"/><ellipse cx="60" cy="53" rx="2.6" ry="4"/><ellipse cx="50" cy="61" rx="2.6" ry="4"/></g>
+      <path d="M20 34 H80" stroke="rgba(255,255,255,.45)" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="sym-grapes" viewBox="0 0 100 100">
+      <path d="M50 26 C50 20 52 14 56 9" fill="none" stroke="#5b3a14" stroke-width="4" stroke-linecap="round"/>
+      <path d="M54 16 C62 6 80 8 86 18 C76 25 62 24 54 16 Z" fill="#5cae3a" stroke="#2c5a14" stroke-width="2.5" stroke-linejoin="round"/>
+      <g fill="url(#gGrape)" stroke="#250841" stroke-width="2.5">
+        <circle cx="26" cy="35" r="10"/><circle cx="42" cy="33" r="10"/><circle cx="58" cy="33" r="10"/><circle cx="74" cy="35" r="10"/>
+        <circle cx="34" cy="51" r="10"/><circle cx="50" cy="50" r="10"/><circle cx="66" cy="51" r="10"/>
+        <circle cx="42" cy="67" r="10"/><circle cx="58" cy="67" r="10"/>
+        <circle cx="50" cy="82" r="10"/>
+      </g>
+    </symbol>
+    <symbol id="sym-lemon" viewBox="0 0 100 100">
+      <path d="M10 52 C13 46 18 42 22 38 C34 22 66 22 78 38 C82 42 87 46 90 52 C87 58 82 62 78 66 C66 82 34 82 22 66 C18 62 13 58 10 52 Z" fill="url(#gLemon)" stroke="#7a5a02" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M30 38 C38 32 50 31 60 33" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="4" stroke-linecap="round"/>
+      <path d="M50 26 C54 18 64 14 72 16 C68 24 58 28 50 26 Z" fill="#5cae3a" stroke="#2c5a14" stroke-width="2.5" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="sym-cherry" viewBox="0 0 100 100">
+      <path d="M33 54 C37 38 46 26 58 15 M66 58 C63 42 60 28 58 15" fill="none" stroke="#3f6b1f" stroke-width="4" stroke-linecap="round"/>
+      <path d="M58 15 C66 6 82 9 88 19 C78 25 66 23 58 15 Z" fill="#5cae3a" stroke="#2c5a14" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="32" cy="69" r="17" fill="url(#gCherry)" stroke="#4d0710" stroke-width="3"/>
+      <circle cx="67" cy="72" r="17" fill="url(#gCherry)" stroke="#4d0710" stroke-width="3"/>
+      <ellipse cx="26" cy="63" rx="5" ry="3.4" fill="rgba(255,255,255,.6)" transform="rotate(-30 26 63)"/>
+      <ellipse cx="61" cy="66" rx="5" ry="3.4" fill="rgba(255,255,255,.6)" transform="rotate(-30 61 66)"/>
     </symbol>
     <symbol id="sym-wild" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="42" fill="url(#gChip)" stroke="#2c080d" stroke-width="2"/>
@@ -273,6 +316,14 @@
               <span class="theme-preview" aria-hidden="true"></span>
               <span class="theme-name" data-i18n="themeAmethyst">Amethyst</span>
             </button>
+          </div>
+        </div>
+
+        <div class="setting-row symbol-setting">
+          <span class="setting-label" id="symbolSetLabel" data-i18n="symbolSet">Symbols</span>
+          <div class="seg symbol-seg" role="radiogroup" aria-labelledby="symbolSetLabel">
+            <button class="seg-btn active" data-set-symbols="classic" type="button" role="radio" aria-checked="true" data-i18n="symbolsClassic">Cards</button>
+            <button class="seg-btn" data-set-symbols="fruit" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="symbolsFruit">Fruits</button>
           </div>
         </div>
 

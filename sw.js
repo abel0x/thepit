@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v16";
+var CACHE_VERSION = "pit-v17";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -118,6 +118,16 @@ var ASSETS = [
   "./games/videopoker/js/engine.js",
   "./games/videopoker/js/store.js",
   "./games/videopoker/js/game.js",
+
+  // Table 18 · Sic Bo
+  "./games/sicbo/",
+  "./games/sicbo/index.html",
+  "./games/sicbo/icon.svg",
+  "./games/sicbo/css/styles.css",
+  "./games/sicbo/js/strings.js",
+  "./games/sicbo/js/engine.js",
+  "./games/sicbo/js/store.js",
+  "./games/sicbo/js/game.js",
 
   // Table 37 · Roulette
   "./games/roulette/",

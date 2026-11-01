@@ -1,0 +1,553 @@
+/* ThePit · Copyright (C) 2026 abel0x
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
+
+/* =========================================================
+   Table 18 — offline Sic Bo
+   Three dice, the last rolls and the layout: Small and Big, Odd and
+   Even, the triples and doubles, the totals, the two-dice
+   combinations and the single numbers. The frame and the chips come
+   from shared/css.
+   ========================================================= */
+:root {
+  --print: rgba(240, 222, 168, .78);
+  --print-soft: rgba(240, 222, 168, .3);
+  --rail: clamp(8px, 1.3vh, 13px);
+  --die: #c8202a;
+  --pip: #fff8ea;
+}
+
+/* ----------------------- Top bar on phones ----------------------- */
+/* The language stays one tap away in the settings, and the way back to the
+   lobby stands in for the table's mark. */
+@media (max-width: 600px) {
+  .topbar { gap: 8px; padding-inline: 10px; }
+  .subtitle,
+  .topbar .lang-switch,
+  .brand-mark { display: none; }
+  .topbar-actions { gap: 6px; }
+  .brand { gap: 8px; }
+  .brand-text h1 { font-size: 14px; letter-spacing: 2.2px; gap: 6px; }
+  .brand-number { min-width: 28px; padding: 2px 5px; }
+  .balance-pill { min-width: 0; padding: 4px 10px; }
+  .balance-value { font-size: 17px; }
+  .icon-btn { width: 36px; height: 36px; }
+  .toast { top: 64px; }
+}
+
+/* ----------------------- The table ----------------------- */
+.table-wrap {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.3vh, 14px);
+  padding: clamp(6px, 1.4vh, 20px) clamp(8px, 2vw, 26px);
+  padding-bottom: max(clamp(6px, 1.4vh, 16px), env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.table {
+  position: relative;
+  width: min(1180px, 100%);
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* One felt with a walnut rail, as at the other tables of the pit. */
+.table-felt {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(6px, 1.4vh, 16px);
+  padding: clamp(10px, 1.8vh, 22px) clamp(10px, 2vw, 30px);
+  border: var(--rail) solid transparent;
+  border-radius: clamp(22px, 4vh, 44px);
+  background:
+    radial-gradient(ellipse 70% 60% at 30% -10%, rgba(255, 247, 218, .1), transparent 66%) padding-box,
+    repeating-linear-gradient(4deg, rgba(255,255,255,.016) 0 1px, transparent 1px 4px) padding-box,
+    repeating-linear-gradient(94deg, rgba(0,0,0,.024) 0 1px, transparent 1px 5px) padding-box,
+    radial-gradient(130% 110% at 50% 10%, var(--felt-highlight) 0%, var(--felt-1) 26%, var(--felt-2) 64%, var(--felt-edge) 100%) padding-box,
+    linear-gradient(142deg, rgba(255,232,164,.3), transparent 24%, rgba(0,0,0,.42) 72%, rgba(255,214,117,.2)) border-box,
+    repeating-linear-gradient(102deg, #25160b 0 10px, #52371a 10px 18px, #30200f 18px 29px, #694821 29px 34px) border-box;
+  box-shadow:
+    inset 0 0 0 1px rgba(241, 211, 130, .18),
+    inset 0 0 110px rgba(0, 0, 0, .55),
+    inset 0 9px 34px rgba(255, 255, 255, .05),
+    0 0 0 1px #0b0704,
+    0 0 0 4px rgba(105, 72, 31, .58),
+    0 30px 60px rgba(0, 0, 0, .6);
+}
+.table-rim {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 2px solid rgba(225, 190, 99, .5);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 0 1px 0 rgba(255,244,205,.16);
+  z-index: 0;
+}
+
+/* ----------------------- Dice, banner and plaque ----------------------- */
+.felt-head {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The dice and the last rolls beside them. */
+.dice-zone {
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.dice { display: flex; gap: 7px; }
+.die, .mini-die {
+  --size: clamp(30px, 4.6vh, 42px);
+  --p: calc(var(--size) * .09);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 22%;
+  background-color: var(--die);
+  background-repeat: no-repeat;
+  box-shadow: inset 0 -3px 6px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.25), 0 4px 8px rgba(0,0,0,.45);
+}
+.mini-die { --size: clamp(11px, 1.8vh, 16px); border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+/* The single numbers show one large ivory die with dark pips. */
+.die-face {
+  --size: clamp(22px, 4vh, 38px);
+  --p: calc(var(--size) * .09);
+  --pip: #1d1d1f;
+  display: block;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 20%;
+  background-color: #fff8ea;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,.25), 0 3px 6px rgba(0,0,0,.4);
+}
+/* The pips of each face, as dots of the die's ivory. */
+[data-face="1"] { background-image: radial-gradient(circle at 50% 50%, var(--pip) var(--p), transparent calc(var(--p) + .6px)); }
+[data-face="2"] { background-image: radial-gradient(circle at 27% 27%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 73%, var(--pip) var(--p), transparent calc(var(--p) + .6px)); }
+[data-face="3"] { background-image: radial-gradient(circle at 27% 27%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 50% 50%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 73%, var(--pip) var(--p), transparent calc(var(--p) + .6px)); }
+[data-face="4"] { background-image: radial-gradient(circle at 27% 27%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 27%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 27% 73%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 73%, var(--pip) var(--p), transparent calc(var(--p) + .6px)); }
+[data-face="5"] { background-image: radial-gradient(circle at 27% 27%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 27%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 50% 50%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 27% 73%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 73%, var(--pip) var(--p), transparent calc(var(--p) + .6px)); }
+[data-face="6"] { background-image: radial-gradient(circle at 27% 25%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 25%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 27% 50%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 50%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 27% 75%, var(--pip) var(--p), transparent calc(var(--p) + .6px)), radial-gradient(circle at 73% 75%, var(--pip) var(--p), transparent calc(var(--p) + .6px)); }
+.dice.rolling .die { animation: tumble .18s linear infinite; }
+.dice.rolling .die:nth-child(2) { animation-direction: reverse; }
+.dice.rolling .die:nth-child(3) { animation-duration: .22s; }
+@keyframes tumble {
+  25% { transform: translate(2px, -4px) rotate(90deg); }
+  50% { transform: translate(-2px, -1px) rotate(180deg); }
+  75% { transform: translate(1px, -3px) rotate(270deg); }
+  100% { transform: rotate(360deg); }
+}
+.history {
+  list-style: none;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+.history li {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cream);
+  background: rgba(0, 0, 0, .35);
+  border: 1px solid rgba(217, 182, 95, .3);
+  font-variant-numeric: tabular-nums;
+}
+.history li.small { background: #1d4f7a; border-color: #7db7ea; }
+.history li.big { background: #8e1a22; border-color: #e8737a; }
+.history li.triple { background: #8a6a12; border-color: var(--gold-bright); color: #fff4cf; }
+.history li.latest { transform: scale(1.15); border-color: var(--gold-bright); }
+.history li:nth-child(n + 9) { opacity: .55; }
+
+.banner {
+  min-width: 0;
+  max-width: min(460px, 52vw);
+  pointer-events: none;
+  padding: 7px 18px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .42);
+  border: 1px solid rgba(217, 182, 95, .35);
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: clamp(10.5px, 1.6vh, 14px);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--gold-bright);
+  line-height: 1.3;
+  text-wrap: balance;
+  transition: background .25s, border-color .25s, color .25s;
+}
+.banner small {
+  display: block;
+  margin-top: 1px;
+  font-size: .8em;
+  letter-spacing: .9px;
+  opacity: .78;
+}
+.banner small:empty { display: none; }
+.banner.flash-lose { background: rgba(0, 0, 0, .5); border-color: rgba(226, 104, 95, .55); color: #ffd9d6; }
+
+.table-specs {
+  justify-self: end;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid rgba(205,169,82,.46);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(18,24,20,.78), rgba(5,10,8,.78));
+  box-shadow: 0 5px 12px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.05);
+}
+.table-spec { min-width: 50px; padding: 5px 10px 6px; text-align: left; }
+.table-spec small {
+  display: block;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: rgba(232, 202, 125, .62);
+}
+.table-spec strong {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--cream);
+}
+
+/* ----------------------- The layout ----------------------- */
+/* Four bands, as on a Sic Bo table: Small and Big with the doubles and
+   triples between them, the totals, the combinations and the single
+   numbers. */
+.layout {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1.9fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(4px, .7vh, 8px);
+}
+.row { min-height: 0; display: grid; gap: clamp(3px, .5vw, 6px); }
+.row-top {
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.5fr) repeat(3, minmax(0, .75fr)) minmax(0, 2.8fr) repeat(3, minmax(0, .75fr)) minmax(0, 1.5fr) minmax(0, .9fr);
+}
+.row-totals { grid-template-columns: repeat(14, minmax(0, 1fr)); }
+.row-combos { grid-template-columns: repeat(15, minmax(0, 1fr)); }
+.row-singles { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+.spot {
+  --spot-ink: var(--print);
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1px, .4vh, 4px);
+  padding: 3px 2px;
+  border: 1.5px solid var(--print);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, .1);
+  color: var(--spot-ink);
+  font-family: var(--font-ui);
+  cursor: pointer;
+  overflow: visible;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.spot:not(:disabled):hover { background: rgba(255, 238, 190, .1); }
+.spot:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+.spot:disabled { cursor: default; }
+.spot-name {
+  font-size: clamp(9px, 1.5vh, 13px);
+  font-weight: 700;
+  letter-spacing: clamp(.5px, .15vw, 2px);
+  text-transform: uppercase;
+  line-height: 1.1;
+  text-align: center;
+}
+.spot-name.big-word { font-size: clamp(13px, 2.6vh, 24px); letter-spacing: clamp(2px, .4vw, 5px); color: var(--cream); }
+.spot-range { font-size: clamp(9px, 1.4vh, 12px); font-weight: 700; letter-spacing: 1px; }
+.spot-note { font-size: clamp(6.5px, .95vh, 8.5px); letter-spacing: .6px; opacity: .7; text-align: center; }
+.spot-pay {
+  font-size: clamp(7px, 1.1vh, 10px);
+  font-weight: 600;
+  letter-spacing: .5px;
+  opacity: .82;
+  text-align: center;
+  white-space: nowrap;
+}
+.spot-dice { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; }
+.total-number { font-family: var(--font-display); font-size: clamp(14px, 2.6vh, 24px); font-weight: 800; color: var(--cream); line-height: 1; }
+
+/* A bet's chips stand over the middle of its spot. */
+.spot-stack {
+  position: absolute;
+  left: 50%;
+  top: 72%;
+  width: 0;
+  height: 0;
+}
+.spot-stack .bet-chip { --chip: clamp(20px, 3vh, 28px); left: 0; top: 0; }
+.spot-stack .bet-chip.payout { left: calc(var(--chip) * .9); }
+.spot-small .spot-stack, .spot-big .spot-stack { top: 88%; }
+.spot-small .spot-stack .bet-chip, .spot-big .spot-stack .bet-chip,
+.spot-single .spot-stack .bet-chip { --chip: clamp(24px, 3.6vh, 32px); }
+
+.spot-small, .spot-big { border-width: 2px; }
+.spot-small { --spot-ink: #b9d8ff; }
+.spot-big { --spot-ink: #ffc0b8; }
+.spot-double .spot-dice { flex-direction: column; }
+.spot-anytriple { --spot-ink: var(--gold-bright); grid-column: 1 / -1; flex-direction: row; gap: 8px; }
+.spot-anytriple .spot-dice { display: none; }
+.spot-single { flex-direction: row; gap: clamp(6px, 1vw, 14px); }
+.spot-single .spot-stack { top: 80%; left: 78%; }
+
+/* The six triples around Any triple. */
+.triples {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  padding: 4px;
+  border: 1.5px solid var(--print);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .16);
+}
+.spot-triple { border-width: 1px; border-radius: 7px; gap: 1px; }
+.spot-triple .spot-dice { flex-wrap: nowrap; }
+
+/* The dice light every spot they win. */
+.spot.lit { border-color: var(--gold-bright); background: rgba(244, 226, 166, .14); box-shadow: 0 0 0 1px rgba(244, 226, 166, .5), 0 0 18px rgba(244, 226, 166, .28); }
+
+/* ----------------------- Controls ----------------------- */
+.controls {
+  position: relative;
+  z-index: 3;
+  width: min(1180px, 100%);
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 1.2vh, 14px) clamp(8px, 1.6vw, 22px);
+}
+.chips-tray {
+  flex: 0 0 auto;
+  display: flex;
+  gap: clamp(6px, 1.1vw, 14px);
+  justify-content: center;
+  padding: clamp(8px, 1.3vh, 13px) clamp(10px, 1.6vw, 18px);
+  padding-top: clamp(12px, 1.8vh, 18px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent 36%),
+    linear-gradient(180deg, var(--tray-top), var(--tray-bottom));
+  border: 1px solid rgba(217,182,95,.25);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), inset 0 -8px 16px rgba(0,0,0,.24), 0 12px 25px rgba(0,0,0,.24);
+}
+.action-row {
+  flex: 1 0 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(8px, 1.4vw, 18px);
+}
+.bet-actions { display: flex; gap: clamp(5px, .7vw, 9px); }
+.bet-total {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  min-width: 92px;
+  text-align: right;
+}
+.bet-total small {
+  color: rgba(244, 239, 226, .55);
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bet-total strong {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 2.3vh, 22px);
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bet-total .last-win { letter-spacing: .6px; text-transform: none; font-size: 10px; }
+.bet-total .last-win b { color: rgba(214, 255, 233, .85); font-variant-numeric: tabular-nums; }
+
+/* Roll: a brass plaque beside the tray. */
+.deal-btn {
+  flex: 0 0 auto;
+  min-width: clamp(96px, 13vh, 132px);
+  height: clamp(48px, 7.4vh, 64px);
+  padding: 0 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(80, 56, 12, .9);
+  background:
+    radial-gradient(120% 90% at 40% 20%, rgba(255,255,255,.45), transparent 45%),
+    linear-gradient(180deg, #f3d985, #c9a24b 62%, #8c6a1c);
+  box-shadow:
+    0 0 0 3px rgba(20, 13, 4, .55),
+    0 0 0 4px rgba(240, 215, 143, .45),
+    0 10px 22px rgba(0,0,0,.45),
+    inset 0 -5px 8px rgba(110, 76, 14, .5);
+  color: #2a1d05;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2.2vh, 19px);
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .14s ease, filter .2s ease;
+}
+.deal-btn:not(:disabled):hover { transform: translateY(-2px); filter: brightness(1.05); }
+.deal-btn:not(:disabled):active { transform: translateY(1px) scale(.98); }
+.deal-btn:disabled { cursor: not-allowed; filter: grayscale(.55) brightness(.62); }
+.deal-btn.ready { animation: dealReady 2.4s ease-in-out infinite; }
+@keyframes dealReady {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(20,13,4,.55), 0 0 0 4px rgba(240,215,143,.45), 0 10px 22px rgba(0,0,0,.45), inset 0 -5px 8px rgba(110,76,14,.5); }
+  50% { box-shadow: 0 0 0 3px rgba(20,13,4,.55), 0 0 0 4px rgba(244,226,166,.9), 0 0 24px rgba(244,226,166,.4), inset 0 -5px 8px rgba(110,76,14,.5); }
+}
+
+
+/* ----------------------- Dialogs ----------------------- */
+/* A miniature of this table on each cloth: two of its dice. */
+.theme-preview::before,
+.theme-preview::after {
+  content: "";
+  position: absolute;
+  top: 30%;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #c8202a radial-gradient(circle, #fff8ea 2px, transparent 2.5px);
+  box-shadow: 0 3px 6px rgba(0,0,0,.45);
+}
+.theme-preview::before { left: 30%; transform: rotate(-12deg); }
+.theme-preview::after { right: 30%; transform: rotate(14deg); }
+.theme-option[data-set-theme="midnight"] { --preview-felt-top: #2b6288; --preview-felt-bottom: #0b2b47; }
+.theme-option[data-set-theme="bordeaux"] { --preview-felt-top: #8e3a49; --preview-felt-bottom: #3e111c; }
+.theme-option[data-set-theme="onyx"] { --preview-felt-top: #5d6268; --preview-felt-bottom: #2a2d31; }
+.theme-option[data-set-theme="amethyst"] { --preview-felt-top: #7a54a8; --preview-felt-bottom: #36215a; }
+.rules-title {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--gold-bright);
+  letter-spacing: .6px;
+}
+.payout-table .settings-hint + .settings-hint { margin-top: 0; }
+
+
+
+/* ----------------------- Phones and short screens ----------------------- */
+@media (max-width: 760px) {
+  .felt-head { grid-template-columns: minmax(0, 1fr) auto; }
+  .table-specs { display: none; }
+  .banner { justify-self: end; max-width: 100%; }
+  .history li:nth-child(n + 5) { display: none; }
+  /* The layout may run longer than the felt; it scrolls inside it. */
+  .layout {
+    overflow-y: auto;
+    grid-template-rows: none;
+    /* Bands as tall as their bets need; the layout scrolls rather than squeezes them. */
+    grid-auto-rows: max-content;
+    padding-top: 4px;
+  }
+  .triples { grid-template-rows: none; grid-auto-rows: max-content; }
+  .row-top {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "small small small big   big   big"
+      "odd   odd   odd   even  even  even"
+      "d1    d2    d3    d4    d5    d6"
+      "tri   tri   tri   tri   tri   tri";
+  }
+  .spot-small { grid-area: small; }
+  .spot-big { grid-area: big; }
+  .spot-odd { grid-area: odd; }
+  .spot-evens { grid-area: even; }
+  .spot[data-bet="double1"] { grid-area: d1; }
+  .spot[data-bet="double2"] { grid-area: d2; }
+  .spot[data-bet="double3"] { grid-area: d3; }
+  .spot[data-bet="double4"] { grid-area: d4; }
+  .spot[data-bet="double5"] { grid-area: d5; }
+  .spot[data-bet="double6"] { grid-area: d6; }
+  .triples { grid-area: tri; }
+  .spot-double .spot-dice { flex-direction: row; }
+  .row-top .spot { min-height: 52px; }
+  .spot-small, .spot-big { min-height: 78px; padding-bottom: 22px; }
+  .triples .spot { min-height: 44px; }
+  .row-totals { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .row-combos { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .row-singles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .row-totals .spot, .row-combos .spot, .row-singles .spot { min-height: 52px; }
+  .controls { justify-content: center; }
+  .chips-tray { width: 100%; gap: 4px; padding-inline: 6px; }
+  .chips-tray .chip { --size: clamp(36px, 12vw, 50px); }
+  .action-row { width: 100%; justify-content: space-between; }
+  .btn-tool { min-width: 0; padding-inline: 7px; }
+}
+
+@media (max-width: 420px) {
+  .bet-total { min-width: 0; }
+  .bet-total .last-win { display: none; }
+  .bet-actions { gap: 4px; }
+  .btn-tool span { display: none; }
+  .deal-btn { min-width: 84px; padding: 0 14px; }
+  .dice .die { --size: 26px; }
+  .dice { gap: 5px; }
+}
+
+/* Phones on their side and short windows: the layout scrolls inside the felt. */
+@media (max-height: 560px) {
+  .topbar { padding-block: 4px; }
+  .table-wrap { padding-block: 4px; gap: 4px; }
+  .table-felt { padding: 6px 12px; gap: 4px; border-radius: 20px; }
+  .layout { overflow-y: auto; grid-template-rows: none; grid-auto-rows: max-content; }
+  .row-top .spot { min-height: 40px; }
+  .row-top .triples { grid-template-rows: repeat(3, minmax(40px, auto)); }
+  .row-totals .spot, .row-combos .spot, .row-singles .spot { min-height: 48px; }
+  .banner { padding: 3px 12px; font-size: 10px; }
+  .banner small { display: inline; margin-left: 6px; }
+  .controls { flex-wrap: nowrap; gap: 8px; }
+  .chips-tray { width: auto; padding: 6px 8px; }
+  .chips-tray .chip { --size: 34px; }
+  .action-row { width: auto; }
+  .deal-btn { height: 42px; min-width: 76px; }
+  .bet-total .last-win { display: none; }
+}
+
+/* No transitions at all for reduced motion: each step appears in place. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

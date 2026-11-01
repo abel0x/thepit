@@ -1,0 +1,182 @@
+/* ThePit · Copyright (C) 2026 abel0x
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
+/* =========================================================
+   Table 18 — the Sic Bo table's own words, in English and Turkish
+   The words every page shares are in shared/js/i18n.js.
+   ========================================================= */
+(function (I18n) {
+  "use strict";
+
+  I18n.define({
+    en: {
+      appTitle: "Table 18 · ThePit",
+      appDescription: "A free, play-money Sic Bo simulation that works completely offline.",
+      brandName: "Table 18",
+      subtitle: "Sic Bo",
+      sicboTable: "Sic Bo table",
+      bettingAreas: "Betting areas",
+      diceLabel: "Dice: {first}, {second} and {third}",
+      diceWaiting: "Dice waiting for the roll",
+      historyLabel: "Last rolls",
+      historySmall: "S",
+      historyBig: "B",
+      historyTriple: "T",
+
+      smallName: "Small",
+      bigName: "Big",
+      oddName: "Odd",
+      evenName: "Even",
+      totalName: "Total {number}",
+      tripleName: "Triple {number}",
+      anyTripleName: "Any triple",
+      doubleName: "Double {number}",
+      comboName: "Combination {first} and {second}",
+      singleName: "Number {number}",
+      smallRange: "4 TO 10",
+      bigRange: "11 TO 17",
+      loseOnTriple: "LOSES ON ANY TRIPLE",
+      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+
+      payTo: "{n} TO 1",
+      paySingle: "1, 2 OR 3 TO 1",
+
+      placeBets: "Place your bets",
+      diceRolling: "The dice are shaking",
+      rollCall: "{total}, {size}",
+      rollTriple: "Triple {number}",
+      sizeSmall: "small",
+      sizeBig: "big",
+      winLine: "You win {amount}",
+      lostLine: "Lost {amount}",
+
+      chipsLabel: "Chip value",
+      undo: "Undo",
+      clear: "Clear",
+      rebet: "Rebet",
+      roll: "Roll",
+      onLayout: "On the layout",
+      lastWin: "Last win",
+
+      insufficientFunds: "Not enough balance for that chip",
+      tableLimit: "Table maximum for this bet: {amount}",
+      rebetUnavailable: "Not enough balance to repeat the last bets",
+      roundRestored: "Your unfinished roll was settled: {result}",
+      roundVoided: "An unfinished roll could not be restored. Its stake was returned.",
+      restake: [
+        "Your balance was topped up to {amount}.",
+        "Fresh play money on the table: {amount}."
+      ],
+
+      animationSpeed: "Dice speed",
+      diceVolume: "Dice",
+      tableVolume: "Table cues",
+
+      payoutsTitle: "Bets and payouts",
+      rulesLine: "Three dice decide every bet on the layout at once. Small wins on totals of 4 to 10 and Big on 11 to 17; Odd and Even win on the total. All four lose to any triple.",
+      rulesBets: "A total pays when the three dice add up to it. A triple pays when all three dice show its number, Any triple on any of the six. A double pays when at least two dice show its number, a combination when its two numbers both appear. A single number pays 1 to 1 for each die that shows it.",
+      rulesWhole: "Every bet is settled by the roll it was made for: winners are paid with their stake back and the layout clears for the next roll. Rebet puts the last bets down again.",
+      houseEdgeTitle: "House edges",
+      edgeLine: "Small, Big, Odd and Even 2.78% · Number 7.87% · Total 7 and 14 9.72% · Total 8, 10, 11 and 13 12.50% · Total 5 and 16 13.89% · Total 4 and 17 15.28% · Total 6 and 15 16.67% · Total 9 and 12 18.98% · Any triple 13.89% · Triple 16.20% · Combination 16.67% · Double 18.52%",
+
+      sessionStats: "Statistics",
+      statRolls: "Rolls",
+      winningRolls: "Winning rolls",
+      statTriples: "Triples",
+      totalWagered: "Wagered",
+      totalReturned: "Returned",
+      netResult: "Net result",
+      biggestWin: "Biggest win",
+      resetStats: "Reset statistics",
+      statsHint: "For entertainment: every roll is independent, so the last rolls never make a total more or less likely.",
+
+      disclaimerPlayMoney: "Table 18 is a Sic Bo simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.",
+      disclaimerOdds: "Every roll of the dice is drawn at random on your device. If gambling is causing problems for you or someone close to you, please seek help."
+    },
+
+    tr: {
+      appTitle: "Table 18 · ThePit",
+      appDescription: "Tamamen çevrimdışı çalışan, oyun parasıyla oynanan ücretsiz bir Sic Bo simülasyonu.",
+      brandName: "Table 18",
+      subtitle: "Sic Bo",
+      sicboTable: "Sic Bo masası",
+      bettingAreas: "Bahis alanları",
+      diceLabel: "Zarlar: {first}, {second} ve {third}",
+      diceWaiting: "Zarlar atışı bekliyor",
+      historyLabel: "Son atışlar",
+      historySmall: "K",
+      historyBig: "B",
+      historyTriple: "Ü",
+
+      smallName: "Küçük",
+      bigName: "Büyük",
+      oddName: "Tek",
+      evenName: "Çift",
+      totalName: "Toplam {number}",
+      tripleName: "Üçlü {number}",
+      anyTripleName: "Herhangi üçlü",
+      doubleName: "İkili {number}",
+      comboName: "{first} ve {second} kombinasyonu",
+      singleName: "Sayı {number}",
+      smallRange: "4 İLE 10",
+      bigRange: "11 İLE 17",
+      loseOnTriple: "HER ÜÇLÜDE KAYBEDER",
+      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+
+      payTo: "1'E {n}",
+      paySingle: "1'E 1, 2 YA DA 3",
+
+      placeBets: "Bahislerinizi yapın",
+      diceRolling: "Zarlar sallanıyor",
+      rollCall: "{total}, {size}",
+      rollTriple: "Üçlü {number}",
+      sizeSmall: "küçük",
+      sizeBig: "büyük",
+      winLine: "{amount} kazandınız",
+      lostLine: "{amount} kaybettiniz",
+
+      chipsLabel: "Jeton değeri",
+      undo: "Geri al",
+      clear: "Temizle",
+      rebet: "Tekrarla",
+      roll: "At",
+      onLayout: "Masada",
+      lastWin: "Son kazanç",
+
+      insufficientFunds: "Bu jeton için bakiyeniz yetersiz",
+      tableLimit: "Bu bahsin masa üst sınırı: {amount}",
+      rebetUnavailable: "Son bahisleri tekrarlamak için bakiyeniz yetersiz",
+      roundRestored: "Yarım kalan atışınız sonuçlandı: {result}",
+      roundVoided: "Yarım kalan bir atış geri yüklenemedi. Bahsi iade edildi.",
+      restake: [
+        "Bakiye {amount} olarak yenilendi.",
+        "Masaya yeni oyun parası kondu: {amount}."
+      ],
+
+      animationSpeed: "Zar hızı",
+      diceVolume: "Zarlar",
+      tableVolume: "Masa sesleri",
+
+      payoutsTitle: "Bahisler ve ödemeler",
+      rulesLine: "Üç zar masadaki bütün bahisleri tek atışta belirler. Küçük 4 ile 10 arası, Büyük 11 ile 17 arası toplamlarda kazanır; Tek ve Çift toplama göre kazanır. Dördü de her üçlüde kaybeder.",
+      rulesBets: "Toplam bahsi, üç zarın toplamı o sayı olursa öder. Üçlü, üç zar da onun sayısını gösterirse öder; Herhangi üçlü altısından herhangi birinde öder. İkili, en az iki zar onun sayısını gösterirse, kombinasyon iki sayısı da gelirse öder. Sayı bahsi, o sayıyı gösteren her zar için 1'e 1 öder.",
+      rulesWhole: "Her bahis yapıldığı atışla sonuçlanır: kazananlar bahisleriyle birlikte ödenir ve masa bir sonraki atış için boşalır. Tekrarla son bahisleri yeniden koyar.",
+      houseEdgeTitle: "Kasa avantajları",
+      edgeLine: "Küçük, Büyük, Tek ve Çift %2,78 · Sayı %7,87 · Toplam 7 ve 14 %9,72 · Toplam 8, 10, 11 ve 13 %12,50 · Toplam 5 ve 16 %13,89 · Toplam 4 ve 17 %15,28 · Toplam 6 ve 15 %16,67 · Toplam 9 ve 12 %18,98 · Herhangi üçlü %13,89 · Üçlü %16,20 · Kombinasyon %16,67 · İkili %18,52",
+
+      sessionStats: "İstatistikler",
+      statRolls: "Atışlar",
+      winningRolls: "Kazandıran atışlar",
+      statTriples: "Üçlüler",
+      totalWagered: "Yatırılan",
+      totalReturned: "Geri dönen",
+      netResult: "Net sonuç",
+      biggestWin: "En büyük kazanç",
+      resetStats: "İstatistikleri sıfırla",
+      statsHint: "Yalnızca eğlence için: her atış bağımsızdır, son atışlar bir toplamı daha olası ya da daha az olası yapmaz.",
+
+      disclaimerPlayMoney: "Table 18 yalnızca eğlence amaçlı bir Sic Bo simülasyonudur. Jetonlar ve bakiye nakit değeri olmayan oyun parasıdır: satın alınamaz, satılamaz, paraya ya da ödüle çevrilemez. Gerçek parayla kumar sunulmaz.",
+      disclaimerOdds: "Her zar atışı cihazınızda rastgele çekilir. Kumar sizin ya da bir yakınınız için sorun olmaya başladıysa lütfen yardım alın."
+    }
+  });
+})((typeof window !== "undefined" ? window : globalThis).I18n);

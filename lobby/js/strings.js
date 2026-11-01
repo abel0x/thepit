@@ -36,6 +36,8 @@
       holdemSummary: "Two cards against the dealer's, a board of five, call or fold after the flop, with the AA Bonus.",
       videopokerGame: "Video poker",
       videopokerSummary: "Jacks or Better: five cards, hold and draw once, 9/6 or 8/5 pays and an exact strategy hint. Returns up to 99.54%.",
+      sicboGame: "Sic Bo",
+      sicboSummary: "Three dice decide Small and Big, the totals, the triples, the doubles, the combinations and the single numbers, all in one roll.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -71,6 +73,8 @@
       holdemSummary: "Krupiyeye karşı iki kart, beş ortak kart, flop'tan sonra call ya da çekil; AA Bonus ile.",
       videopokerGame: "Video poker",
       videopokerSummary: "Jacks or Better: beş kart, tut ve bir kez çek; 9/6 ya da 8/5 ödemeler ve tam hesaplı strateji ipucu. Geri dönüş %99,54'e kadar.",
+      sicboGame: "Sic Bo",
+      sicboSummary: "Üç zar Küçük ve Büyük'ü, toplamları, üçlüleri, ikilileri, kombinasyonları ve tek sayıları tek atışta belirler.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

@@ -26,6 +26,6 @@ The first version of the pit: seven tables, a money wheel, a slot machine, a vid
 - One set of chips for the whole pit: the clay chips of Table 21 at every table, in the tray and stacked on the felt, and one colour per value everywhere, from the white $1 to the silver $100K; each table keeps its own tray.
 - One installable app with one offline cache for the lobby and every table, plus the zero-setup `file://` route.
 - Roulette's top bar no longer runs into the balance on the narrowest phones.
-- Table 9 says which Banker stakes are paid in full: twenties under the 5% commission, even amounts without it.
+- Table 9 keeps a commission box as at a real table: Banker wins are paid at even money and the 5% commission is collected to the cent, a whole dollar at a time, so every stake pays exactly 19 to 20 instead of rounding down (a $5 win paid $4 before, a 7.94% house edge); without commission, the half dollar of an odd stake on a six is owed to the player in the same box.
 - Play money only, with a disclaimer on every page and in the README.
 - Licensed under the GNU AGPL v3 or later.

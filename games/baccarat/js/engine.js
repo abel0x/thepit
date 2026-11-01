@@ -193,7 +193,9 @@
   }
 
   /* ---------------- Settlement ---------------- */
-  // Whole play-money dollars returned on one bet, stake included.
+  // Whole play-money dollars returned on one bet, stake included. A Banker
+  // win is paid at even money; what it owes or is owed in cents goes in the
+  // commission box (see boxCents).
   function returnFor(key, amount, coup, rules) {
     switch (key) {
       case "player":
@@ -202,7 +204,7 @@
         if (coup.winner === "tie") return amount;
         if (coup.winner !== "banker") return 0;
         if (rules === "noCommission") return coup.bankerTotal === 6 ? amount + Math.floor(amount / 2) : amount * 2;
-        return amount + Math.floor(amount * 19 / 20);
+        return amount * 2;
       case "tie":
         return coup.winner === "tie" ? amount * 9 : 0;
       case "playerPair":
@@ -236,16 +238,51 @@
     return Object.keys(bets).reduce(function (sum, key) { return sum + bets[key]; }, 0);
   }
 
-  function settle(bets, coup, rules) {
+  // The cents one bet leaves in the commission box, as at a real table where
+  // the 5% is not taken from the payout but owed beside it: a Banker win owes
+  // its commission under classic rules, and a Banker six without commission
+  // is owed the half dollar of an odd stake, as a negative amount.
+  function boxCents(key, amount, coup, rules) {
+    if (key !== "banker" || coup.winner !== "banker") return 0;
+    if (rules === "noCommission") return coup.bankerTotal === 6 && amount % 2 ? -50 : 0;
+    return amount * 5;
+  }
+
+  // What the box holds between coups: whole cents, less than a dollar either way.
+  function normalizeBox(value) {
+    value = Number(value);
+    return Number.isInteger(value) && value > -100 && value < 100 ? value : 0;
+  }
+
+  // Settles a coup against the commission box. `returned` is what the bets
+  // pay, stake included; every whole dollar the box then holds is taken from
+  // the payout (`collected`), or added to it when the box owes the player, and
+  // the cents left stay in the box for the next coup. `paid` is what reaches
+  // the balance, so over any run of coups the player pays exactly 5%.
+  function settle(bets, coup, rules, box) {
     bets = normalizeBets(bets);
+    var commission = 0;
     var lines = Object.keys(bets).map(function (key) {
       var amount = bets[key];
       var returned = returnFor(key, amount, coup, rules);
+      commission += boxCents(key, amount, coup, rules);
       return { key: key, amount: amount, returned: returned, result: returned > amount ? "win" : returned === amount ? "push" : "lose" };
     });
     var stake = totalStake(bets);
     var returned = lines.reduce(function (sum, line) { return sum + line.returned; }, 0);
-    return { lines: lines, stake: stake, returned: returned, net: returned - stake };
+    var held = normalizeBox(box) + commission;
+    var collected = held >= 0 ? Math.floor(held / 100) : -Math.floor(-held / 100);
+    var paid = returned - collected;
+    return {
+      lines: lines,
+      stake: stake,
+      returned: returned,
+      commission: commission,
+      collected: collected + 0,
+      box: held - collected * 100,
+      paid: paid,
+      net: paid - stake
+    };
   }
 
   /* ---------------- Scoreboards ---------------- */
@@ -339,6 +376,8 @@
     describe: describe,
     isLegalCoup: isLegalCoup,
     returnFor: returnFor,
+    boxCents: boxCents,
+    normalizeBox: normalizeBox,
     wholeAmount: wholeAmount,
     normalizeBets: normalizeBets,
     totalStake: totalStake,

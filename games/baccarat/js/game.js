@@ -68,6 +68,7 @@
     state.roads = snap.roads;
     state.shoe = snap.shoe;
     state.lastBets = snap.lastBets;
+    state.box = snap.box;
   }
 
   function saveSettings() {
@@ -87,6 +88,9 @@
     tableMin: $("tableMin"),
     tableMax: $("tableMax"),
     tableProfile: $("tableProfile"),
+    boxSpec: $("boxSpec"),
+    boxLabel: $("boxLabel"),
+    tableBox: $("tableBox"),
     bankerPay: $("bankerPay"),
     bankerPayRow: $("bankerPayRow"),
     bays: { player: document.querySelector(".bay-player"), banker: document.querySelector(".bay-banker") },
@@ -256,6 +260,16 @@
     el.totalBet.textContent = fmt(totalStake());
     el.lastWin.textContent = fmt(state.lastWin);
     body.setAttribute("data-wager", String(totalStake()));
+    renderBox();
+  }
+
+  // The commission box: the cents of commission owed, or the cents of a half
+  // dollar owed to the player, until they make a whole dollar.
+  function renderBox() {
+    var cents = state.box || 0;
+    el.boxSpec.hidden = !cents;
+    el.boxLabel.textContent = t(cents < 0 ? "boxCreditLabel" : "boxLabel");
+    el.tableBox.textContent = "$" + (Math.abs(cents) / 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function flashBalance() {
@@ -526,17 +540,19 @@
   // Credits the account, records the coup and closes the saved round.
   function commitSettlement(round, settlement) {
     var bankroll = Store.normalizeBankroll(account.read("bankroll", state.bankroll));
-    bankroll = Math.min(Store.MAX_BANKROLL, bankroll + settlement.returned);
+    bankroll = Math.min(Store.MAX_BANKROLL, bankroll + settlement.paid);
     var stats = Store.recordCoup(account.read("stats", state.stats), round.coup, settlement);
     var roads = Store.normalizeRoads(account.read("roads", [])).concat([Engine.result(round.coup)]).slice(-Store.ROADS_LIMIT);
     account.write("bankroll", bankroll);
     account.write("stats", stats);
     account.write("roads", roads);
+    account.write("box", settlement.box);
     account.remove("round");
     state.bankroll = bankroll;
     state.stats = stats;
     state.roads = roads;
-    state.lastWin = settlement.returned;
+    state.box = settlement.box;
+    state.lastWin = settlement.paid;
     renderStats();
   }
 
@@ -557,13 +573,13 @@
       renderBankroll();
       return { voided: true };
     }
-    var settlement = Engine.settle(round.bets, round.coup, round.rules);
+    var settlement = Engine.settle(round.bets, round.coup, round.rules, account.read("box", 0));
     commitSettlement(round, settlement);
     state.lastBets = round.bets;
     account.write("lastBets", round.bets);
     renderRoads();
     renderBankroll();
-    toast(t("roundRestored", { result: resultText(round.coup) }), settlement.returned ? "win" : "");
+    toast(t("roundRestored", { result: resultText(round.coup) }), settlement.paid ? "win" : "");
     return { settlement: settlement };
   }
 
@@ -641,7 +657,7 @@
     await showCoup(round.coup);
 
     var coup = round.coup;
-    var settlement = Engine.settle(round.bets, coup, round.rules);
+    var settlement = Engine.settle(round.bets, coup, round.rules, account.read("box", 0));
     commitSettlement(round, settlement);
     if (coup.winner !== "tie") el.bays[coup.winner].classList.add("winner");
     document.querySelectorAll(coup.winner === "tie" ? ".bay-cards .card" : ".bay-" + coup.winner + " .card").forEach(function (node) {
@@ -649,9 +665,9 @@
     });
     var line = resultBanner(coup);
     var net = settlement.net;
-    var sub = !settlement.returned ? { key: "noWin" }
-      : net > 0 ? { key: "winLine", params: { amount: money(settlement.returned) } }
-      : { key: "returnedLine", params: { amount: money(settlement.returned) } };
+    var sub = !settlement.paid ? { key: "noWin" }
+      : net > 0 ? { key: "winLine", params: { amount: money(settlement.paid) } }
+      : { key: "returnedLine", params: { amount: money(settlement.paid) } };
     setBanner(line.key, line.params, sub, net > 0 ? "win" : net < 0 ? "lose" : "");
     if (net > 0) Sound.win();
     else if (net < 0) Sound.lose();
@@ -974,6 +990,7 @@
     renderBets(null);
     renderRoads();
     renderShoe();
+    renderBox();
     renderStats();
   }
 

@@ -56,7 +56,14 @@ function checkSettlement(name, result, stake, maxTimes) {
   assert.equal(result.stake, stake, name + ": the stake is the sum of the bets");
   assert.ok(whole(result.returned), name + ": returned " + result.returned);
   assert.ok(result.returned <= result.stake * maxTimes, name + ": " + result.returned + " back on " + result.stake);
-  if (result.net !== undefined) assert.equal(result.net, result.returned - result.stake, name + ": net");
+  // Table 9 settles against its commission box: what reaches the balance is
+  // what the bets return less the whole dollars of commission collected.
+  var paid = result.paid !== undefined ? result.paid : result.returned;
+  if (result.paid !== undefined) {
+    assert.equal(result.paid, result.returned - result.collected, name + ": paid");
+    assert.ok(whole(result.paid), name + ": paid " + result.paid);
+  }
+  if (result.net !== undefined) assert.equal(result.net, paid - result.stake, name + ": net");
   if (result.lines) {
     result.lines.forEach(function (line) {
       assert.ok(whole(line.amount) && whole(line.returned), name + ": a line in whole dollars");
@@ -111,8 +118,10 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     count("roulette");
   }
 
-  // Table 9: real coups from a shuffled shoe, under both rules.
+  // Table 9: real coups from a shuffled shoe, under both rules, with the
+  // commission box carried from coup to coup and never above a dollar.
   var baccaratShoe = Baccarat.newShoe(random).cards;
+  var box = 0;
   for (round = 0; round < ROUNDS; round++) {
     if (Baccarat.needsNewShoe(baccaratShoe)) baccaratShoe = Baccarat.newShoe(random).cards;
     var coup = Baccarat.playCoup(function () { return baccaratShoe.shift(); });
@@ -120,7 +129,11 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     Baccarat.BETS.forEach(function (key) { if (random() < 0.5) bets[key] = chipStake(random, [5, 25, 100]); });
     if (!Object.keys(bets).length) bets.banker = 5;
     var rules = pick(random, Baccarat.RULES);
-    checkSettlement("Table 9", Baccarat.settle(bets, coup, rules), Baccarat.totalStake(bets), 12);
+    var coupSettled = Baccarat.settle(bets, coup, rules, box);
+    checkSettlement("Table 9", coupSettled, Baccarat.totalStake(bets), 12);
+    assert.equal(coupSettled.box + coupSettled.collected * 100, box + coupSettled.commission, "Table 9: no cent leaves the box unaccounted");
+    box = coupSettled.box;
+    assert.ok(box > -100 && box < 100);
     count("baccarat");
   }
 
@@ -265,10 +278,25 @@ test("whole-dollar rounding: which stakes are paid in full, and what the others 
   var bankerCoup = { winner: "banker", bankerTotal: 7 };
   var bankerSix = { winner: "banker", bankerTotal: 6 };
   for (var amount = 1; amount <= 200; amount++) {
-    // Table 9: Banker pays 19 for 20 in full in twenties, and a win on six
-    // without commission pays half in full on even amounts.
-    assert.equal(Baccarat.returnFor("banker", amount, bankerCoup, "classic") === amount + amount * 19 / 20, amount % 20 === 0, "banker " + amount);
-    assert.equal(Baccarat.returnFor("banker", amount, bankerSix, "noCommission") === amount * 1.5, amount % 2 === 0, "banker six " + amount);
+    // Table 9: with the commission box every stake is paid exactly. Twenty
+    // Banker wins put exactly the stake in commission through the box, and
+    // two wins on six without commission pay exactly three stakes.
+    var box = 0, paid = 0;
+    for (var win = 0; win < 20; win++) {
+      var settled = Baccarat.settle({ banker: amount }, bankerCoup, "classic", box);
+      paid += settled.paid;
+      box = settled.box;
+    }
+    assert.equal(paid, amount * 20 * 1.95, "banker " + amount);
+    assert.equal(box, 0);
+    paid = 0;
+    for (win = 0; win < 2; win++) {
+      settled = Baccarat.settle({ banker: amount }, bankerSix, "noCommission", box);
+      paid += settled.paid;
+      box = settled.box;
+    }
+    assert.equal(paid, amount * 2 * 1.5, "banker six " + amount);
+    assert.equal(box, 0);
     // Table 37: La Partage returns half in full on even amounts.
     assert.equal(Roulette.settle({ red: amount }, 0, { laPartage: true }).returned === amount / 2, amount % 2 === 0, "partage " + amount);
     // Table 21: a blackjack's 3 to 2 and a surrender's half in full on even amounts.
@@ -288,21 +316,19 @@ test("whole-dollar rounding: which stakes are paid in full, and what the others 
     assert.ok(Number.isInteger(Holdem.ANTE_PAYS[hand] || 1) && Number.isInteger(Holdem.AA_PAYS[hand] || 1));
   });
 
-  // What the rounding costs on the Banker under classic rules: the exact
-  // house edge for each stake, from the eight-deck odds.
+  // So the Banker's house edge is the published 1.06% at every stake: a win
+  // earns the stake less exactly 5%, through the box, whatever its size.
   function bankerEdge(stake) {
-    var win = Baccarat.returnFor("banker", stake, bankerCoup, "classic") - stake;
+    var win = Baccarat.returnFor("banker", stake, bankerCoup, "classic") - stake - Baccarat.boxCents("banker", stake, bankerCoup, "classic") / 100;
     return -(odds.banker * win - odds.player * stake) / stake;
   }
-  var edges = {};
-  [5, 10, 15, 20, 25, 40, 50, 100].forEach(function (stake) { edges[stake] = (bankerEdge(stake) * 100).toFixed(2); });
-  assert.deepEqual(edges, { 5: "7.94", 10: "3.35", 15: "1.82", 20: "1.06", 25: "2.43", 40: "1.06", 50: "1.52", 100: "1.06" });
+  [5, 10, 15, 20, 25, 40, 50, 100].forEach(function (stake) { assert.equal((bankerEdge(stake) * 100).toFixed(2), "1.06", "$" + stake); });
 });
 
-test("the rules texts tell the player which stakes are paid in full", function () {
+test("the rules texts tell the player how every fraction of a dollar is settled", function () {
   var baccarat = loadI18n("games/baccarat/js/strings.js").I18n._dict;
-  assert.match(baccarat.en.rulesHint, /Banker in twenties/);
-  assert.match(baccarat.tr.rulesHint, /20'nin katları/);
+  assert.match(baccarat.en.rulesHint, /commission box, to the cent/);
+  assert.match(baccarat.tr.rulesHint, /komisyon kutusuna/);
   var craps = loadI18n("games/craps/js/strings.js").I18n._dict;
   assert.match(craps.en.rulesWhole, /Place 6 and 8 in sixes and Place 5 and 9 in fives/);
   var roulette = loadI18n("games/roulette/js/strings.js").I18n._dict;

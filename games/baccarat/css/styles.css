@@ -577,6 +577,10 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
 @media (max-width: 760px) {
   .felt-head { grid-template-columns: auto 1fr; }
   .table-specs { display: none; }
+  /* The commission box stays in sight while it holds anything. */
+  .felt-head:has(.table-box-spec:not([hidden])) { grid-template-columns: auto 1fr auto; }
+  .table-specs:has(.table-box-spec:not([hidden])) { display: flex; }
+  .table-specs .table-spec:not(.table-box-spec) { display: none; }
   .banner { justify-self: center; max-width: 100%; }
   .table-felt { --w: clamp(30px, 9.4vw, 62px); }
   .spots {
@@ -638,6 +642,7 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .banner { padding: 3px 12px; font-size: 10px; }
   .banner small { display: inline; margin-left: 6px; }
   .table-specs { display: flex; }
+  .table-specs .table-spec:not(.table-box-spec) { display: block; }
   .bay-head { font-size: 11px; letter-spacing: 2px; }
   .roads { display: none; }
   .spots { grid-template-columns: .8fr 1.35fr 1fr 1.35fr .8fr; grid-template-areas: none; }

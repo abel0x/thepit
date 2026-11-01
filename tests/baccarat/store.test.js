@@ -21,6 +21,7 @@ test("the table keeps its own data, the balance is the pit's", function () {
   assert.equal(Store.KEYS.bankroll, "pit.bankroll");
   assert.equal(Store.KEYS.round, "pit.baccarat.round");
   assert.equal(Store.KEYS.shoe, "pit.baccarat.shoe");
+  assert.equal(Store.KEYS.box, "pit.baccarat.box", "the commission box is saved with the balance");
   Object.keys(Store.KEYS).forEach(function (name) { assert.match(Store.KEYS[name], /^pit\./, name); });
 });
 
@@ -117,4 +118,15 @@ test("the account moves the balance, the shoe and the coup together", async func
   tab.write("settings", { rules: "classic" });
   assert.equal(session.getItem("pit.session.baccarat.shoe"), "[\"KD\"]", "without Web Locks the shoe stays with the tab's balance");
   assert.equal(await tab.run(function () { return "ran"; }), "ran");
+});
+
+test("the commission box comes back as whole cents under a dollar, or empty", async function () {
+  var helpers = require("../helpers/storage.js");
+  var account = Store.createAccount({ local: helpers.memoryStorage(), session: helpers.memoryStorage(), locks: helpers.fakeLocks() });
+  var seen = [];
+  for (var value of [75, -50, 100, 2.5, "40", null]) {
+    await account.run(function () { account.write("box", value); });
+    seen.push(account.snapshot().box);
+  }
+  assert.deepEqual(seen, [75, -50, 0, 0, 40, 0], "a number written as text reads as that number, as bets do");
 });

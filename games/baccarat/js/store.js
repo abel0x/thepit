@@ -30,12 +30,14 @@
     roads: Pit.gameKey(GAME, "roads"),
     shoe: Pit.gameKey(GAME, "shoe"),
     lastBets: Pit.gameKey(GAME, "lastBets"),
+    // The cents of commission owed, or owed to the player, between coups.
+    box: Pit.gameKey(GAME, "box"),
     round: Pit.roundKey(GAME),
     sound: Pit.gameKey(GAME, "sound"),
     audio: Pit.gameKey(GAME, "audio")
   };
   // Everything that changes together with the balance.
-  var ACCOUNT_KEYS = ["bankroll", "stats", "roads", "shoe", "lastBets", "round"];
+  var ACCOUNT_KEYS = ["bankroll", "stats", "roads", "shoe", "lastBets", "box", "round"];
 
   var SPEEDS = ["fast", "normal", "cinematic"];
   var DEFAULT_SETTINGS = { rules: "classic", animationSpeed: "normal" };
@@ -167,7 +169,7 @@
     else next.ties += 1;
     if (coup.natural) next.naturals += 1;
     next.wagered = Math.min(Number.MAX_SAFE_INTEGER, next.wagered + settlement.stake);
-    next.returned = Math.min(Number.MAX_SAFE_INTEGER, next.returned + settlement.returned);
+    next.returned = Math.min(Number.MAX_SAFE_INTEGER, next.returned + settlement.paid);
     if (settlement.net > 0) {
       next.winningCoups += 1;
       next.biggestWin = Math.max(next.biggestWin, settlement.net);
@@ -199,6 +201,7 @@
         roads: normalizeRoads(read("roads", [])),
         shoe: normalizeShoe(read("shoe", null)),
         lastBets: Engine.normalizeBets(read("lastBets", {})),
+        box: Engine.normalizeBox(read("box", 0)),
         round: normalizeRound(round),
         roundPresent: round != null
       };

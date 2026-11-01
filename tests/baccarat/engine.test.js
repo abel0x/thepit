@@ -116,8 +116,9 @@ test("every bet settles in whole dollars, stake included", function () {
 
   var banker = coup(["2", "8", "3", "K"]);   // Banker natural 8 against Player 5
   assert.equal(banker.winner, "banker");
-  assert.equal(Engine.returnFor("banker", 25, banker, "classic"), 48, "19 to 20 on $25 is $23.75, paid as $23");
-  assert.equal(Engine.returnFor("banker", 100, banker, "classic"), 195);
+  assert.equal(Engine.returnFor("banker", 25, banker, "classic"), 50, "the Banker is paid even money, its commission owed beside it");
+  assert.equal(Engine.boxCents("banker", 25, banker, "classic"), 125, "5% of $25 is $1.25");
+  assert.equal(Engine.boxCents("player", 25, banker, "classic"), 0);
   assert.equal(Engine.returnFor("banker", 100, banker, "noCommission"), 200);
   assert.equal(Engine.returnFor("player", 100, banker, "classic"), 0);
 
@@ -126,6 +127,8 @@ test("every bet settles in whole dollars, stake included", function () {
   assert.equal(bankerSix.winner, "banker");
   assert.equal(Engine.returnFor("banker", 100, bankerSix, "noCommission"), 150, "a six pays one to two without commission");
   assert.equal(Engine.returnFor("banker", 25, bankerSix, "noCommission"), 37);
+  assert.equal(Engine.boxCents("banker", 25, bankerSix, "noCommission"), -50, "the half dollar of $12.50 is owed to the player");
+  assert.equal(Engine.boxCents("banker", 24, bankerSix, "noCommission"), 0);
 
   var pairs = coup(["4", "9", "4", "9"]);   // two naturals of eight, each a pair
   assert.equal(pairs.playerPair && pairs.bankerPair, true);
@@ -133,6 +136,48 @@ test("every bet settles in whole dollars, stake included", function () {
   assert.equal(Engine.returnFor("playerPair", 10, pairs, "classic"), 120);
   assert.equal(Engine.returnFor("bankerPair", 10, pairs, "classic"), 120);
   assert.throws(function () { Engine.returnFor("dragon", 10, pairs, "classic"); }, /Not a baccarat bet/);
+});
+
+test("the commission box takes exactly 5% of every Banker win, to the cent, over any run of coups", function () {
+  var banker = coup(["2", "8", "3", "K"]);
+  var bankerSix = coup(["2", "3", "3", "3", "K"]);
+  // Four $5 Banker wins: $10 back each time, and the fourth puts a whole
+  // dollar of commission in the box, which comes off that payout.
+  var box = 0, paid = [];
+  for (var i = 0; i < 4; i++) {
+    var won = Engine.settle({ banker: 5 }, banker, "classic", box);
+    paid.push(won.paid);
+    box = won.box;
+  }
+  assert.deepEqual(paid, [10, 10, 10, 9]);
+  assert.equal(box, 0);
+  assert.equal(paid.reduce(function (a, b) { return a + b; }) - 20, 19, "four wins of $5 earn 19 to 20 on $20");
+
+  var one = Engine.settle({ banker: 25, player: 10 }, banker, "classic", 90);
+  assert.deepEqual([one.returned, one.commission, one.collected, one.box, one.paid, one.net], [50, 125, 2, 15, 48, 13]);
+  // Without commission an odd stake on a six is owed its half dollar.
+  var six = Engine.settle({ banker: 25 }, bankerSix, "noCommission", -60);
+  assert.deepEqual([six.returned, six.commission, six.collected, six.box, six.paid], [37, -50, -1, -10, 38]);
+  assert.equal(Object.is(Engine.settle({ player: 5 }, banker, "classic", -40).collected, 0), true, "no negative zero");
+
+  // Any run of classic Banker stakes and outcomes: what was paid, less what
+  // is still owed in the box, is exactly 19 to 20 on every winning stake.
+  var random = 0.37, exact = 0, total = 0;
+  box = 0;
+  for (var n = 0; n < 2000; n++) {
+    random = (random * 9301 + 49297) % 233280 / 233280;
+    var stake = 5 * (1 + Math.floor(random * 40));
+    var result = random < 0.5 ? banker : bankerSix;
+    var settled = Engine.settle({ banker: stake }, result, "classic", box);
+    box = settled.box;
+    assert.ok(box >= 0 && box < 100);
+    total += settled.paid - stake;
+    exact += stake * 0.95;
+  }
+  assert.equal(Math.round((total - exact) * 100), box, "the box holds every cent paid out but not yet collected");
+  assert.equal(Engine.normalizeBox(150), 0);
+  assert.equal(Engine.normalizeBox(-99), -99);
+  assert.equal(Engine.normalizeBox(2.5), 0);
 });
 
 test("bets are cleaned to known spots and whole amounts", function () {

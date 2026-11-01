@@ -117,6 +117,48 @@ test("a coup plays straight from file:// and the Banker pays 19 to 20", async ()
   });
 });
 
+test("the commission box keeps the cents of every Banker win and collects each whole dollar", async () => {
+  // Four Banker naturals of 8 against a Player 5.
+  const natural = ["2S", "8H", "3C", "KD"];
+  await scene({ cards: natural.concat(natural, natural, natural) }, async page => {
+    assert.equal(await page.$eval("#boxSpec", node => node.hidden), true, "an empty box is not shown");
+    const paid = [];
+    for (let coup = 0; coup < 4; coup++) {
+      const before = await stored(page, "pit.bankroll");
+      await bet(page, "banker");                     // $25
+      await dealAndSettle(page);
+      paid.push(await stored(page, "pit.bankroll") - before + 25);
+      if (coup === 0) {
+        // $1.25 of commission: the dollar comes off the payout, 25 cents stay.
+        assert.equal(await stored(page, "pit.baccarat.box"), 25);
+        assert.equal(await page.$eval("#boxSpec", node => node.hidden), false);
+        assert.equal(await page.$eval("#boxLabel", node => node.textContent), "COMMISSION");
+        assert.equal(await page.$eval("#tableBox", node => node.textContent), "$0.25");
+        await page.reload({ waitUntil: "load" });
+        await page.waitForFunction(() => document.body.dataset.busy === "false");
+        assert.equal(await page.$eval("#tableBox", node => node.textContent), "$0.25", "the box survives a reload");
+      }
+    }
+    assert.deepEqual(paid, [49, 49, 49, 48]);
+    assert.equal(await stored(page, "pit.baccarat.box"), 0);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 + 4 * 25 * 0.95, "four wins of $25 earn exactly 19 to 20");
+    assert.equal(await page.$eval("#boxSpec", node => node.hidden), true);
+    assert.equal((await stored(page, "pit.baccarat.stats")).returned, 49 * 3 + 48);
+  });
+});
+
+test("without commission the half dollar of an odd stake on a Banker six waits in the box", async () => {
+  // Player 2 and 3 make 5 and draw a K; the Banker's 3 and 3 make 6 and stand.
+  await scene({ cards: ["2S", "3H", "3C", "3D", "KS"], settings: { rules: "noCommission" }, lang: "tr" }, async page => {
+    await bet(page, "banker");                       // $25 pays $12.50
+    await dealAndSettle(page);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 + 12);
+    assert.equal(await stored(page, "pit.baccarat.box"), -50);
+    assert.equal(await page.$eval("#boxLabel", node => node.textContent), "ALACAK");
+    assert.equal(await page.$eval("#tableBox", node => node.textContent), "$0,50");
+  });
+});
+
 test("a tie pays 8 to 1, returns Player and Banker bets and pays both pairs", async () => {
   await scene({ cards: ["4S", "4H", "4D", "4C"] }, async page => {
     await chip(page, 100); await bet(page, "player");
@@ -222,7 +264,9 @@ test("Turkish names the sides, the payouts and the result", async () => {
     assert.equal(await page.$eval("#bannerText", node => node.textContent), "Bahislerinizi yapın");
     await bet(page, "banker");
     await dealAndSettle(page);
-    assert.equal(await balance(page), "10.023");
+    assert.equal(await balance(page), "10.024");
+    assert.equal(await page.$eval("#boxLabel", node => node.textContent), "KOMİSYON");
+    assert.equal(await page.$eval("#tableBox", node => node.textContent), "$0,25");
     assert.match(await page.$eval("#roadCounts", node => node.textContent), /Banko 1/);
   });
 });
@@ -283,7 +327,8 @@ test("installed, the table deals offline", async () => {
     await page.waitForFunction(() => document.body.dataset.busy === "false");
     await bet(page, "banker");
     await dealAndSettle(page);
-    assert.equal(await stored(page, "pit.bankroll"), 10000 + 23, "$25 on the Banker wins $23 after commission");
+    assert.equal(await stored(page, "pit.bankroll"), 10000 + 24, "$25 on the Banker wins $25, less the whole dollar of its $1.25 commission");
+    assert.equal(await stored(page, "pit.baccarat.box"), 25);
     await page.setOfflineMode(false);
   });
 });

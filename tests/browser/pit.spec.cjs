@@ -170,6 +170,11 @@ test("from file:// the lobby leads to every table and each back to the lobby", a
     await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false");
     assert.equal(await balance(page), "10,000");
     await backToLobby(page);
+    await enterTable(page, "videopoker");
+    assert.equal(await page.title(), "Poker 11 · ThePit");
+    await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false");
+    assert.equal(await balance(page), "10,000");
+    await backToLobby(page);
     assert.match(page.url(), /\/index\.html$/);
   });
 });

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money Jacks or Better video poker simulation that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>Poker 11 · ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="Poker 11 · ThePit" />
+  <meta property="og:description" content="A free, play-money Jacks or Better video poker simulation that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/games/videopoker/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The video poker machine Poker 11 with its pay table and five cards on green felt" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="../../shared/css/pit.css" />
+  <link rel="stylesheet" href="../../shared/css/table.css" />
+  <link rel="stylesheet" href="../../shared/css/cards.css" />
+  <link rel="stylesheet" href="../../shared/css/chip-tables.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-phase="betting" data-theme="emerald" data-animation-speed="normal" data-coach="false">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="icon-btn lobby-link" href="../../index.html" aria-label="Back to the lobby" title="Back to the lobby"
+         data-i18n-aria-label="backToLobby" data-i18n-title="backToLobby">
+        <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+      </a>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="vRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#vRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#vRing)" stroke-width="1" opacity=".7"/>
+          <rect x="12" y="23" width="40" height="18" rx="2.5" fill="#06140e" stroke="#c9a24b" stroke-width="1"/>
+          <g fill="#fbf8ef" stroke="#8c6a1c" stroke-width=".6">
+            <rect x="14.5" y="25" width="6" height="14" rx="1"/><rect x="21.6" y="25" width="6" height="14" rx="1"/>
+            <rect x="28.7" y="25" width="6" height="14" rx="1"/><rect x="35.8" y="25" width="6" height="14" rx="1"/>
+            <rect x="42.9" y="25" width="6" height="14" rx="1"/>
+          </g>
+          <g font-size="6.4" font-weight="700" fill="#17171a" text-anchor="middle">
+            <text x="17.5" y="34.4">10</text><text x="24.6" y="34.4">J</text><text x="31.7" y="34.4">Q</text>
+            <text x="38.8" y="34.4">K</text><text x="45.9" y="34.4">A</text>
+          </g>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="Poker 11" data-i18n-aria-label="brandName">
+          <span class="brand-word">POKER</span><span class="brand-number" aria-hidden="true">11</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">Jacks or Better</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="soundToggle" class="icon-btn sound-control" type="button" aria-pressed="true" aria-label="Mute sound"
+              title="Mute sound" data-i18n-title="muteSound" data-i18n-aria-label="muteSound" aria-keyshortcuts="M">
+        <svg class="sound-glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path class="sound-cone" d="M4.8 11h3.5l4.7-3.9v13.8L8.3 17H4.8Z" />
+          <path class="sound-wave sound-wave-near" d="M16.1 10.2c1 1 1.5 2.3 1.5 3.8s-.5 2.8-1.5 3.8" />
+          <path class="sound-wave sound-wave-far" d="M19.2 7.6c1.8 1.8 2.8 4 2.8 6.4s-1 4.6-2.8 6.4" />
+          <path class="sound-slash" d="M6.5 6.5l15 15" />
+        </svg>
+        <span class="sound-led" aria-hidden="true"></span>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <section class="machine" aria-label="Video poker machine" data-i18n-aria-label="pokerMachine">
+      <div class="cabinet" id="cabinet">
+        <div class="table-rim" aria-hidden="true"></div>
+
+        <div class="felt-head">
+          <div class="banner" id="banner" role="status" aria-live="polite" aria-atomic="true">
+            <span id="bannerText" data-i18n="placeBet">Pick a coin value and deal</span>
+            <small id="bannerSub"></small>
+          </div>
+          <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
+            <span class="table-spec">
+              <small data-i18n="tableMinLabel">MIN</small>
+              <strong id="tableMin">$1</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableMaxLabel">MAX</small>
+              <strong id="tableMax">$2,500</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableRtpLabel">RETURN</small>
+              <strong id="tableRtp">99.54%</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="paytable-frame">
+          <table class="paytable" id="payTable">
+            <caption class="sr-only" data-i18n="payTableLabel">Pay table</caption>
+            <thead>
+              <tr>
+                <th scope="col"><span class="sr-only" data-i18n="handHeader">Hand</span></th>
+                <th scope="col" data-coins="1">1</th><th scope="col" data-coins="2">2</th><th scope="col" data-coins="3">3</th>
+                <th scope="col" data-coins="4">4</th><th scope="col" data-coins="5">5</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-category="royalFlush"><th scope="row" data-i18n="catRoyalFlush">Royal flush</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="straightFlush"><th scope="row" data-i18n="catStraightFlush">Straight flush</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="quads"><th scope="row" data-i18n="catQuads">Four of a kind</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="fullHouse"><th scope="row" data-i18n="catFullHouse">Full house</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="flush"><th scope="row" data-i18n="catFlush">Flush</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="straight"><th scope="row" data-i18n="catStraight">Straight</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="trips"><th scope="row" data-i18n="catTrips">Three of a kind</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="twoPair"><th scope="row" data-i18n="catTwoPair">Two pair</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+              <tr data-category="jacksOrBetter"><th scope="row" data-i18n="catJacksOrBetter">Jacks or better</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="hand" id="hand" role="group" aria-label="Your hand" data-i18n-aria-label="handCards">
+          <div class="hand-slot" data-pos="0"><div class="slot-card"></div><button class="hold-btn" data-hold="0" type="button" aria-pressed="false" aria-keyshortcuts="1"><span data-i18n="hold">Hold</span></button></div>
+          <div class="hand-slot" data-pos="1"><div class="slot-card"></div><button class="hold-btn" data-hold="1" type="button" aria-pressed="false" aria-keyshortcuts="2"><span data-i18n="hold">Hold</span></button></div>
+          <div class="hand-slot" data-pos="2"><div class="slot-card"></div><button class="hold-btn" data-hold="2" type="button" aria-pressed="false" aria-keyshortcuts="3"><span data-i18n="hold">Hold</span></button></div>
+          <div class="hand-slot" data-pos="3"><div class="slot-card"></div><button class="hold-btn" data-hold="3" type="button" aria-pressed="false" aria-keyshortcuts="4"><span data-i18n="hold">Hold</span></button></div>
+          <div class="hand-slot" data-pos="4"><div class="slot-card"></div><button class="hold-btn" data-hold="4" type="button" aria-pressed="false" aria-keyshortcuts="5"><span data-i18n="hold">Hold</span></button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls" data-i18n-aria-label="controlsLabel">
+      <div class="chips-tray" id="chipTray" role="radiogroup" aria-label="Coin value" data-i18n-aria-label="chipsLabel" aria-keyshortcuts="1 2 3 4 5 6">
+        <button class="chip chip-1" data-value="1" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$1"><span class="denom">1</span></button>
+        <button class="chip chip-5" data-value="5" type="button" role="radio" aria-checked="true" aria-label="$5"><span class="denom">5</span></button>
+        <button class="chip chip-10" data-value="10" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$10"><span class="denom">10</span></button>
+        <button class="chip chip-25" data-value="25" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$25"><span class="denom">25</span></button>
+        <button class="chip chip-100" data-value="100" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$100"><span class="denom">100</span></button>
+        <button class="chip chip-500" data-value="500" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$500"><span class="denom">500</span></button>
+      </div>
+
+      <div class="action-row">
+        <div class="bet-buttons">
+          <button id="btnBetOne" class="btn btn-tool" type="button" aria-keyshortcuts="B"><span data-i18n="betOne">Bet one</span></button>
+          <button id="btnBetMax" class="btn btn-tool" type="button" aria-keyshortcuts="X"><span data-i18n="betMax">Bet max</span></button>
+        </div>
+        <div class="bet-total" aria-live="off">
+          <small data-i18n="totalBet">Total bet</small>
+          <strong>$<span id="totalBet">25</span></strong>
+          <small class="coins-line" id="coinsLine">5 × $5</small>
+        </div>
+        <div class="win-meter" aria-live="off">
+          <small data-i18n="win">Win</small>
+          <strong>$<span id="winMeter">0</span></strong>
+          <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
+        </div>
+        <button id="btnDeal" class="deal-btn" type="button" aria-keyshortcuts="Space Enter">
+          <span class="deal-label" id="dealLabel" data-i18n="deal">Deal</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+            <button class="theme-option" data-set-theme="onyx" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeOnyx">Onyx</span>
+            </button>
+            <button class="theme-option" data-set-theme="amethyst" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeAmethyst">Amethyst</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="rule-profile-setting">
+          <div class="setting-section-label" id="profileLabel" data-i18n="tableRules">Pay table</div>
+          <div class="rule-profile-picker" role="radiogroup" aria-labelledby="profileLabel" aria-describedby="profileHint">
+            <button class="rule-profile" data-profile="nineSix" type="button" role="radio" aria-checked="true">
+              <span class="rule-profile-code" aria-hidden="true">9/6</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileNineSix">9/6</strong>
+                <small data-i18n="profileNineSixSummary">Full house pays 9, flush 6 · Returns 99.54% with the best play</small>
+              </span>
+            </button>
+            <button class="rule-profile" data-profile="eightFive" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="rule-profile-code" aria-hidden="true">8/5</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileEightFive">8/5</strong>
+                <small data-i18n="profileEightFiveSummary">Full house pays 8, flush 5 · Returns 97.30% with the best play</small>
+              </span>
+            </button>
+          </div>
+          <p class="settings-hint" id="profileHint" data-i18n="profileHint">The pay table changes between hands.</p>
+        </div>
+
+        <div class="coach-setting">
+          <div class="setting-row">
+            <label for="setCoach" data-i18n="coachLabel">Strategy hint</label>
+            <label class="switch">
+              <input type="checkbox" id="setCoach" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <p class="settings-hint" data-i18n="coachHint">Marks the hold that returns the most on average, worked out exactly from every possible draw.</p>
+        </div>
+
+        <div class="setting-row animation-setting">
+          <span class="setting-label" id="animationSpeedLabel" data-i18n="animationSpeed">Dealing speed</span>
+          <div class="seg animation-seg" role="radiogroup" aria-labelledby="animationSpeedLabel">
+            <button class="seg-btn" data-set-animation="fast" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedFast">Fast</button>
+            <button class="seg-btn active" data-set-animation="normal" type="button" role="radio" aria-checked="true" data-i18n="speedNormal">Normal</button>
+            <button class="seg-btn" data-set-animation="cinematic" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedCinematic">Cinematic</button>
+          </div>
+        </div>
+
+        <div class="sound-settings">
+          <div class="setting-row">
+            <label for="setSound" data-i18n="soundLabel">Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="setSound" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="audio-mixer" id="soundMixer" role="group" aria-label="Sound levels" data-i18n-aria-label="soundMixer">
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundMasterLabel" data-i18n="masterVolume">Master</span><output id="soundMasterValue" for="soundMaster">100%</output></span>
+              <input class="volume-slider" id="soundMaster" data-sound-level="master" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundMasterLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundCardsLabel" data-i18n="cardVolume">Cards</span><output id="soundCardsValue" for="soundCards">100%</output></span>
+              <input class="volume-slider" id="soundCards" data-sound-level="cards" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundCardsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundChipsLabel" data-i18n="chipVolume">Chips</span><output id="soundChipsValue" for="soundChips">100%</output></span>
+              <input class="volume-slider" id="soundChips" data-sound-level="chips" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundChipsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundTableLabel" data-i18n="tableVolume">Machine cues</span><output id="soundTableValue" for="soundTable">100%</output></span>
+              <input class="volume-slider" id="soundTable" data-sound-level="table" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundTableLabel" aria-valuetext="100%" />
+            </label>
+          </div>
+        </div>
+
+        <details class="payout-table">
+          <summary data-i18n="payoutsTitle">How to play</summary>
+          <p class="settings-hint" data-i18n="howToPlay">Pick a coin value and bet one to five coins, then deal five cards. Hold any of them and draw once: every card you let go is replaced from the same deck. The hand you end with pays by the table.</p>
+          <p class="settings-hint" data-i18n="paysHint">Pays are in coins for the coins bet, the bet included. A pair pays only when it is Jacks or better.</p>
+          <p class="settings-hint" data-i18n="royalNote">A royal flush pays 250 a coin, and 800 a coin when all five coins are bet.</p>
+          <p class="settings-hint" data-i18n="returnNote">With the best play on every hand and five coins bet, the 9/6 table returns 99.54% and the 8/5 table 97.30%. With fewer coins the return is lower.</p>
+          <p class="settings-hint" data-i18n="rulesHint">One deck, shuffled for every hand. Amounts use whole dollars.</p>
+        </details>
+
+        <div class="stats-grid">
+          <h3 data-i18n="sessionStats">Statistics</h3>
+          <div class="stat"><span data-i18n="statHands">Hands</span><b id="stHands">0</b></div>
+          <div class="stat"><span data-i18n="winningHands">Winning hands</span><b id="stWinRate">0%</b></div>
+          <div class="stat"><span data-i18n="statRoyals">Royal flushes</span><b id="stRoyals">0</b></div>
+          <div class="stat"><span data-i18n="statBestHand">Best hand</span><b id="stBestHand">None yet</b></div>
+          <div class="stat"><span data-i18n="totalWagered">Wagered</span><b id="stWagered">$0</b></div>
+          <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
+          <div class="stat"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
+          <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+        </div>
+        <p class="settings-hint" data-i18n="statsHint">For entertainment: every hand is dealt from a freshly shuffled deck, so past hands never make the next one more or less likely.</p>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="modal-foot">
+          <button id="btnResetStats" class="btn btn-ghost" type="button" data-i18n="resetStats">Reset statistics</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">Poker 11 is a video poker simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every card is drawn at random on your device from a deck shuffled for each hand, and the return is reached only over a very long run with the best play; any session can lose. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../../shared/js/pit.js"></script>
+  <script src="../../shared/js/i18n.js"></script>
+  <script src="js/strings.js"></script>
+  <script src="../../shared/js/card-sound.js"></script>
+  <script src="../../shared/js/cards.js"></script>
+  <script src="../../shared/js/chips.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/game.js"></script>
+  <script src="../../shared/js/pwa.js"></script>
+</body>
+</html>

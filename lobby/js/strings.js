@@ -34,6 +34,8 @@
       crapsSummary: "Pass and Don't pass with odds, Come, Place, the Field, the Hardways and the bets in the middle, with real dice rules.",
       holdemGame: "Casino Hold'em",
       holdemSummary: "Two cards against the dealer's, a board of five, call or fold after the flop, with the AA Bonus.",
+      videopokerGame: "Video poker",
+      videopokerSummary: "Jacks or Better: five cards, hold and draw once, 9/6 or 8/5 pays and an exact strategy hint. Returns up to 99.54%.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -67,6 +69,8 @@
       crapsSummary: "Oranlarıyla Pass ve Don't pass, Come, Place, Field, zor bahisler ve ortadaki bahisler; gerçek zar kurallarıyla.",
       holdemGame: "Casino Hold'em",
       holdemSummary: "Krupiyeye karşı iki kart, beş ortak kart, flop'tan sonra call ya da çekil; AA Bonus ile.",
+      videopokerGame: "Video poker",
+      videopokerSummary: "Jacks or Better: beş kart, tut ve bir kez çek; 9/6 ya da 8/5 ödemeler ve tam hesaplı strateji ipucu. Geri dönüş %99,54'e kadar.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

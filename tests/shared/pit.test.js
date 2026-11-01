@@ -24,7 +24,7 @@ test("every page shares one wallet key, one lock and one cloth key", function ()
   assert.equal(Pit.KEYS.bankroll, "pit.bankroll");
   assert.equal(Pit.KEYS.theme, "pit.theme");
   assert.equal(Pit.LOCK_NAME, "pit.account");
-  assert.deepEqual(Object.keys(Pit.TABLES), ["blackjack", "roulette", "baccarat", "threecard", "slot", "craps", "holdem"]);
+  assert.deepEqual(Object.keys(Pit.TABLES), ["blackjack", "roulette", "baccarat", "threecard", "slot", "craps", "holdem", "videopoker"]);
   assert.equal(Pit.TABLES.blackjack, "Table 21");
   assert.equal(Pit.TABLES.roulette, "Table 37");
   assert.equal(Pit.TABLES.baccarat, "Table 9");
@@ -32,6 +32,7 @@ test("every page shares one wallet key, one lock and one cloth key", function ()
   assert.equal(Pit.TABLES.slot, "Slot 5");
   assert.equal(Pit.TABLES.craps, "Table 7");
   assert.equal(Pit.TABLES.holdem, "Table 2");
+  assert.equal(Pit.TABLES.videopoker, "Poker 11");
 });
 
 test("each game keeps its own data under its own name", function () {

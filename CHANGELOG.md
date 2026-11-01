@@ -4,7 +4,7 @@ All notable changes to ThePit are documented here. The project follows [Semantic
 
 ## [0.1.0] - Unreleased
 
-The first version of the pit: six tables and a slot machine, one wallet, one lobby.
+The first version of the pit: six tables, a slot machine and a video poker machine, one wallet, one lobby.
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
@@ -15,6 +15,7 @@ The first version of the pit: six tables and a slot machine, one wallet, one lob
 - Table 3, a Three Card Poker table: Ante and Play against a dealer who qualifies with Queen high, the Ante Bonus and the Pair Plus under the Standard or Low flush pay table, a deck shuffled for every hand, an optional strategy hint, and a hand left waiting for its decision brought back with the same cards.
 - Table 7, a craps table: Pass and Don't pass with odds, Come and Don't come, Place, the Field, the Hardways and the one-roll bets, the puck and the last rolls, under real table rules and with every house edge checked exactly.
 - Table 2, a Casino Hold'em table: Ante and Call against a dealer who qualifies with a pair of fours, the board turned flop, turn and river, the AA Bonus, and a hand left waiting for its decision brought back with the same cards.
+- Poker 11, a Jacks or Better video poker machine: one to five coins of a chip's value, hold and draw once, the 9/6 or 8/5 pay table returning 99.54% or 97.30% with the best play, an exact strategy hint, and a hand left waiting for its hold brought back with the same cards.
 - Slot 5, a five-reel slot machine with 20 lines, a wild, scattered stars and ten free spins at triple pay, returning exactly 95.80%, with the bet on each line set by the pit's chips.
 - A lobby that lays its tables out in rows: one on a phone, two on a tablet, four on a wide screen, with a last row that is not full centred.
 - Two new cloths, Onyx and Amethyst, beside Emerald, Midnight and Bordeaux; at Table 21 Onyx deals from green backs and Amethyst from antique gold.

@@ -81,8 +81,9 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 
 - **Five reels, three rows, 20 lines**: an original machine with sevens, diamonds, bells, horseshoes and card ranks, every reel stopped with `crypto.getRandomValues`.
 - **Cards or fruits**: in the settings the card ranks can turn into watermelons, grapes, lemons and cherries; only the faces change, so the seven, the pays and the return stay the same.
+- **Sevens on top**: five sevens on a line pay 1,000 times the line bet, the biggest prize of the machine, above five wilds at 750.
 - **Wild and stars**: the wild stands in for every symbol but the star; stars pay anywhere and three or more bring ten free spins at triple pay, drawn with the paid spin.
-- **A return worked out exactly**: the reel strips and pays give 95.80% over the long run, confirmed by counting all 33,554,432 stops of the reels; free spins come about once in 140 paid spins.
+- **A return worked out exactly**: the reel strips and pays give 95.82% over the long run, confirmed by counting all 33,554,432 stops of the reels; free spins come about once in 140 paid spins.
 - **Chips for the bet**: a chip from $1 to $100 sets the bet on each of the 20 lines, and the total stands on the bet plate as the pit's chips.
 - **Saved before the reels turn**: the spin, its free spins and the stake; a reload settles the very same spin.
 - **Keyboard shortcuts**: `Space`/`Enter` spin · `1`–`6` bet per line · `M` sound.
@@ -119,7 +120,7 @@ The core test suite uses only Node's built-in test runner (Node.js 22.12 or newe
 npm test                 # node --test "tests/**/*.test.js" "tests/**/*.test.cjs"
 ```
 
-The suite currently executes **774 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals, the slot machine's against all 33,554,432 stops of its reels, every craps bet against the 36 rolls of two dice, the AA Bonus against all 2,598,960 five-card hands, and video poker's best play against every one of its 2,598,960 deals), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
+The suite currently executes **775 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals, the slot machine's against all 33,554,432 stops of its reels, every craps bet against the 36 rolls of two dice, the AA Bonus against all 2,598,960 five-card hands, and video poker's best play against every one of its 2,598,960 deals), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
 
 The optional real-browser suite adds **282 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
 

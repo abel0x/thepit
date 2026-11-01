@@ -109,14 +109,14 @@ test("a spin plays straight from file:// and pays every winning line", async () 
   await scene({ spins: [{ stops: WIN }] }, async page => {
     assert.equal(await text(page, "#totalBet"), "100");
     await spinAndSettle(page);
-    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 775);
-    assert.equal(await text(page, "#winMeter"), "775");
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 725);
+    assert.equal(await text(page, "#winMeter"), "725");
     const lines = await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent));
-    assert.deepEqual(lines, ["Line 1: 4 × Seven, $750", "Line 18: 3 × Jack, $25"]);
+    assert.deepEqual(lines, ["Line 1: 4 × Seven, $700", "Line 18: 3 × Jack, $25"]);
     assert.equal(await page.$$eval("#paylines polyline", nodes => nodes.length), 2);
     assert.equal(await page.$$eval(".cell.win", nodes => nodes.length), 7);
     const stats = await stored(page, "pit.slot.stats");
-    assert.deepEqual([stats.spins, stats.winningSpins, stats.wagered, stats.returned], [1, 1, 100, 775]);
+    assert.deepEqual([stats.spins, stats.winningSpins, stats.wagered, stats.returned], [1, 1, 100, 725]);
   });
 });
 
@@ -182,7 +182,7 @@ test("the chips choose the bet on every line, from the keyboard too", async () =
     await page.keyboard.press(" ");
     await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false" &&
       localStorage.getItem("pit.slot.round") === null && localStorage.getItem("pit.slot.stats") !== null, { timeout: 30000 });
-    assert.equal(await stored(page, "pit.bankroll"), 10000 - 200 + 775 * 2, "every win scales with the line bet");
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 200 + 725 * 2, "every win scales with the line bet");
   });
 });
 
@@ -208,17 +208,17 @@ test("Turkish names the bet, the symbols and the wins", async () => {
     assert.equal(await text(page, "#perLine"), "Çizgi başına $5 × 20 çizgi");
     await spinAndSettle(page);
     const lines = await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent));
-    assert.deepEqual(lines, ["1. çizgi: 4 × Yedi, $750", "18. çizgi: 3 × Vale, $25"]);
-    assert.equal(await text(page, "#bannerText"), "$775 kazandınız");
+    assert.deepEqual(lines, ["1. çizgi: 4 × Yedi, $700", "18. çizgi: 3 × Vale, $25"]);
+    assert.equal(await text(page, "#bannerText"), "$725 kazandınız");
   });
 });
 
 test("the fruit set dresses the letters as fruits and pays the same", async () => {
   await scene({ spins: [{ stops: WIN }, { stops: WIN }], settings: { symbolSet: "fruit" } }, async page => {
     await spinAndSettle(page);
-    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 775, "fruit pays what the cards pay");
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 725, "fruit pays what the cards pay");
     const lines = await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent));
-    assert.deepEqual(lines, ["Line 1: 4 × Seven, $750", "Line 18: 3 × Cherry, $25"]);
+    assert.deepEqual(lines, ["Line 1: 4 × Seven, $700", "Line 18: 3 × Cherry, $25"]);
     const faces = await page.$$eval(".reel .cell", cells => cells.map(c => [c.dataset.symbol, c.querySelector("use").getAttribute("href")]));
     const fruit = { ace: "watermelon", king: "grapes", queen: "lemon", jack: "cherry" };
     faces.forEach(([symbol, href]) => assert.equal(href, "#sym-" + (fruit[symbol] || symbol)));
@@ -233,7 +233,7 @@ test("the fruit set dresses the letters as fruits and pays the same", async () =
     await page.click('[data-set-symbols="classic"]');
     assert.equal(await page.$eval('#paysTable tr[data-symbol="jack"] th span', n => n.textContent), "Jack");
     assert.equal(await page.$$eval('.reel .cell[data-symbol="jack"] use', nodes => nodes.every(n => n.getAttribute("href") === "#sym-jack")), true);
-    assert.deepEqual(await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent)), ["Line 1: 4 × Seven, $750", "Line 18: 3 × Jack, $25"]);
+    assert.deepEqual(await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent)), ["Line 1: 4 × Seven, $700", "Line 18: 3 × Jack, $25"]);
     assert.equal((await stored(page, "pit.slot.settings")).symbolSet, "classic");
     await page.click('[data-set-symbols="fruit"]');
     await page.reload({ waitUntil: "load" });
@@ -247,7 +247,7 @@ test("Turkish names the fruits", async () => {
   await scene({ spins: [{ stops: WIN }], lang: "tr", settings: { symbolSet: "fruit" } }, async page => {
     await spinAndSettle(page);
     const lines = await page.$$eval("#winList li", nodes => nodes.map(n => n.textContent));
-    assert.deepEqual(lines, ["1. çizgi: 4 × Yedi, $750", "18. çizgi: 3 × Kiraz, $25"]);
+    assert.deepEqual(lines, ["1. çizgi: 4 × Yedi, $700", "18. çizgi: 3 × Kiraz, $25"]);
     assert.equal(await page.$eval('#paysTable tr[data-symbol="king"] th span', n => n.textContent), "Üzüm");
     assert.equal(await text(page, '[data-set-symbols="fruit"]'), "Meyveler");
     await page.setViewport({ width: 390, height: 844 });
@@ -302,7 +302,7 @@ test("installed, the machine spins offline", async () => {
     await page.reload({ waitUntil: "load" });
     await page.waitForFunction(() => document.body.dataset.busy === "false");
     await spinAndSettle(page);
-    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 775);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 100 + 725);
     await page.setOfflineMode(false);
   });
 });

@@ -51,12 +51,12 @@ test("every word the page and the machine ask for exists, and every symbol has a
 
 test("the printed return is the engine's, in both languages", function () {
   var total = (Engine.returnToPlayer().total * 100).toFixed(2);
-  assert.equal(total, "95.80");
+  assert.equal(total, "95.82");
   assert.match(DICT.en.returnNote, new RegExp(total.replace(".", "\\.") + "%"));
   assert.match(DICT.tr.returnNote, new RegExp("%" + total.replace(".", ",")));
-  assert.match(DICT.en.disclaimerOdds, /95\.80%/);
-  assert.match(DICT.tr.disclaimerOdds, /%95,80/);
-  assert.match(html, /id="tableRtp">95\.80%</);
+  assert.match(DICT.en.disclaimerOdds, /95\.82%/);
+  assert.match(DICT.tr.disclaimerOdds, /%95,82/);
+  assert.match(html, /id="tableRtp">95\.82%</);
 });
 
 test("every symbol is drawn once in the sprite and listed in the pays", function () {

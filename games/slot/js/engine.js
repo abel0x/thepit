@@ -24,6 +24,7 @@
   var UINT32_RANGE = 0x100000000;
 
   // The wild stands in for every symbol but the star, and pays on its own.
+  // Five sevens are the machine's top prize, above even five wilds.
   var WILD = "wild";
   // The star pays wherever it lands and three or more start the free spins.
   var SCATTER = "star";
@@ -32,8 +33,8 @@
   // What three, four and five of a symbol pay on a line, from the left, in
   // line bets.
   var PAYS = {
-    wild:      { 3: 50, 4: 250, 5: 1000 },
-    seven:     { 3: 40, 4: 150, 5: 750 },
+    seven:     { 3: 40, 4: 140, 5: 1000 },
+    wild:      { 3: 30, 4: 100, 5: 750 },
     diamond:   { 3: 25, 4: 100, 5: 400 },
     bell:      { 3: 15, 4: 60, 5: 250 },
     horseshoe: { 3: 10, 4: 40, 5: 150 },

@@ -58,9 +58,9 @@
 
       payoutsTitle: "Pays",
       paysHint: "Line pays are multiplied by the bet per line. A line pays from the leftmost reel, on any of the 20 lines, and only its best win counts.",
-      wildRule: "The wild stands in for every symbol but the star, and five wilds pay the most of all.",
+      wildRule: "The wild stands in for every symbol but the star, and pays on its own too; five sevens are the top prize.",
       scatterRule: "Stars pay wherever they land, multiplied by the total bet. Three or more start 10 free spins at the same bet, where every win pays triple. Free spins never start more free spins.",
-      returnNote: "Return to player: 95.80% over the long run, as the reel strips and pays give it exactly. Free spins come about once in 140 paid spins.",
+      returnNote: "Return to player: 95.82% over the long run, as the reel strips and pays give it exactly. Free spins come about once in 140 paid spins.",
       linesTitle: "The 20 lines",
       payCount: "{count} in a row",
       scatterCount: "{count} stars",
@@ -78,7 +78,7 @@
       statsHint: "For entertainment: every spin is independent, so a long wait never makes a win more likely.",
 
       disclaimerPlayMoney: "Slot 5 is a slot machine simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.",
-      disclaimerOdds: "Every reel stops at random on your device, and the machine returns 95.80% of what is wagered only over a very long run; any session can lose. If gambling is causing problems for you or someone close to you, please seek help."
+      disclaimerOdds: "Every reel stops at random on your device, and the machine returns 95.82% of what is wagered only over a very long run; any session can lose. If gambling is causing problems for you or someone close to you, please seek help."
     },
 
     tr: {
@@ -130,9 +130,9 @@
 
       payoutsTitle: "Ödemeler",
       paysHint: "Çizgi ödemeleri çizgi başına bahisle çarpılır. Bir çizgi en soldaki makaradan başlayarak, 20 çizginin herhangi birinde öder ve yalnızca en iyi kazancı sayılır.",
-      wildRule: "Joker yıldız dışındaki her sembolün yerine geçer; beş joker hepsinden fazla öder.",
+      wildRule: "Joker yıldız dışındaki her sembolün yerine geçer; kendi başına da öder. En büyük ödül beş yedidir.",
       scatterRule: "Yıldızlar nereye düşerse düşsün toplam bahisle çarpılarak öder. Üç ya da daha fazlası aynı bahisle 10 bedava çevirme başlatır; bunlarda her kazanç üç katı öder. Bedava çevirmeler yeniden bedava çevirme başlatmaz.",
-      returnNote: "Oyuncuya geri dönüş: uzun vadede %95,80; makara şeritleri ve ödemeler bunu tam olarak verir. Bedava çevirmeler yaklaşık 140 ücretli çevirmede bir gelir.",
+      returnNote: "Oyuncuya geri dönüş: uzun vadede %95,82; makara şeritleri ve ödemeler bunu tam olarak verir. Bedava çevirmeler yaklaşık 140 ücretli çevirmede bir gelir.",
       linesTitle: "20 çizgi",
       payCount: "Art arda {count}",
       scatterCount: "{count} yıldız",
@@ -150,7 +150,7 @@
       statsHint: "Yalnızca eğlence için: her çevirme bağımsızdır, uzun bir bekleyiş kazancı daha olası yapmaz.",
 
       disclaimerPlayMoney: "Slot 5 yalnızca eğlence amaçlı bir slot makinesi simülasyonudur. Jetonlar ve bakiye nakit değeri olmayan oyun parasıdır: satın alınamaz, satılamaz, paraya ya da ödüle çevrilemez. Gerçek parayla kumar sunulmaz.",
-      disclaimerOdds: "Her makara cihazınızda rastgele durur ve makine yatırılanın %95,80'ini yalnızca çok uzun vadede geri verir; her oturum kaybettirebilir. Kumar sizin ya da bir yakınınız için sorun olmaya başladıysa lütfen yardım alın."
+      disclaimerOdds: "Her makara cihazınızda rastgele durur ve makine yatırılanın %95,82'ini yalnızca çok uzun vadede geri verir; her oturum kaybettirebilir. Kumar sizin ya da bir yakınınız için sorun olmaya başladıysa lütfen yardım alın."
     }
   });
 })((typeof window !== "undefined" ? window : globalThis).I18n);

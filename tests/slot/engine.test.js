@@ -40,15 +40,29 @@ test("twenty different lines, one row on every reel", function () {
 
 test("a line pays from the leftmost reel, the wild standing in, and only its best win", function () {
   function pay(text) { return Engine.lineWin(text.split(" ")); }
-  assert.deepEqual(pay("wild wild wild wild wild"), { symbol: "wild", count: 5, pay: 1000 });
-  assert.deepEqual(pay("wild wild wild seven seven"), { symbol: "seven", count: 5, pay: 750 }, "standing in pays more");
-  assert.deepEqual(pay("wild wild wild jack jack"), { symbol: "wild", count: 3, pay: 50 }, "three wilds beat five jacks");
+  assert.deepEqual(pay("seven seven seven seven seven"), { symbol: "seven", count: 5, pay: 1000 });
+  assert.deepEqual(pay("wild wild wild wild wild"), { symbol: "wild", count: 5, pay: 750 });
+  assert.deepEqual(pay("wild wild wild seven seven"), { symbol: "seven", count: 5, pay: 1000 }, "standing in pays more");
+  assert.deepEqual(pay("wild wild wild wild seven"), { symbol: "seven", count: 5, pay: 1000 }, "one seven makes the top prize");
+  assert.deepEqual(pay("wild wild wild jack jack"), { symbol: "jack", count: 5, pay: 50 }, "five jacks beat three wilds");
+  assert.deepEqual(pay("wild wild wild jack queen"), { symbol: "wild", count: 3, pay: 30 }, "three wilds beat four jacks");
   assert.deepEqual(pay("seven wild seven jack bell"), { symbol: "seven", count: 3, pay: 40 });
   assert.deepEqual(pay("bell bell bell bell jack"), { symbol: "bell", count: 4, pay: 60 });
   assert.equal(pay("jack jack queen jack jack").pay, 0, "two do not pay");
   assert.equal(pay("wild wild star seven seven").pay, 0, "a star ends the line");
   assert.equal(pay("star star star star star").pay, 0, "stars pay as scatters, not on lines");
   assert.equal(pay("king queen king king king").pay, 0, "only from the leftmost reel");
+});
+
+test("the seven is the top symbol: no line pays more for any count", function () {
+  [3, 4, 5].forEach(function (count) {
+    Object.keys(Engine.PAYS).forEach(function (symbol) {
+      if (symbol !== "seven") assert.ok(Engine.PAYS.seven[count] > Engine.PAYS[symbol][count], count + " × " + symbol);
+    });
+  });
+  var top = Math.max.apply(null, Object.keys(Engine.PAYS).map(function (s) { return Engine.PAYS[s][5]; }));
+  assert.equal(top, Engine.PAYS.seven[5]);
+  assert.equal(top, 1000);
 });
 
 test("a spin pays every winning line by the line bet, and stars by the total bet", function () {
@@ -100,7 +114,7 @@ test("the reels stop without bias", function () {
   counts.forEach(function (count) { assert.ok(count > 1700 && count < 2300, String(count)); });
 });
 
-test("an exhaustive count of all 33,554,432 stops gives the machine its 95.80% return", function () {
+test("an exhaustive count of all 33,554,432 stops gives the machine its 95.82% return", function () {
   var symbols = Engine.SYMBOLS;
   // What a line of five symbols pays, for every combination of symbols.
   var pays = new Float64Array(Math.pow(10, 5));
@@ -156,6 +170,6 @@ test("an exhaustive count of all 33,554,432 stops gives the machine its 95.80% r
   assert.ok(Math.abs(engine.scatter - scatterReturn) < 1e-12);
   assert.ok(Math.abs(engine.trigger - trigger) < 1e-12);
   assert.ok(Math.abs(engine.total - total) < 1e-12);
-  assert.equal((total * 100).toFixed(2), "95.80");
+  assert.equal((total * 100).toFixed(2), "95.82");
   assert.equal(Math.round(1 / trigger), 140, "free spins about once in 140 paid spins");
 });

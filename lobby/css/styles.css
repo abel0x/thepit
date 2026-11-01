@@ -205,6 +205,10 @@ body {
 .art-pip { fill: #fff8ea; }
 
 /* Slot 5: a window of three reels */
+.art-keno-cell { fill: rgba(0, 0, 0, .18); stroke: var(--print); stroke-width: 1.2; opacity: .8; }
+.art-keno-ball { fill: #e3bd4d; stroke: #a57d1f; stroke-width: 1.5; filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+.art-keno-number { font-family: var(--font-display); font-size: 13px; font-weight: 700; text-anchor: middle; fill: var(--cream); }
+.art-keno-number.on { fill: #2a1d05; }
 .art-reels { fill: #120b05; stroke: var(--gold); stroke-width: 3; }
 .art-reel { fill: #fbf8ef; }
 .art-seven { font-family: Georgia, "Times New Roman", serif; font-size: 40px; font-weight: 700; text-anchor: middle; fill: #c8202a; stroke: #e6c35a; stroke-width: 1.2; paint-order: stroke; }

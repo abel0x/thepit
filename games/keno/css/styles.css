@@ -1,0 +1,452 @@
+/* ThePit · Copyright (C) 2026 abel0x
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
+
+/* =========================================================
+   Keno 80 — offline keno
+   The ticket of eighty numbers, the draw of twenty balls and the pay
+   table for the marks. The frame and the chips come from shared/css.
+   ========================================================= */
+:root {
+  --print: rgba(240, 222, 168, .78);
+  --print-soft: rgba(240, 222, 168, .3);
+  --rail: clamp(8px, 1.3vh, 13px);
+}
+
+/* ----------------------- Top bar on phones ----------------------- */
+/* The language stays one tap away in the settings, and the way back to the
+   lobby stands in for the table's mark. */
+@media (max-width: 600px) {
+  .topbar { gap: 8px; padding-inline: 10px; }
+  .subtitle,
+  .topbar .lang-switch,
+  .brand-mark { display: none; }
+  .topbar-actions { gap: 6px; }
+  .brand { gap: 8px; }
+  .brand-text h1 { font-size: 14px; letter-spacing: 2.2px; gap: 6px; }
+  .brand-number { min-width: 28px; padding: 2px 5px; }
+  .balance-pill { min-width: 0; padding: 4px 10px; }
+  .balance-value { font-size: 17px; }
+  .icon-btn { width: 36px; height: 36px; }
+  .toast { top: 64px; }
+}
+
+/* ----------------------- The table ----------------------- */
+.table-wrap {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.3vh, 14px);
+  padding: clamp(6px, 1.4vh, 20px) clamp(8px, 2vw, 26px);
+  padding-bottom: max(clamp(6px, 1.4vh, 16px), env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.table {
+  position: relative;
+  width: min(1180px, 100%);
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* One felt with a walnut rail, as at the other tables of the pit. */
+.table-felt {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(6px, 1.4vh, 16px);
+  padding: clamp(10px, 1.8vh, 22px) clamp(10px, 2vw, 30px);
+  border: var(--rail) solid transparent;
+  border-radius: clamp(22px, 4vh, 44px);
+  background:
+    radial-gradient(ellipse 70% 60% at 30% -10%, rgba(255, 247, 218, .1), transparent 66%) padding-box,
+    repeating-linear-gradient(4deg, rgba(255,255,255,.016) 0 1px, transparent 1px 4px) padding-box,
+    repeating-linear-gradient(94deg, rgba(0,0,0,.024) 0 1px, transparent 1px 5px) padding-box,
+    radial-gradient(130% 110% at 50% 10%, var(--felt-highlight) 0%, var(--felt-1) 26%, var(--felt-2) 64%, var(--felt-edge) 100%) padding-box,
+    linear-gradient(142deg, rgba(255,232,164,.3), transparent 24%, rgba(0,0,0,.42) 72%, rgba(255,214,117,.2)) border-box,
+    repeating-linear-gradient(102deg, #25160b 0 10px, #52371a 10px 18px, #30200f 18px 29px, #694821 29px 34px) border-box;
+  box-shadow:
+    inset 0 0 0 1px rgba(241, 211, 130, .18),
+    inset 0 0 110px rgba(0, 0, 0, .55),
+    inset 0 9px 34px rgba(255, 255, 255, .05),
+    0 0 0 1px #0b0704,
+    0 0 0 4px rgba(105, 72, 31, .58),
+    0 30px 60px rgba(0, 0, 0, .6);
+}
+.table-rim {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 2px solid rgba(225, 190, 99, .5);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 0 1px 0 rgba(255,244,205,.16);
+  z-index: 0;
+}
+
+/* ----------------------- Meter, banner and plaque ----------------------- */
+.felt-head {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner {
+  min-width: 0;
+  max-width: min(460px, 52vw);
+  pointer-events: none;
+  padding: 7px 18px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .42);
+  border: 1px solid rgba(217, 182, 95, .35);
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: clamp(10.5px, 1.6vh, 14px);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--gold-bright);
+  line-height: 1.3;
+  text-wrap: balance;
+  transition: background .25s, border-color .25s, color .25s;
+}
+.banner small {
+  display: block;
+  margin-top: 1px;
+  font-size: .8em;
+  letter-spacing: .9px;
+  opacity: .78;
+}
+.banner small:empty { display: none; }
+.banner.flash-lose { background: rgba(0, 0, 0, .5); border-color: rgba(226, 104, 95, .55); color: #ffd9d6; }
+
+.table-specs {
+  justify-self: end;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid rgba(205,169,82,.46);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(18,24,20,.78), rgba(5,10,8,.78));
+  box-shadow: 0 5px 12px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.05);
+}
+.table-spec { min-width: 50px; padding: 5px 10px 6px; text-align: left; }
+.table-spec small {
+  display: block;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: rgba(232, 202, 125, .62);
+}
+.table-spec strong {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--cream);
+}
+
+/* ----------------------- The draw meter ----------------------- */
+.draw-meter {
+  justify-self: start;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid rgba(205,169,82,.46);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(18,24,20,.78), rgba(5,10,8,.78));
+}
+.meter-item { min-width: 64px; padding: 5px 10px 6px; }
+.meter-item + .meter-item { border-left: 1px solid rgba(205,169,82,.25); }
+.meter-item small {
+  display: block;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: rgba(232, 202, 125, .62);
+}
+.meter-item strong {
+  font-family: var(--font-display);
+  font-size: clamp(13px, 2vh, 17px);
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------- The board ----------------------- */
+.keno-body {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 250px);
+  gap: clamp(8px, 1.4vw, 18px);
+}
+/* Eighty numbers in eight rows of ten, as on a keno ticket. */
+.board {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  gap: clamp(3px, .5vw, 6px);
+}
+.ball-cell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--print);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .14);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: clamp(12px, 2.4vh, 22px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+/* The middle line of the ticket, between 40 and 41. */
+.ball-cell:nth-child(n + 41):nth-child(-n + 50) { margin-top: clamp(2px, .5vh, 6px); }
+.ball-cell:not(:disabled):hover { background: rgba(255, 238, 190, .12); }
+.ball-cell:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+.ball-cell:disabled { cursor: default; }
+/* A mark: a red dauber over the number. */
+.ball-cell.marked {
+  border-color: #f08a80;
+  background: radial-gradient(circle closest-side, rgba(200, 32, 42, .9) 0 82%, rgba(200, 32, 42, .22) 86%);
+  color: #fff;
+}
+/* A drawn ball that is not marked: an ivory ball. */
+.ball-cell.drawn {
+  border-color: rgba(244, 226, 166, .6);
+  background: radial-gradient(circle closest-side, #fbf6e8 0, #efe5c9 70%, #c9b98e 88%, transparent 92%);
+  color: #17171a;
+}
+/* A caught mark: a gold ball with the dauber's ring. */
+.ball-cell.caught {
+  border-color: var(--gold-bright);
+  background: radial-gradient(circle closest-side, #fff2bd 0, #f0cf63 62%, #a57d1f 86%, rgba(200, 32, 42, .55) 90%);
+  color: #2a1d05;
+  box-shadow: 0 0 0 1px rgba(244, 226, 166, .6), 0 0 16px rgba(244, 226, 166, .4);
+}
+.ball-cell.pop { animation: ballPop .3s cubic-bezier(.3, .8, .4, 1.3); }
+@keyframes ballPop {
+  0% { transform: scale(.4); }
+  100% { transform: scale(1); }
+}
+
+/* ----------------------- The pay table ----------------------- */
+.paytable {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--print);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .22);
+  overflow: auto;
+}
+.paytable-title {
+  font-size: clamp(11px, 1.6vh, 14px);
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+.paytable-grid { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.paytable-grid th, .paytable-grid td { padding: clamp(2px, .5vh, 5px) 6px; text-align: left; border-bottom: 1px solid rgba(217, 182, 95, .14); }
+.paytable-grid thead th { font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(244, 239, 226, .55); font-weight: 600; }
+.paytable-grid tbody th { font-family: var(--font-display); font-size: clamp(13px, 2vh, 17px); color: var(--cream); width: 3em; }
+.paytable-grid td b { display: block; font-family: var(--font-display); font-size: clamp(13px, 2vh, 17px); color: var(--gold-bright); }
+.paytable-grid td small { font-size: 9.5px; color: rgba(244, 239, 226, .55); }
+.paytable-grid tr.won { background: rgba(244, 226, 166, .18); box-shadow: inset 3px 0 0 var(--gold-bright); }
+.paytable-hint { font-size: 12px; color: rgba(244, 239, 226, .62); line-height: 1.45; }
+
+/* ----------------------- Controls ----------------------- */
+.controls {
+  position: relative;
+  z-index: 3;
+  width: min(1180px, 100%);
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 1.2vh, 14px) clamp(8px, 1.6vw, 22px);
+}
+.chips-tray {
+  flex: 0 0 auto;
+  display: flex;
+  gap: clamp(6px, 1.1vw, 14px);
+  justify-content: center;
+  padding: clamp(8px, 1.3vh, 13px) clamp(10px, 1.6vw, 18px);
+  padding-top: clamp(12px, 1.8vh, 18px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent 36%),
+    linear-gradient(180deg, var(--tray-top), var(--tray-bottom));
+  border: 1px solid rgba(217,182,95,.25);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), inset 0 -8px 16px rgba(0,0,0,.24), 0 12px 25px rgba(0,0,0,.24);
+}
+.action-row {
+  flex: 1 0 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(8px, 1.4vw, 18px);
+}
+.bet-actions { display: flex; gap: clamp(5px, .7vw, 9px); }
+.bet-total {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  min-width: 92px;
+  text-align: right;
+}
+.bet-total small {
+  color: rgba(244, 239, 226, .55);
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bet-total strong {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 2.3vh, 22px);
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bet-total .last-win { letter-spacing: .6px; text-transform: none; font-size: 10px; }
+.bet-total .last-win b { color: rgba(214, 255, 233, .85); font-variant-numeric: tabular-nums; }
+
+/* Roll: a brass plaque beside the tray. */
+.deal-btn {
+  flex: 0 0 auto;
+  min-width: clamp(96px, 13vh, 132px);
+  height: clamp(48px, 7.4vh, 64px);
+  padding: 0 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(80, 56, 12, .9);
+  background:
+    radial-gradient(120% 90% at 40% 20%, rgba(255,255,255,.45), transparent 45%),
+    linear-gradient(180deg, #f3d985, #c9a24b 62%, #8c6a1c);
+  box-shadow:
+    0 0 0 3px rgba(20, 13, 4, .55),
+    0 0 0 4px rgba(240, 215, 143, .45),
+    0 10px 22px rgba(0,0,0,.45),
+    inset 0 -5px 8px rgba(110, 76, 14, .5);
+  color: #2a1d05;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2.2vh, 19px);
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .14s ease, filter .2s ease;
+}
+.deal-btn:not(:disabled):hover { transform: translateY(-2px); filter: brightness(1.05); }
+.deal-btn:not(:disabled):active { transform: translateY(1px) scale(.98); }
+.deal-btn:disabled { cursor: not-allowed; filter: grayscale(.55) brightness(.62); }
+.deal-btn.ready { animation: dealReady 2.4s ease-in-out infinite; }
+@keyframes dealReady {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(20,13,4,.55), 0 0 0 4px rgba(240,215,143,.45), 0 10px 22px rgba(0,0,0,.45), inset 0 -5px 8px rgba(110,76,14,.5); }
+  50% { box-shadow: 0 0 0 3px rgba(20,13,4,.55), 0 0 0 4px rgba(244,226,166,.9), 0 0 24px rgba(244,226,166,.4), inset 0 -5px 8px rgba(110,76,14,.5); }
+}
+
+
+/* ----------------------- Dialogs ----------------------- */
+/* A miniature of this machine on each cloth: a marked number and a ball. */
+.theme-preview::before,
+.theme-preview::after {
+  content: "";
+  position: absolute;
+  top: 28%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: 0 3px 6px rgba(0,0,0,.45);
+}
+.theme-preview::before { left: 30%; background: #c8202a; }
+.theme-preview::after { right: 30%; background: radial-gradient(circle at 40% 35%, #fff6c9, #e3bd4d 60%, #a57d1f); }
+.theme-option[data-set-theme="midnight"] { --preview-felt-top: #2b6288; --preview-felt-bottom: #0b2b47; }
+.theme-option[data-set-theme="bordeaux"] { --preview-felt-top: #8e3a49; --preview-felt-bottom: #3e111c; }
+.theme-option[data-set-theme="onyx"] { --preview-felt-top: #5d6268; --preview-felt-bottom: #2a2d31; }
+.theme-option[data-set-theme="amethyst"] { --preview-felt-top: #7a54a8; --preview-felt-bottom: #36215a; }
+.rules-title {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--gold-bright);
+  letter-spacing: .6px;
+}
+.payout-table .settings-hint + .settings-hint { margin-top: 0; }
+
+
+
+
+/* ----------------------- Phones and short screens ----------------------- */
+@media (max-width: 760px) {
+  .felt-head { grid-template-columns: auto minmax(0, 1fr); }
+  .table-specs { display: none; }
+  .banner { justify-self: end; max-width: 100%; }
+  /* The board on top, the pay table below; the felt scrolls between them. */
+  .keno-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: max-content max-content; overflow-y: auto; }
+  .board { grid-template-rows: none; grid-auto-rows: clamp(28px, 8.4vw, 44px); }
+  .ball-cell { font-size: clamp(12px, 3.6vw, 18px); border-radius: 6px; }
+  .paytable { overflow: visible; }
+  .controls { justify-content: center; }
+  .chips-tray { width: 100%; gap: 4px; padding-inline: 6px; }
+  .chips-tray .chip { --size: clamp(36px, 12vw, 50px); }
+  .action-row { width: 100%; justify-content: space-between; }
+  .btn-tool { min-width: 0; padding-inline: 7px; }
+}
+
+@media (max-width: 420px) {
+  .bet-total { min-width: 0; }
+  .bet-total .last-win { display: none; }
+  .bet-actions { gap: 4px; }
+  .btn-tool span { display: none; }
+  .deal-btn { min-width: 84px; padding: 0 14px; }
+  .meter-item { min-width: 52px; padding-inline: 7px; }
+}
+
+/* Phones on their side and short windows. */
+@media (max-height: 560px) {
+  .topbar { padding-block: 4px; }
+  .table-wrap { padding-block: 4px; gap: 4px; }
+  .table-felt { padding: 6px 12px; gap: 4px; border-radius: 20px; }
+  .keno-body { grid-template-columns: minmax(0, 1fr) minmax(160px, 210px); grid-template-rows: none; overflow: hidden; }
+  .board { grid-template-rows: repeat(8, minmax(0, 1fr)); grid-auto-rows: auto; gap: 2px; }
+  .ball-cell { font-size: 11px; border-radius: 4px; border-width: 1px; }
+  .ball-cell:nth-child(n + 41):nth-child(-n + 50) { margin-top: 0; }
+  .paytable { overflow: auto; padding: 6px 8px; }
+  .banner { padding: 3px 12px; font-size: 10px; }
+  .banner small { display: inline; margin-left: 6px; }
+  .controls { flex-wrap: nowrap; gap: 8px; }
+  .chips-tray { width: auto; padding: 6px 8px; }
+  .chips-tray .chip { --size: 34px; }
+  .action-row { width: auto; }
+  .deal-btn { height: 42px; min-width: 76px; }
+  .bet-total .last-win { display: none; }
+}
+
+/* No transitions at all for reduced motion: each step appears in place. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

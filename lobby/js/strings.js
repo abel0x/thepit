@@ -38,6 +38,8 @@
       videopokerSummary: "Jacks or Better: five cards, hold and draw once, 9/6 or 8/5 pays and an exact strategy hint. Returns up to 99.54%.",
       sicboGame: "Sic Bo",
       sicboSummary: "Three dice decide Small and Big, the totals, the triples, the doubles, the combinations and the single numbers, all in one roll.",
+      kenoGame: "Keno",
+      kenoSummary: "Mark up to 10 of 80 numbers and watch 20 balls drawn, with a pay table for every count of marks. Returns up to 92.96%.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -75,6 +77,8 @@
       videopokerSummary: "Jacks or Better: beş kart, tut ve bir kez çek; 9/6 ya da 8/5 ödemeler ve tam hesaplı strateji ipucu. Geri dönüş %99,54'e kadar.",
       sicboGame: "Sic Bo",
       sicboSummary: "Üç zar Küçük ve Büyük'ü, toplamları, üçlüleri, ikilileri, kombinasyonları ve tek sayıları tek atışta belirler.",
+      kenoGame: "Keno",
+      kenoSummary: "80 sayıdan 10'a kadarını işaretleyin, 20 topun çekilişini izleyin; her işaret sayısının kendi ödeme tablosu var. Geri dönüş %92,96'ya kadar.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

@@ -155,13 +155,42 @@ test("bets keep only whole, positive amounts for the bets placed before the deal
   assert.equal(Engine.totalStake({ ante: 25, pairPlus: 10 }), 35);
 });
 
-test("an exhaustive count of all 22,100 hands gives Pair Plus its 2.32% house edge", function () {
+test("the two Pair Plus pay tables differ only in the flush", function () {
+  assert.deepEqual(Engine.PAY_TABLES, ["standard", "lowFlush"]);
+  assert.deepEqual(Engine.PAIR_PLUS.standard, { straightFlush: 40, trips: 30, straight: 6, flush: 4, pair: 1 });
+  assert.deepEqual(Engine.PAIR_PLUS.lowFlush, Object.assign({}, Engine.PAIR_PLUS.standard, { flush: 3 }));
+  assert.equal(Engine.pairPlusPays("other"), Engine.PAIR_PLUS.standard);
+  assert.equal(Engine.pairPlusPays(undefined), Engine.PAIR_PLUS.standard);
+});
+
+test("a flush pays Pair Plus by the pay table the hand was dealt under; nothing else changes", function () {
+  var bets = { ante: 100, pairPlus: 10 };
+  var cards = [hand("2H 7H JH"), hand("QS 8D 3C")];
+  var standard = Engine.settle(bets, cards[0], cards[1], "play", "standard");
+  var lowFlush = Engine.settle(bets, cards[0], cards[1], "play", "lowFlush");
+  assert.deepEqual(standard.lines.map(function (l) { return [l.key, l.returned]; }), [["pairPlus", 50], ["ante", 200], ["play", 200]]);
+  assert.deepEqual(lowFlush.lines.map(function (l) { return [l.key, l.returned]; }), [["pairPlus", 40], ["ante", 200], ["play", 200]]);
+  assert.deepEqual(Engine.settle(bets, cards[0], cards[1], "play"), standard, "no pay table means the standard one");
+  // Every other hand settles the same under both.
+  [["4S 5D 6C", "9S 10D JC"], ["7S 7D 7C", "QS 5D 9C"], ["QH KH AH", "2S 5D 9C"], ["KS KD 4C", "QS 8D 3C"]].forEach(function (deal) {
+    assert.deepEqual(Engine.settle(bets, hand(deal[0]), hand(deal[1]), "play", "lowFlush"),
+      Engine.settle(bets, hand(deal[0]), hand(deal[1]), "play", "standard"), deal[0]);
+  });
+});
+
+// The house edge of one Pair Plus pay table over all 22,100 hands, in percent.
+function pairPlusEdge(payTable) {
   var total = 0;
   ALL.forEach(function (entry) {
-    var pays = Engine.PAIR_PLUS[entry.hand.category] || 0;
+    var pays = Engine.pairPlusPays(payTable)[entry.hand.category] || 0;
     total += pays ? pays : -1;
   });
-  assert.equal((-total / ALL.length * 100).toFixed(2), "2.32");
+  return (-total / ALL.length * 100).toFixed(2);
+}
+
+test("an exhaustive count of all 22,100 hands gives Pair Plus its 2.32% house edge, and 7.28% with the flush at 3 to 1", function () {
+  assert.equal(pairPlusEdge("standard"), "2.32");
+  assert.equal(pairPlusEdge("lowFlush"), "7.28");
 });
 
 test("an exhaustive count of every deal gives Ante and Play their 3.37% house edge with the best strategy", function () {

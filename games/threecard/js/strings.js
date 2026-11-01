@@ -87,6 +87,12 @@
         "Fresh play money on the table: {amount}."
       ],
 
+      tableRules: "Pair Plus pay table",
+      profileStandard: "Standard",
+      profileLowFlush: "Low flush",
+      profileStandardSummary: "Flush pays 4 to 1 · House edge 2.32% on Pair Plus",
+      profileLowFlushSummary: "Flush pays 3 to 1 · House edge 7.28% on Pair Plus",
+      profileHint: "The pay table changes between hands. Ante, Play and the Ante Bonus pay the same under both.",
       animationSpeed: "Dealing speed",
       cardVolume: "Cards",
       tableVolume: "Table cues",
@@ -102,11 +108,13 @@
       payTrips: "30 TO 1",
       payStraight: "6 TO 1",
       payFlush: "4 TO 1",
+      payFlushLow: "3 TO 1",
       payPair: "1 TO 1",
       bonusStraightFlush: "5 TO 1",
       bonusTrips: "4 TO 1",
       bonusStraight: "1 TO 1",
       houseEdges: "House edge with the best strategy: 3.37% of the Ante on Ante and Play, 2.32% on Pair Plus.",
+      houseEdgesLowFlush: "House edge with the best strategy: 3.37% of the Ante on Ante and Play, 7.28% on Pair Plus.",
       rulesHint: "One deck, shuffled for every hand. In three-card poker a straight beats a flush, and A-2-3 is the lowest straight. Amounts use whole dollars.",
 
       sessionStats: "Statistics",
@@ -207,6 +215,12 @@
         "Masaya yeni oyun parası kondu: {amount}."
       ],
 
+      tableRules: "Pair Plus ödeme tablosu",
+      profileStandard: "Standart",
+      profileLowFlush: "Düşük renk",
+      profileStandardSummary: "Renk 1'e 4 öder · Pair Plus'ta kasa avantajı %2,32",
+      profileLowFlushSummary: "Renk 1'e 3 öder · Pair Plus'ta kasa avantajı %7,28",
+      profileHint: "Ödeme tablosu eller arasında değişir. Ante, Play ve Ante Bonusu ikisinde de aynı öder.",
       animationSpeed: "Dağıtım hızı",
       cardVolume: "Kartlar",
       tableVolume: "Masa sesleri",
@@ -222,11 +236,13 @@
       payTrips: "1'E 30",
       payStraight: "1'E 6",
       payFlush: "1'E 4",
+      payFlushLow: "1'E 3",
       payPair: "1'E 1",
       bonusStraightFlush: "1'E 5",
       bonusTrips: "1'E 4",
       bonusStraight: "1'E 1",
       houseEdges: "En iyi stratejiyle kasa avantajı: Ante ve Play'de Ante'nin %3,37'si, Pair Plus'ta %2,32.",
+      houseEdgesLowFlush: "En iyi stratejiyle kasa avantajı: Ante ve Play'de Ante'nin %3,37'si, Pair Plus'ta %7,28.",
       rulesHint: "Tek deste, her elde yeniden karıştırılır. Üç kartlı pokerde kent rengi yener ve A-2-3 en düşük kenttir. Tutarlar tam dolardır.",
 
       sessionStats: "İstatistikler",

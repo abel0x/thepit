@@ -176,7 +176,7 @@
               <tr><th scope="row" data-i18n="handStraightFlush">Straight flush</th><td data-i18n="payStraightFlush">40 TO 1</td></tr>
               <tr><th scope="row" data-i18n="handTripsPrint">Three of a kind</th><td data-i18n="payTrips">30 TO 1</td></tr>
               <tr><th scope="row" data-i18n="handStraight">Straight</th><td data-i18n="payStraight">6 TO 1</td></tr>
-              <tr><th scope="row" data-i18n="handFlush">Flush</th><td data-i18n="payFlush">4 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="handFlush">Flush</th><td data-i18n="payFlush" data-pay-flush>4 TO 1</td></tr>
               <tr><th scope="row" data-i18n="handPairPrint">Pair</th><td data-i18n="payPair">1 TO 1</td></tr>
             </tbody>
           </table>
@@ -288,6 +288,27 @@
           </div>
         </div>
 
+        <div class="rule-profile-setting">
+          <div class="setting-section-label" id="profileLabel" data-i18n="tableRules">Pair Plus pay table</div>
+          <div class="rule-profile-picker" role="radiogroup" aria-labelledby="profileLabel" aria-describedby="profileHint">
+            <button class="rule-profile" data-profile="standard" type="button" role="radio" aria-checked="true">
+              <span class="rule-profile-code" aria-hidden="true">6/4</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileStandard">Standard</strong>
+                <small data-i18n="profileStandardSummary">Flush pays 4 to 1 · House edge 2.32% on Pair Plus</small>
+              </span>
+            </button>
+            <button class="rule-profile" data-profile="lowFlush" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="rule-profile-code" aria-hidden="true">6/3</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileLowFlush">Low flush</strong>
+                <small data-i18n="profileLowFlushSummary">Flush pays 3 to 1 · House edge 7.28% on Pair Plus</small>
+              </span>
+            </button>
+          </div>
+          <p class="settings-hint" id="profileHint" data-i18n="profileHint">The pay table changes between hands. Ante, Play and the Ante Bonus pay the same under both.</p>
+        </div>
+
         <div class="coach-setting">
           <div class="setting-row">
             <label for="setCoach" data-i18n="coachLabel">Strategy hint</label>
@@ -346,7 +367,7 @@
               <tr><th scope="row" data-i18n="handStraightFlush">Straight flush</th><td data-i18n="payStraightFlush">40 TO 1</td></tr>
               <tr><th scope="row" data-i18n="handTripsPrint">Three of a kind</th><td data-i18n="payTrips">30 TO 1</td></tr>
               <tr><th scope="row" data-i18n="handStraight">Straight</th><td data-i18n="payStraight">6 TO 1</td></tr>
-              <tr><th scope="row" data-i18n="handFlush">Flush</th><td data-i18n="payFlush">4 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="handFlush">Flush</th><td data-i18n="payFlush" data-pay-flush>4 TO 1</td></tr>
               <tr><th scope="row" data-i18n="handPairPrint">Pair</th><td data-i18n="payPair">1 TO 1</td></tr>
             </tbody>
           </table>
@@ -360,7 +381,7 @@
             </tbody>
           </table>
           <p class="settings-hint" data-i18n="anteBonusRules">The Ante Bonus is paid on every hand you play, whatever the dealer holds.</p>
-          <p class="settings-hint" data-i18n="houseEdges">House edge with the best strategy: 3.37% of the Ante on Ante and Play, 2.32% on Pair Plus.</p>
+          <p class="settings-hint" id="houseEdges" data-i18n="houseEdges">House edge with the best strategy: 3.37% of the Ante on Ante and Play, 2.32% on Pair Plus.</p>
           <p class="settings-hint" data-i18n="rulesHint">One deck, shuffled for every hand. In three-card poker a straight beats a flush, and A-2-3 is the lowest straight. Amounts use whole dollars.</p>
         </details>
 

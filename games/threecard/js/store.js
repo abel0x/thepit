@@ -37,7 +37,7 @@
 
   var SPEEDS = ["fast", "normal", "cinematic"];
   var DECISIONS = ["play", "fold"];
-  var DEFAULT_SETTINGS = { animationSpeed: "normal", coach: false };
+  var DEFAULT_SETTINGS = { payTable: "standard", animationSpeed: "normal", coach: false };
   var DEFAULT_STATS = { hands: 0, played: 0, folded: 0, winningHands: 0, noQualify: 0, pairPlusWins: 0, wagered: 0, returned: 0, biggestWin: 0, bestHand: 0 };
 
   function safeCount(value) {
@@ -48,6 +48,7 @@
   function normalizeSettings(value) {
     value = value && typeof value === "object" ? value : {};
     return {
+      payTable: Engine.PAY_TABLES.indexOf(value.payTable) !== -1 ? value.payTable : DEFAULT_SETTINGS.payTable,
       animationSpeed: SPEEDS.indexOf(value.animationSpeed) !== -1 ? value.animationSpeed : DEFAULT_SETTINGS.animationSpeed,
       coach: value.coach === true
     };
@@ -88,6 +89,7 @@
     return {
       id: round.id,
       bets: round.bets,
+      payTable: round.payTable,
       stake: roundStake(round.bets, round.decision),
       player: round.player.map(Engine.code),
       dealer: round.dealer.map(Engine.code),
@@ -97,20 +99,24 @@
   }
 
   // A hand snapshot is trusted only when every part of it agrees: an Ante
-  // within the limits, a stake that adds up, a decision the table knows and
-  // six different cards from one deck.
+  // within the limits, a pay table the table offers, a stake that adds up, a
+  // decision the table knows and six different cards from one deck. A hand
+  // saved before there was a choice of pay table was dealt under the
+  // standard one.
   function normalizeRound(value) {
     if (!value || typeof value !== "object") return null;
     if (typeof value.id !== "string" || !value.id) return null;
     var bets = Engine.normalizeBets(value.bets);
     if (!bets.ante || Object.keys(bets).length !== Object.keys(value.bets || {}).length) return null;
     if (Object.keys(bets).some(function (key) { return bets[key] > betLimit(key); })) return null;
+    var payTable = value.payTable == null ? "standard" : value.payTable;
+    if (Engine.PAY_TABLES.indexOf(payTable) === -1) return null;
     var decision = value.decision == null ? null : value.decision;
     if (decision !== null && DECISIONS.indexOf(decision) === -1) return null;
     if (value.stake !== roundStake(bets, decision)) return null;
     var player = hand(value.player), dealer = hand(value.dealer);
     if (!player || !dealer || !Engine.isLegalDeal(player, dealer)) return null;
-    return { id: value.id, bets: bets, player: player, dealer: dealer, decision: decision, at: safeCount(value.at) };
+    return { id: value.id, bets: bets, payTable: payTable, player: player, dealer: dealer, decision: decision, at: safeCount(value.at) };
   }
 
   // Applies a settled hand to the statistics.

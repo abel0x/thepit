@@ -13,7 +13,7 @@ function hand(text) {
   return text.split(" ").map(Engine.fromCode);
 }
 
-var good = { id: "h1", bets: { ante: 25, pairPlus: 10 }, stake: 35, player: ["KS", "KD", "4C"], dealer: ["QS", "8D", "3C"], decision: null, at: 7 };
+var good = { id: "h1", bets: { ante: 25, pairPlus: 10 }, payTable: "lowFlush", stake: 35, player: ["KS", "KD", "4C"], dealer: ["QS", "8D", "3C"], decision: null, at: 7 };
 
 test("the table keeps its own data, the balance is the pit's", function () {
   assert.equal(Store.KEYS.bankroll, "pit.bankroll");
@@ -23,8 +23,10 @@ test("the table keeps its own data, the balance is the pit's", function () {
 
 test("settings fall back to the defaults field by field", function () {
   assert.deepEqual(Store.normalizeSettings(null), Store.DEFAULT_SETTINGS);
-  assert.deepEqual(Store.normalizeSettings({ animationSpeed: "cinematic", coach: true }), { animationSpeed: "cinematic", coach: true });
-  assert.deepEqual(Store.normalizeSettings({ animationSpeed: 2, coach: "yes" }), Store.DEFAULT_SETTINGS);
+  assert.deepEqual(Store.normalizeSettings({ payTable: "lowFlush", animationSpeed: "cinematic", coach: true }),
+    { payTable: "lowFlush", animationSpeed: "cinematic", coach: true });
+  assert.deepEqual(Store.normalizeSettings({ payTable: "high", animationSpeed: 2, coach: "yes" }), Store.DEFAULT_SETTINGS);
+  assert.equal(Store.DEFAULT_SETTINGS.payTable, "standard");
 });
 
 test("statistics stay whole and consistent", function () {
@@ -57,12 +59,17 @@ test("a hand is saved with its cards, and comes back only when everything agrees
   var played = Object.assign({}, good, { decision: "play", stake: 60 });
   assert.equal(Store.normalizeRound(played).decision, "play");
   assert.deepEqual(Store.roundSnapshot(Store.normalizeRound(played)), Object.assign({}, played, { bets: { pairPlus: 10, ante: 25 } }));
+  assert.equal(round.payTable, "lowFlush", "the hand keeps the pay table it was dealt under");
+  var older = Object.assign({}, good);
+  delete older.payTable;
+  assert.equal(Store.normalizeRound(older).payTable, "standard", "a hand saved before the choice was dealt under the standard table");
 
   [
     Object.assign({}, good, { id: "" }),
     Object.assign({}, good, { stake: 60 }),
     Object.assign({}, good, { decision: "play" }),
     Object.assign({}, good, { decision: "raise" }),
+    Object.assign({}, good, { payTable: "high" }),
     Object.assign({}, good, { bets: { pairPlus: 10 }, stake: 10 }),
     Object.assign({}, good, { bets: { ante: 25, play: 25 }, stake: 50 }),
     Object.assign({}, good, { bets: { ante: 5000, pairPlus: 10 }, stake: 5010 }),

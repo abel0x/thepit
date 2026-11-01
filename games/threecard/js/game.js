@@ -398,7 +398,7 @@
     // The Play spot takes the Play bet, and only while the hand waits for it.
     spotFor("play").disabled = !deciding;
     $("depositAmount").disabled = !betting;
-    document.querySelectorAll("[data-deposit], #btnDeposit, #btnResetStats").forEach(function (node) {
+    document.querySelectorAll("[data-deposit], #btnDeposit, .rule-profile, #btnResetStats").forEach(function (node) {
       node.disabled = !betting;
     });
     body.setAttribute("data-busy", String(state.busy || (state.phase !== "betting" && state.phase !== "deciding")));
@@ -407,7 +407,32 @@
   function setPhase(phase) {
     state.phase = phase;
     body.setAttribute("data-phase", phase);
+    applyPayTable();
     updateControls();
+  }
+
+  // The Pair Plus pay table on show: the one the hand on the felt was dealt
+  // under, or between hands the one the next hand will be dealt under.
+  function shownPayTable() {
+    return state.round ? state.round.payTable : state.settings.payTable;
+  }
+
+  function applyPayTable() {
+    var low = shownPayTable() === "lowFlush";
+    document.querySelectorAll("[data-pay-flush]").forEach(function (node) {
+      node.setAttribute("data-i18n", low ? "payFlushLow" : "payFlush");
+      node.textContent = t(low ? "payFlushLow" : "payFlush");
+    });
+    var edges = $("houseEdges");
+    edges.setAttribute("data-i18n", low ? "houseEdgesLowFlush" : "houseEdges");
+    edges.textContent = t(low ? "houseEdgesLowFlush" : "houseEdges");
+    body.setAttribute("data-pay-table", shownPayTable());
+    document.querySelectorAll(".rule-profile").forEach(function (button) {
+      var on = button.getAttribute("data-profile") === state.settings.payTable;
+      button.classList.toggle("active", on);
+      button.setAttribute("aria-checked", String(on));
+      button.tabIndex = on ? 0 : -1;
+    });
   }
 
   /* ---------------- The cards on the felt ---------------- */
@@ -537,7 +562,7 @@
     }
     state.lastBets = round.bets;
     if (round.decision === null) return { resume: round };
-    var settlement = Engine.settle(round.bets, round.player, round.dealer, round.decision);
+    var settlement = Engine.settle(round.bets, round.player, round.dealer, round.decision, round.payTable);
     commitSettlement(settlement);
     renderBankroll();
     toast(t("roundRestored", { result: resultText(settlement) }), settlement.returned ? "win" : "");
@@ -589,7 +614,7 @@
       }
       var deck = Engine.newDeck();
       var hands = Engine.deal(function () { return deck.shift(); });
-      var round = { id: Store.newRoundId(), bets: bets, player: hands.player, dealer: hands.dealer, decision: null, at: Date.now() };
+      var round = { id: Store.newRoundId(), bets: bets, payTable: state.settings.payTable, player: hands.player, dealer: hands.dealer, decision: null, at: Date.now() };
       // The cards and the stake are saved before the first card is shown, so
       // a reload can neither redeal this hand nor refund a losing bet.
       account.write("round", Store.roundSnapshot(round));
@@ -684,7 +709,7 @@
     }
     await revealDealer(round);
 
-    var settlement = Engine.settle(round.bets, round.player, round.dealer, round.decision);
+    var settlement = Engine.settle(round.bets, round.player, round.dealer, round.decision, round.payTable);
     commitSettlement(settlement);
     if (settlement.outcome === "win" || settlement.outcome === "noQualify") el.bays.player.classList.add("winner");
     if (settlement.outcome === "lose") el.bays.dealer.classList.add("winner");
@@ -939,6 +964,17 @@
     });
     radioKeys(themePicker, "[data-set-theme]", function (button) { button.click(); });
 
+    var payTablePicker = document.querySelector(".rule-profile-picker");
+    payTablePicker.addEventListener("click", function (event) {
+      var button = event.target.closest(".rule-profile");
+      if (!button || button.disabled || !canBet()) return;
+      state.settings.payTable = button.getAttribute("data-profile");
+      saveSettings();
+      applyPayTable();
+      toast(t("profileApplied", { profile: t(state.settings.payTable === "lowFlush" ? "profileLowFlush" : "profileStandard") }));
+    });
+    radioKeys(payTablePicker, ".rule-profile", function (button) { button.click(); });
+
     var speedPicker = document.querySelector(".animation-seg");
     speedPicker.addEventListener("click", function (event) {
       var button = event.target.closest("[data-set-animation]");
@@ -1027,6 +1063,7 @@
     readAccountState();
     applyTheme(Pit.readTheme(safeStorage("localStorage")));
     applyAnimationSpeed();
+    applyPayTable();
     var volumes = Store.readJSON(safeStorage("localStorage"), Store.KEYS.audio, null);
     if (volumes) Sound.setVolumes(volumes);
     Sound.setEnabled(soundEnabled);

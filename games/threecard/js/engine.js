@@ -4,7 +4,8 @@
 /* =========================================================
    Table 3 — pure Three Card Poker engine
    The deck, the ranking of three-card hands, the dealer's qualifier,
-   the Ante, Play, Ante Bonus and Pair Plus settlements. No DOM,
+   the Ante, Play, Ante Bonus and Pair Plus settlements under either Pair
+   Plus pay table. No DOM,
    storage, network, or third-party dependencies.
    Exposed as window.ThreeCardEngine and CommonJS for tests.
    ========================================================= */
@@ -32,7 +33,12 @@
   // than a flush, so it ranks above it.
   var CATEGORIES = ["high", "pair", "flush", "straight", "trips", "straightFlush"];
   // Pair Plus pays on the player's hand alone, whatever the dealer holds.
-  var PAIR_PLUS = { straightFlush: 40, trips: 30, straight: 6, flush: 4, pair: 1 };
+  // The table offers two pay tables; they differ only in the flush.
+  var PAY_TABLES = ["standard", "lowFlush"];
+  var PAIR_PLUS = {
+    standard: { straightFlush: 40, trips: 30, straight: 6, flush: 4, pair: 1 },
+    lowFlush: { straightFlush: 40, trips: 30, straight: 6, flush: 3, pair: 1 }
+  };
   // The Ante Bonus pays a hand that is played, whatever the dealer holds.
   var ANTE_BONUS = { straightFlush: 5, trips: 4, straight: 1 };
 
@@ -211,10 +217,16 @@
     return Object.keys(bets).reduce(function (sum, key) { return sum + bets[key]; }, 0);
   }
 
-  // Everything a hand settles to. decision is "play" or "fold". Each line
+  // The Pair Plus pays of a pay table; an unknown name gets the standard one.
+  function pairPlusPays(payTable) {
+    return PAIR_PLUS[PAY_TABLES.indexOf(payTable) !== -1 ? payTable : "standard"];
+  }
+
+  // Everything a hand settles to. decision is "play" or "fold"; payTable
+  // names the Pair Plus pay table the hand was dealt under. Each line
   // is one bet: its stake and the whole dollars it returns, stake included.
   // The Ante Bonus has no stake of its own; it is paid on the Ante.
-  function settle(bets, player, dealer, decision) {
+  function settle(bets, player, dealer, decision, payTable) {
     bets = normalizeBets(bets);
     var ante = bets.ante || 0;
     var pairPlus = bets.pairPlus || 0;
@@ -226,7 +238,7 @@
 
     if (pairPlus) {
       // Folding gives up the Pair Plus with the Ante.
-      var pairPay = played ? PAIR_PLUS[mine.category] || 0 : 0;
+      var pairPay = played ? pairPlusPays(payTable)[mine.category] || 0 : 0;
       lines.push({ key: "pairPlus", amount: pairPlus, returned: pairPay ? pairPlus * (pairPay + 1) : 0 });
     }
     if (ante) {
@@ -268,6 +280,7 @@
     BETS: BETS,
     LIMITS: LIMITS,
     CATEGORIES: CATEGORIES,
+    PAY_TABLES: PAY_TABLES,
     PAIR_PLUS: PAIR_PLUS,
     ANTE_BONUS: ANTE_BONUS,
     QUALIFY_SCORE: QUALIFY_SCORE,
@@ -287,6 +300,7 @@
     qualifies: qualifies,
     shouldPlay: shouldPlay,
     compare: compare,
+    pairPlusPays: pairPlusPays,
     wholeAmount: wholeAmount,
     normalizeBets: normalizeBets,
     totalStake: totalStake,

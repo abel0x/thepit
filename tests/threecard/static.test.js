@@ -52,13 +52,28 @@ test("every word the page and the table ask for exists", function () {
 test("the printed odds are the engine's, in both languages", function () {
   assert.match(DICT.en.houseEdges, /3\.37% of the Ante on Ante and Play, 2\.32% on Pair Plus/);
   assert.match(DICT.tr.houseEdges, /Ante'nin %3,37'si, Pair Plus'ta %2,32/);
-  var pays = { payStraightFlush: Engine.PAIR_PLUS.straightFlush, payTrips: Engine.PAIR_PLUS.trips, payStraight: Engine.PAIR_PLUS.straight,
-    payFlush: Engine.PAIR_PLUS.flush, payPair: Engine.PAIR_PLUS.pair, bonusStraightFlush: Engine.ANTE_BONUS.straightFlush,
+  assert.match(DICT.en.houseEdgesLowFlush, /3\.37% of the Ante on Ante and Play, 7\.28% on Pair Plus/);
+  assert.match(DICT.tr.houseEdgesLowFlush, /Ante'nin %3,37'si, Pair Plus'ta %7,28/);
+  assert.equal(DICT.en.profileStandardSummary, "Flush pays " + Engine.PAIR_PLUS.standard.flush + " to 1 · House edge 2.32% on Pair Plus");
+  assert.equal(DICT.en.profileLowFlushSummary, "Flush pays " + Engine.PAIR_PLUS.lowFlush.flush + " to 1 · House edge 7.28% on Pair Plus");
+  assert.equal(DICT.tr.profileStandardSummary, "Renk 1'e " + Engine.PAIR_PLUS.standard.flush + " öder · Pair Plus'ta kasa avantajı %2,32");
+  assert.equal(DICT.tr.profileLowFlushSummary, "Renk 1'e " + Engine.PAIR_PLUS.lowFlush.flush + " öder · Pair Plus'ta kasa avantajı %7,28");
+  var standard = Engine.PAIR_PLUS.standard;
+  var pays = { payStraightFlush: standard.straightFlush, payTrips: standard.trips, payStraight: standard.straight,
+    payFlush: standard.flush, payFlushLow: Engine.PAIR_PLUS.lowFlush.flush, payPair: standard.pair, bonusStraightFlush: Engine.ANTE_BONUS.straightFlush,
     bonusTrips: Engine.ANTE_BONUS.trips, bonusStraight: Engine.ANTE_BONUS.straight };
   Object.keys(pays).forEach(function (key) {
     assert.equal(DICT.en[key], pays[key] + " TO 1", key);
     assert.equal(DICT.tr[key], "1'E " + pays[key], key + ": Turkish odds read the Turkish way round");
   });
+});
+
+test("a choice of the two Pair Plus pay tables, one radio button each", function () {
+  var profiles = Array.from(html.matchAll(/<button class="rule-profile" data-profile="(\w+)" type="button" role="radio"/g), function (m) { return m[1]; });
+  assert.deepEqual(profiles, Engine.PAY_TABLES);
+  assert.equal((html.match(/data-pay-flush/g) || []).length, 2, "the felt and the payout list both show the flush pay");
+  assert.match(game, /Engine\.settle\(round\.bets, round\.player, round\.dealer, round\.decision, round\.payTable\)/);
+  assert.doesNotMatch(game, /Engine\.settle\([^)]*round\.decision\)/, "every settlement names its pay table");
 });
 
 test("a spot for every bet, each a real button, and the Play spot beside them", function () {

@@ -157,6 +157,31 @@ test("a losing straight still collects the Ante Bonus and the Pair Plus", async 
   });
 });
 
+test("the low-flush pay table pays a flush 3 to 1, and only changes between hands", async () => {
+  await scene({ player: "2H 7H JH", dealer: "QS 8D 3C" }, async page => {
+    assert.deepEqual(await page.$$eval("[data-pay-flush]", nodes => nodes.map(n => n.textContent)), ["4 TO 1", "4 TO 1"]);
+    await page.click("#settingsBtn");
+    await page.click('.rule-profile[data-profile="lowFlush"]');
+    assert.match(await text(page, "#toast"), /Low flush rules applied/);
+    assert.equal(await page.$eval('.rule-profile[data-profile="lowFlush"]', node => node.getAttribute("aria-checked")), "true");
+    assert.match(await text(page, "#houseEdges"), /7\.28% on Pair Plus/);
+    assert.equal((await stored(page, "pit.threecard.settings")).payTable, "lowFlush");
+    await page.keyboard.press("Escape");
+    assert.deepEqual(await page.$$eval("[data-pay-flush]", nodes => nodes.map(n => n.textContent)), ["3 TO 1", "3 TO 1"]);
+
+    await chip(page, 100); await bet(page, "ante");
+    await chip(page, 10); await bet(page, "pairPlus");
+    await dealToDecision(page);
+    assert.equal((await stored(page, "pit.threecard.round")).payTable, "lowFlush", "the hand keeps the table it was dealt under");
+    assert.equal(await page.$eval('.rule-profile[data-profile="standard"]', node => node.disabled), true, "no change while a hand is out");
+    await page.click("#btnPlay");
+    await settled(page);
+    // Stake 210; returned Ante 200, Play 200 and Pair Plus 10 + 30.
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 210 + 440);
+    assert.equal(await page.$eval('.rule-profile[data-profile="standard"]', node => node.disabled), false);
+  });
+});
+
 test("folding gives up the Ante and the Pair Plus, and the strategy hint says so first", async () => {
   await scene({ player: "2S 5D 9C", dealer: "QS 8D 3C", settings: { coach: true } }, async page => {
     await chip(page, 25); await bet(page, "ante");

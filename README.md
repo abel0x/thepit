@@ -56,7 +56,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 
 - **Ante and Play against the dealer**: one deck, shuffled with `crypto.getRandomValues` for every hand. See your three cards, then play by matching the Ante or fold.
 - **The dealer qualifies with Queen high**: if not, the Ante pays 1:1 and the Play bet is returned; if so, the better hand wins both at 1:1 and a tie returns both. A straight beats a flush, and A-2-3 is the lowest straight.
-- **Ante Bonus and Pair Plus**: straight flush 5:1, three of a kind 4:1 and straight 1:1 on every hand played; Pair Plus pays 40, 30, 6, 4 and 1 to 1 on the player's hand alone. An exhaustive check of all 407,170,400 deals gives the published house edges: 3.37% of the Ante with the best strategy, 2.32% on Pair Plus.
+- **Ante Bonus and Pair Plus**: straight flush 5:1, three of a kind 4:1 and straight 1:1 on every hand played; Pair Plus pays 40, 30, 6, 4 and 1 to 1 on the player's hand alone, or with the flush at 3 to 1 under the Low flush pay table chosen in the settings. An exhaustive check of all 407,170,400 deals gives the published house edges: 3.37% of the Ante with the best strategy, 2.32% on Pair Plus, and 7.28% under Low flush.
 - **An optional strategy hint**: play Queen-6-4 or better, fold anything less, shown on the banner and on the button it picks.
 - **Saved at every step**: the hand and its stake before the first card, the decision and the Play bet before the dealer's cards. A reload brings the same cards back to the decision, or settles a decided hand.
 - **Keyboard shortcuts**: `Space`/`Enter` deal or play · `1`–`6` chips · `A` Ante · `S` Pair Plus · `P` play · `F` fold · `Z` or `Backspace` undo · `C` clear · `D` double · `R` rebet · `M` sound.

@@ -115,11 +115,19 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Saved before the first ball**: the ticket, the bet and all twenty balls; a reload settles the very same game and shows its draw.
 - **Keyboard shortcuts**: `Space`/`Enter` play · `1`–`6` bet · `Q` quick pick · `C` clear · `M` sound.
 
+### Wheel 54 · Big Six
+
+- **A money wheel of 54 segments**: 24 of $1, 15 of $2, 7 of $5, 4 of $10, 2 of $20, a Joker and the pit's logo, each value spread around the wheel. The segment is drawn with `crypto.getRandomValues` and the wheel turns four times and more before it slows to a stop under the pointer.
+- **Seven bets**: a dollar symbol pays its number to 1, the Joker and the logo 40 to 1. Every bet is checked on all 54 segments, and its house edge matches the published one, from 11.11% on $1 to 24.07% on the Joker and the logo.
+- **The wheel lights the layout**: the winning spot lights up, losing chips are swept away, winners are paid beside their stake, and the last spins line up beside the banner in the colours of the wheel.
+- **Saved before the wheel turns**: the bets, the stake and the segment; a reload settles the very same spin and shows the wheel where it stopped.
+- **Keyboard shortcuts**: `Space`/`Enter` spin · `1`–`6` chips · `Z` or `Backspace` undo · `C` clear · `R` rebet · `M` sound.
+
 ## One pit
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
 - **One round at a time**: a hand or a spin left unfinished is saved before it is played, so a reload, a crash, a closed tab or a trip back to the lobby resumes it with the same cards or the same result. Until it is played out, its stake stays on that table: the lobby marks the table, and the other tables wait instead of spending it.
-- **One set of chips**: every table bets with the same clay chips, and every value keeps one colour wherever it appears, in a tray, on the felt or in a payout: $1 white, $5 red, $10 brown, $25 green, $50 orange, $100 black, $500 purple, $1K yellow, $5K blue, $25K pink, $100K silver, and All-in bordeaux. Each table offers its own tray of them: Table 21 from $100, Table 37 and Table 9 from $5, Table 3 from $10, Table 7, Table 2 and Table 18 from $5, Slot 5 a chip for each line from $1, Poker 11 a coin from $1, and Keno 80 a bet from $1.
+- **One set of chips**: every table bets with the same clay chips, and every value keeps one colour wherever it appears, in a tray, on the felt or in a payout: $1 white, $5 red, $10 brown, $25 green, $50 orange, $100 black, $500 purple, $1K yellow, $5K blue, $25K pink, $100K silver, and All-in bordeaux. Each table offers its own tray of them: Table 21 from $100, Table 37 and Table 9 from $5, Table 3 from $10, Table 7, Table 2, Table 18 and Wheel 54 from $5, Slot 5 a chip for each line from $1, Poker 11 a coin from $1, and Keno 80 a bet from $1.
 - **The lobby**: the balance, every table with its rules and limits, and the settings the whole pit shares. *Add play money* only adds free chips.
 - **Five cloths, one language**: Emerald, Midnight, Bordeaux, Onyx and Amethyst, each with its own card back at the blackjack table, and the English or Turkish language follow the player from the lobby to every table and back.
 - **One installable app**: one manifest and one offline cache for the lobby and every table. Updates wait until no round is in play and do not force another open tab to reload.
@@ -138,9 +146,9 @@ The core test suite uses only Node's built-in test runner (Node.js 22.12 or newe
 npm test                 # node --test "tests/**/*.test.js" "tests/**/*.test.cjs"
 ```
 
-The suite currently executes **794 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals, the slot machine's against all 33,554,432 stops of its reels, every craps bet against the 36 rolls of two dice, the AA Bonus against all 2,598,960 five-card hands, video poker's best play against every one of its 2,598,960 deals, every Sic Bo bet against the 216 rolls of three dice, and every keno pay table against all 3,535,316,142,212,174,320 draws), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
+The suite currently executes **827 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals, the slot machine's against all 33,554,432 stops of its reels, every craps bet against the 36 rolls of two dice, the AA Bonus against all 2,598,960 five-card hands, video poker's best play against every one of its 2,598,960 deals, every Sic Bo bet against the 216 rolls of three dice, every keno pay table against all 3,535,316,142,212,174,320 draws, and every Big Six bet against the 54 segments of the wheel), the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
 
-The optional real-browser suite adds **318 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
+The optional real-browser suite adds **346 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
 
 ```bash
 npm install              # also downloads the Chrome build Puppeteer drives
@@ -180,6 +188,7 @@ games/holdem/              Table 2: page, look, engine, saved state
 games/videopoker/          Poker 11: page, look, engine, saved state
 games/sicbo/               Table 18: page, look, engine, saved state
 games/keno/                Keno 80: page, look, engine, saved state
+games/bigsix/              Wheel 54: page, look, engine, saved state
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)

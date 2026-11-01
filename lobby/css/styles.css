@@ -209,6 +209,17 @@ body {
 .art-keno-ball { fill: #e3bd4d; stroke: #a57d1f; stroke-width: 1.5; filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
 .art-keno-number { font-family: var(--font-display); font-size: 13px; font-weight: 700; text-anchor: middle; fill: var(--cream); }
 .art-keno-number.on { fill: #2a1d05; }
+.art-wheel-rim { fill: #3a240f; stroke: var(--gold); stroke-width: 3; filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
+.art-wedge { stroke: rgba(40, 26, 8, .7); stroke-width: .4; }
+.art-wedge.one { fill: #f1e8cf; }
+.art-wedge.two { fill: #2f6fb8; }
+.art-wedge.five { fill: #23834b; }
+.art-wedge.ten { fill: #6c3ea8; }
+.art-wedge.twenty { fill: #c4472b; }
+.art-wedge.joker { fill: #121214; }
+.art-wedge.logo { fill: #b8902f; }
+.art-wheel-hub { fill: #b7151e; stroke: var(--gold); stroke-width: 3; }
+.art-wheel-pointer { fill: #f4efe2; stroke: #8c6a1c; stroke-width: 1.2; }
 .art-reels { fill: #120b05; stroke: var(--gold); stroke-width: 3; }
 .art-reel { fill: #fbf8ef; }
 .art-seven { font-family: Georgia, "Times New Roman", serif; font-size: 40px; font-weight: 700; text-anchor: middle; fill: #c8202a; stroke: #e6c35a; stroke-width: 1.2; paint-order: stroke; }

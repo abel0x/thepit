@@ -4,7 +4,7 @@ All notable changes to ThePit are documented here. The project follows [Semantic
 
 ## [0.1.0] - Unreleased
 
-The first version of the pit: seven tables, a slot machine, a video poker machine and a keno machine, one wallet, one lobby.
+The first version of the pit: seven tables, a money wheel, a slot machine, a video poker machine and a keno machine, one wallet, one lobby.
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
@@ -17,6 +17,7 @@ The first version of the pit: seven tables, a slot machine, a video poker machin
 - Table 2, a Casino Hold'em table: Ante and Call against a dealer who qualifies with a pair of fours, the board turned flop, turn and river, the AA Bonus, and a hand left waiting for its decision brought back with the same cards.
 - Poker 11, a Jacks or Better video poker machine: one to five coins of a chip's value, hold and draw once, the 9/6 or 8/5 pay table returning 99.54% or 97.30% with the best play, an exact strategy hint, and a hand left waiting for its hold brought back with the same cards.
 - Table 18, a Sic Bo table: three dice deciding Small and Big, Odd and Even, the totals, the triples, the doubles, the two-dice combinations and the single numbers in one roll, the classic pay table with every house edge checked against all 216 rolls, the winning spots lit after each roll, and a roll left unfinished settled with the same dice.
+- Wheel 54, a Big Six money wheel: 54 segments from $1 to $20 with a Joker and the pit's logo, seven bets paying their number to 1 and 40 to 1, every house edge checked against the whole wheel, and a spin left unfinished settled on the same segment.
 - Keno 80, a keno machine: mark 1 to 10 of 80 numbers or quick pick, twenty balls drawn one by one, a pay table for every count of marks with its exact return, and a game left unfinished settled with the same balls.
 - Slot 5, a five-reel slot machine with 20 lines, a wild, scattered stars and ten free spins at triple pay, five sevens as its top prize, returning exactly 95.82%, with the bet on each line set by the pit's chips, and a fruit set that dresses the card ranks as watermelons, grapes, lemons and cherries without changing a single pay.
 - A lobby that lays its tables out in rows: one on a phone, two on a tablet, four on a wide screen, with a last row that is not full centred.

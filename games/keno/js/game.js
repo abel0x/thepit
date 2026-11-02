@@ -87,6 +87,8 @@
     paytableHint: $("paytableHint"),
     chipTray: $("chipTray"),
     betAmount: $("betAmount"),
+    racesLine: $("racesLine"),
+    racesPicker: $("racesPicker"),
     lastWin: $("lastWin"),
     toast: $("toast"),
     settings: $("settingsModal"),
@@ -144,12 +146,15 @@
   function idleBanner() {
     var count = picks().length;
     if (!count) setBanner("markNumbers");
-    else setBanner(count === 1 ? "readyLineOne" : "readyLine", { count: count, amount: bet() });
+    else setBanner(count === 1 ? "readyLineOne" : "readyLine", { count: count, amount: stake() });
   }
 
   /* ---------------- The ticket ---------------- */
   function picks() { return state.settings.picks; }
   function bet() { return state.settings.bet; }
+  function races() { return state.settings.races; }
+  // What the next game costs: the bet on every draw it plays.
+  function stake() { return bet() * races(); }
   function canPlay() { return state.phase === "betting" && !state.busy; }
 
   // A new mark wipes the last draw from the board.
@@ -284,7 +289,14 @@
   }
 
   function renderTicket() {
-    el.betAmount.textContent = fmt(bet());
+    el.betAmount.textContent = fmt(stake());
+    el.racesLine.textContent = races() > 1 ? t("racesLine", { bet: money(bet()), races: races() }) : "";
+    el.racesPicker.querySelectorAll("[data-races]").forEach(function (button) {
+      var on = Number(button.getAttribute("data-races")) === races();
+      button.classList.toggle("active", on);
+      button.setAttribute("aria-checked", String(on));
+      button.tabIndex = on ? 0 : -1;
+    });
     renderBoard();
     renderBankroll();
     updateControls();
@@ -346,8 +358,9 @@
     el.btn.play.classList.toggle("ready", ready && marked);
     el.chipTray.querySelectorAll(".chip").forEach(function (chip) {
       chip.disabled = !ready;
-      chip.classList.toggle("unaffordable", Number(chip.getAttribute("data-value")) > state.bankroll);
+      chip.classList.toggle("unaffordable", Number(chip.getAttribute("data-value")) * races() > state.bankroll);
     });
+    el.racesPicker.querySelectorAll("[data-races]").forEach(function (button) { button.disabled = !ready; });
     el.board.querySelectorAll(".ball-cell").forEach(function (cell) { cell.disabled = !ready; });
     $("depositAmount").disabled = !ready;
     document.querySelectorAll("[data-deposit], #btnDeposit, #btnResetStats").forEach(function (node) { node.disabled = !ready; });
@@ -361,21 +374,26 @@
   }
 
   /* ---------------- A game ---------------- */
-  // Credits the account, records the game and closes the round.
-  function commitGame(result) {
+  // Credits the account with every draw of the ticket, records each one as
+  // a game and closes the round.
+  function commitGame(played) {
     var bankroll = Store.normalizeBankroll(account.read("bankroll", state.bankroll));
-    bankroll = Math.min(Store.MAX_BANKROLL, bankroll + result.returned);
-    var stats = Store.recordGame(account.read("stats", state.stats), result);
+    bankroll = Math.min(Store.MAX_BANKROLL, bankroll + played.returned);
+    var stats = played.games.reduce(function (next, result) { return Store.recordGame(next, result); }, account.read("stats", state.stats));
     account.write("bankroll", bankroll);
     account.write("stats", stats);
     account.remove("round");
     state.bankroll = bankroll;
     state.stats = stats;
-    state.lastWin = result.returned;
+    state.lastWin = played.returned;
     renderStats();
   }
 
-  function resultText(result) {
+  function resultText(played) {
+    if (played.games.length > 1) {
+      return t("racesResult", { races: played.games.length }) + ". " + (played.returned ? t("winLine", { amount: money(played.returned) }) : t("noWin"));
+    }
+    var result = played.games[0];
     var caught = t("caughtLine", { hits: result.hits, spots: result.spots });
     return caught + ". " + (result.returned ? t("winLine", { amount: money(result.returned) }) : t("noWin"));
   }
@@ -395,28 +413,30 @@
     var round = Store.normalizeRound(raw);
     if (!round) {
       var bankroll = Store.normalizeBankroll(account.read("bankroll", Store.START_BANKROLL));
-      var refund = raw && Engine.isBet(raw.bet) ? raw.bet : 0;
+      var refund = raw && Engine.isBet(raw.bet) ? raw.bet * (Array.isArray(raw.races) && Engine.isRaces(raw.races.length) ? raw.races.length : 1) : 0;
       state.bankroll = Math.min(Store.MAX_BANKROLL, bankroll + refund);
       account.write("bankroll", state.bankroll);
       account.remove("round");
       toast(t("roundVoided"), "lose");
       return { voided: true };
     }
-    var result = Engine.settle(round.picks, round.balls, round.bet);
-    commitGame(result);
+    var played = Engine.settleRaces(round.picks, round.races, round.bet);
+    commitGame(played);
     state.settings.picks = round.picks.slice().sort(function (a, b) { return a - b; });
     state.settings.bet = round.bet;
+    state.settings.races = round.races.length;
     saveSettings();
-    state.shown = round.balls.slice();
-    state.result = result;
-    toast(t("roundRestored", { result: resultText(result) }), result.returned ? "win" : "");
-    return { result: result };
+    state.shown = round.races[round.races.length - 1].slice();
+    state.result = played.games[played.games.length - 1];
+    toast(t("roundRestored", { result: resultText(played) }), played.returned ? "win" : "");
+    return { result: played };
   }
 
   function play() {
     if (!canPlay()) return;
     var ticket = picks().slice();
-    var stake = bet();
+    var cost = stake();
+    var count = races();
     if (!Engine.isPicks(ticket)) { toast(t("markFirst"), "lose"); return; }
     Sound.unlock();
     state.busy = true;
@@ -426,16 +446,19 @@
       var elsewhere = account.roundsElsewhere();
       if (elsewhere.length) return { elsewhere: elsewhere[0] };
       var bankroll = Store.normalizeBankroll(account.read("bankroll", Store.START_BANKROLL));
-      if (stake > bankroll) {
+      if (cost > bankroll) {
         state.bankroll = bankroll;
         return { insufficient: true };
       }
-      var round = { id: Store.newRoundId(), picks: ticket, bet: stake, balls: Engine.draw(), at: Date.now() };
-      // The ticket, the bet and all twenty balls are saved before the first
-      // ball is shown, so a reload can neither draw again nor refund a loss.
+      var draws = [];
+      for (var i = 0; i < count; i++) draws.push(Engine.draw());
+      var round = { id: Store.newRoundId(), picks: ticket, bet: bet(), races: draws, at: Date.now() };
+      // The ticket, the bet and every ball of every draw are saved before
+      // the first ball is shown, so a reload can neither draw again nor
+      // refund a loss.
       account.write("round", Store.roundSnapshot(round));
-      account.write("bankroll", bankroll - stake);
-      state.bankroll = bankroll - stake;
+      account.write("bankroll", bankroll - cost);
+      state.bankroll = bankroll - cost;
       return playGame(round);
     }, 900).then(function (outcome) {
       state.busy = false;
@@ -452,36 +475,57 @@
     });
   }
 
-  // The twenty balls come out one by one; a caught mark rings.
+  // The twenty balls of each draw come out one by one; a caught mark rings.
+  // With several draws, each is shown and paid in turn, and the lot is
+  // credited together at the end.
   async function playGame(round) {
     setPhase("drawing");
-    state.shown = [];
-    state.result = null;
-    renderBoard();
-    renderBankroll();
-    setBanner("drawing");
-    for (var i = 0; i < round.balls.length; i++) {
-      var ball = round.balls[i];
-      state.shown.push(ball);
+    var played = Engine.settleRaces(round.picks, round.races, round.bet);
+    var multi = round.races.length > 1;
+    var won = 0;
+    for (var race = 0; race < round.races.length; race++) {
+      var balls = round.races[race];
+      state.shown = [];
+      state.result = null;
       renderBoard();
-      if (!reducedMotion.matches) {
-        var cell = cellFor(ball);
-        cell.classList.remove("pop");
-        void cell.offsetWidth;
-        cell.classList.add("pop");
+      renderBankroll();
+      setBanner(multi ? "raceDrawing" : "drawing", multi ? { n: race + 1, races: round.races.length } : null);
+      for (var i = 0; i < balls.length; i++) {
+        var ball = balls[i];
+        state.shown.push(ball);
+        renderBoard();
+        if (!reducedMotion.matches) {
+          var cell = cellFor(ball);
+          cell.classList.remove("pop");
+          void cell.offsetWidth;
+          cell.classList.add("pop");
+        }
+        if (round.picks.indexOf(ball) !== -1) Sound.flip();
+        else Sound.card();
+        await pause(multi ? 60 : 120);
       }
-      if (round.picks.indexOf(ball) !== -1) Sound.flip();
-      else Sound.card();
-      await pause(120);
+      state.result = played.games[race];
+      renderBoard();
+      if (multi) {
+        won += state.result.returned;
+        setBanner("raceResult", { n: race + 1, races: round.races.length, hits: state.result.hits, spots: state.result.spots },
+          { key: "racesWon", params: { amount: won } }, state.result.returned ? "win" : "");
+        if (state.result.returned) Sound.payout();
+        await pause(race === round.races.length - 1 ? 300 : 700);
+      }
     }
-    var result = Engine.settle(round.picks, round.balls, round.bet);
-    state.result = result;
-    commitGame(result);
+    commitGame(played);
     renderBoard();
-    showResultBanner(result);
-    if (result.returned) {
+    if (multi) {
+      setBanner("racesResult", { races: round.races.length },
+        played.returned ? { key: "winLine", params: { amount: played.returned } } : { key: "noWin" },
+        played.net > 0 ? "win" : played.returned ? "" : "lose");
+    } else {
+      showResultBanner(played.games[0]);
+    }
+    if (played.returned) {
       Sound.payout();
-      if (result.net > 0) Sound.win();
+      if (played.net > 0) Sound.win();
       flashBalance();
     } else {
       Sound.lose();
@@ -644,6 +688,16 @@
       Sound.chip(0);
     });
     radioKeys(el.chipTray, ".chip", function (chip) { selectChip(Number(chip.getAttribute("data-value"))); });
+    el.racesPicker.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-races]");
+      if (!button || button.disabled || !canPlay()) return;
+      state.settings.races = Number(button.getAttribute("data-races"));
+      saveSettings();
+      Sound.chip(0);
+      renderTicket();
+      if (!state.shown.length) idleBanner();
+    });
+    radioKeys(el.racesPicker, "[data-races]", function (button) { button.click(); });
 
     el.board.addEventListener("click", function (event) {
       var cell = event.target.closest(".ball-cell");
@@ -744,8 +798,16 @@
     switch (lower) {
       case "q": quickPick(); break;
       case "c": clearTicket(); break;
+      case "d": cycleRaces(); break;
       case "m": setSound(!soundEnabled); break;
     }
+  }
+
+  // D steps through the counts of draws: 1, 5, 10, 20 and round again.
+  function cycleRaces() {
+    if (!canPlay()) return;
+    var next = Engine.RACES[(Engine.RACES.indexOf(races()) + 1) % Engine.RACES.length];
+    el.racesPicker.querySelector('[data-races="' + next + '"]').click();
   }
 
   /* ---------------- Start ---------------- */

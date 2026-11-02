@@ -129,6 +129,46 @@ test("a game plays straight from file:// and pays by the marks caught", async ()
   });
 });
 
+test("one ticket plays five draws in a row, paid together", async () => {
+  const OTHER = [80, 1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 23];
+  await scene({ draws: [BALLS, OTHER, BALLS, OTHER, BALLS], settings: { picks: [3, 17, 80], bet: 10 } }, async page => {
+    await page.click('#racesPicker [data-races="5"]');
+    assert.equal(await text(page, "#betAmount"), "50");
+    assert.equal(await text(page, "#racesLine"), "$10 × 5 draws");
+    assert.equal(await text(page, "#bannerText"), "3 marked: play for $50");
+    const before = 10000;
+    await page.click("#btnPlay");
+    await page.waitForFunction(() => document.body.dataset.phase !== "betting");
+    assert.equal(await stored(page, "pit.bankroll"), before - 50, "every draw is paid for before the first ball");
+    assert.equal((await stored(page, "pit.keno.round")).races.length, 5, "and all five are drawn and saved");
+    await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false" &&
+      localStorage.getItem("pit.keno.round") === null, { timeout: 30000 });
+    // Two of three caught pay 2 for 1 on each BALLS draw; OTHER catches only 80.
+    assert.equal(await stored(page, "pit.bankroll"), before - 50 + 3 * 20);
+    assert.equal(await text(page, "#bannerText"), "5 draws played");
+    assert.equal(await text(page, "#bannerSub"), "You win $60");
+    const stats = await stored(page, "pit.keno.stats");
+    assert.deepEqual([stats.games, stats.winningGames, stats.wagered, stats.returned], [5, 3, 50, 60]);
+    assert.equal((await stored(page, "pit.keno.settings")).races, 5, "the count of draws stays for the next ticket");
+    await page.evaluate(() => document.activeElement.blur());
+    await page.keyboard.press("d");
+    assert.equal(await text(page, "#betAmount"), "100", "D steps on to ten draws");
+  });
+});
+
+test("a reload in the middle of five draws settles all of them", async () => {
+  const OTHER = [80, 1, 2, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 23];
+  await scene({ draws: [OTHER, OTHER, BALLS, OTHER, OTHER], motion: true, settings: { picks: [3, 17, 80], bet: 10, races: 5, animationSpeed: "cinematic" } }, async page => {
+    await page.click("#btnPlay");
+    await page.waitForFunction(() => /^Draw 2 of 5/.test(document.getElementById("bannerText").textContent), { timeout: 20000 });
+    await page.reload({ waitUntil: "load" });
+    await page.waitForFunction(() => localStorage.getItem("pit.keno.round") === null && document.body.dataset.busy === "false");
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 50 + 20);
+    assert.match(await text(page, "#toast"), /5 draws played\. You win \$20/);
+    assert.equal((await stored(page, "pit.keno.stats")).games, 5);
+  });
+});
+
 test("the ticket holds ten marks, a new mark wipes the last draw, and quick pick and clear work from the keyboard", async () => {
   await scene({ draws: [BALLS] }, async page => {
     await mark(page, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
@@ -157,7 +197,7 @@ test("a reload while the balls come out settles the same game", async () => {
     await page.click("#btnPlay");
     await page.waitForFunction(() => document.body.dataset.phase === "drawing");
     const round = await stored(page, "pit.keno.round");
-    assert.deepEqual(round.balls, BALLS);
+    assert.deepEqual(round.races, [BALLS]);
     assert.deepEqual(round.picks, [22, 60]);
     assert.equal(await stored(page, "pit.bankroll"), 9990, "the bet left the balance before the first ball");
     await page.reload({ waitUntil: "load" });

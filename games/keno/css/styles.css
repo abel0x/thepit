@@ -307,6 +307,11 @@
   gap: clamp(8px, 1.4vw, 18px);
 }
 .bet-actions { display: flex; gap: clamp(5px, .7vw, 9px); }
+/* How many draws the ticket plays, beside the bet. */
+.races-picker { flex: 0 0 auto; }
+.races-picker .seg-btn { min-width: 0; padding-inline: 8px; }
+.bet-total .races-line { letter-spacing: .4px; text-transform: none; font-size: 10px; }
+
 .bet-total {
   display: grid;
   justify-items: end;
@@ -413,6 +418,10 @@
 }
 
 @media (max-width: 420px) {
+  /* The count of draws takes a row of its own below the buttons. */
+  .action-row { flex-wrap: wrap; row-gap: 6px; }
+  .races-picker { order: 3; width: 100%; justify-content: center; }
+  .races-picker .seg-btn { flex: 1 1 0; padding-block: 5px; }
   .bet-total { min-width: 0; }
   .bet-total .last-win { display: none; }
   .bet-actions { gap: 4px; }

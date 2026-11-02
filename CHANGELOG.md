@@ -8,6 +8,7 @@ The first version of the pit: seven tables, a money wheel, a slot machine, a vid
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
+- Keno 80 multi-race: one ticket for 1, 5, 10 or 20 draws in a row, every draw paid for, drawn and saved before the first ball, and the lot paid together.
 - Slot 5 autoplay: 10 to 100 spins with stops at a loss limit, on a big win, when free spins start or at a press of Stop, never saved across a reload.
 - Table 7 put, hop and Fire bets: a come bet put straight on a number once a point is on, seventeen one-roll hop bets at 15 or 30 to 1, and the Fire Bet on the different points a new shooter makes, paying up to 999 to 1 with a 20.76% house edge counted exactly, its points lit on the layout.
 - Table 3 6-Card Bonus: up to $100 on the best five of the player's and the dealer's six cards, paid on a folded hand too, from 7 to 1 for three of a kind to 1000 to 1 for a royal flush, with its 8.56% house edge counted over all 20,358,520 six-card deals.

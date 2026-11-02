@@ -163,9 +163,16 @@
           </button>
         </div>
 
+        <div class="races-picker seg" id="racesPicker" role="radiogroup" aria-label="Draws" data-i18n-aria-label="racesLabel" aria-keyshortcuts="D">
+          <button class="seg-btn active" data-races="1" type="button" role="radio" aria-checked="true">×1</button>
+          <button class="seg-btn" data-races="5" type="button" role="radio" aria-checked="false" tabindex="-1">×5</button>
+          <button class="seg-btn" data-races="10" type="button" role="radio" aria-checked="false" tabindex="-1">×10</button>
+          <button class="seg-btn" data-races="20" type="button" role="radio" aria-checked="false" tabindex="-1">×20</button>
+        </div>
         <div class="bet-total" aria-live="off">
           <small data-i18n="betLabel">Bet</small>
           <strong>$<span id="betAmount">5</span></strong>
+          <small class="races-line" id="racesLine"></small>
           <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
         </div>
 

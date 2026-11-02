@@ -71,13 +71,14 @@ test("scripts and stylesheets load in dependency order", function () {
   assert.deepEqual(sheets, ["../../shared/css/pit.css", "../../shared/css/table.css", "../../shared/css/chip-tables.css", "css/styles.css"]);
 });
 
-test("the ticket, the bet and all twenty balls are saved before the first ball is shown", function () {
-  var playing = game.slice(game.indexOf("  function play()"), game.indexOf("  // The twenty balls come out"));
+test("the ticket, the bet and every ball of every draw are saved before the first ball is shown", function () {
+  var playing = game.slice(game.indexOf("  function play()"), game.indexOf("  // The twenty balls of each draw come out"));
   var save = playing.indexOf('account.write("round", Store.roundSnapshot(round))');
-  var debit = playing.indexOf('account.write("bankroll", bankroll - stake)');
+  var debit = playing.indexOf('account.write("bankroll", bankroll - cost)');
   var show = playing.indexOf("return playGame(round)");
   assert.ok(save > 0 && debit > 0 && show > save && show > debit);
-  assert.match(playing, /balls: Engine\.draw\(\)/);
+  assert.match(playing, /for \(var i = 0; i < count; i\+\+\) draws\.push\(Engine\.draw\(\)\);/);
+  assert.ok(playing.indexOf("draws.push") < save, "every draw is made before the round is saved");
   assert.match(playing, /account\.roundsElsewhere\(\)/, "a round open at another table comes first");
   assert.match(read("css/styles.css"), /@media \(prefers-reduced-motion: reduce\)/);
 });

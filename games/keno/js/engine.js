@@ -42,6 +42,8 @@
 
   // The bet on a game is chosen with a chip.
   var BETS = [1, 5, 10, 25, 50, 100];
+  // A ticket can be played for several draws in a row, each at its bet.
+  var RACES = [1, 5, 10, 20];
 
   /* ---------------- Randomness ---------------- */
   // An unbiased integer in [0, n) from crypto.getRandomValues, with rejection
@@ -125,6 +127,19 @@
     return { spots: picks.length, hits: hit.length, caught: hit, times: times, stake: bet, returned: returned, net: returned - bet };
   }
 
+  function isRaces(value) {
+    return RACES.indexOf(value) !== -1;
+  }
+
+  // One ticket played for every draw of a multi-race game: each draw is a
+  // game of its own at the bet, and the lot is paid together.
+  function settleRaces(picks, races, bet) {
+    var games = races.map(function (balls) { return settle(picks, balls, bet); });
+    var stake = bet * races.length;
+    var returned = games.reduce(function (sum, game) { return sum + game.returned; }, 0);
+    return { games: games, stake: stake, returned: returned, net: returned - stake };
+  }
+
   /* ---------------- The return ---------------- */
   function binomial(n, k) {
     if (k < 0 || k > n) return 0;
@@ -152,6 +167,7 @@
     MAX_SPOTS: MAX_SPOTS,
     PAYS: PAYS,
     BETS: BETS,
+    RACES: RACES,
     randomInt: randomInt,
     draw: draw,
     quickPick: quickPick,
@@ -162,6 +178,8 @@
     catches: catches,
     payFor: payFor,
     settle: settle,
+    isRaces: isRaces,
+    settleRaces: settleRaces,
     binomial: binomial,
     hitChance: hitChance,
     returnFor: returnFor

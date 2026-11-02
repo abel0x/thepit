@@ -36,7 +36,7 @@
   var ACCOUNT_KEYS = ["bankroll", "stats", "round"];
 
   var SPEEDS = ["fast", "normal", "cinematic"];
-  var DEFAULT_SETTINGS = { animationSpeed: "normal", bet: 5, picks: [] };
+  var DEFAULT_SETTINGS = { animationSpeed: "normal", bet: 5, races: 1, picks: [] };
   var DEFAULT_STATS = { games: 0, winningGames: 0, wagered: 0, returned: 0, biggestWin: 0, bestCatch: 0 };
 
   function safeCount(value) {
@@ -51,6 +51,7 @@
     return {
       animationSpeed: SPEEDS.indexOf(value.animationSpeed) !== -1 ? value.animationSpeed : DEFAULT_SETTINGS.animationSpeed,
       bet: Engine.isBet(value.bet) ? value.bet : DEFAULT_SETTINGS.bet,
+      races: Engine.isRaces(value.races) ? value.races : DEFAULT_SETTINGS.races,
       picks: Engine.isPicks(value.picks) ? value.picks.slice().sort(function (a, b) { return a - b; }) : []
     };
   }
@@ -64,17 +65,29 @@
     return stats;
   }
 
-  // What is saved once the balls are drawn: the ticket, the bet and the draw.
+  // What is saved once the balls are drawn: the ticket, the bet and every
+  // draw it plays, all of them drawn before the first ball is shown.
   function roundSnapshot(round) {
-    return { id: round.id, picks: round.picks, bet: round.bet, balls: round.balls, at: round.at };
+    return { id: round.id, picks: round.picks, bet: round.bet, races: round.races, at: round.at };
   }
 
-  // A game is trusted only when every part of it agrees.
+  // A game is trusted only when every part of it agrees. A game saved as a
+  // single draw (balls) plays one race.
   function normalizeRound(value) {
     if (!value || typeof value !== "object") return null;
     if (typeof value.id !== "string" || !value.id) return null;
-    if (!Engine.isPicks(value.picks) || !Engine.isBet(value.bet) || !Engine.isDraw(value.balls)) return null;
-    return { id: value.id, picks: value.picks.slice(), bet: value.bet, balls: value.balls.slice(), at: safeCount(value.at) };
+    if (!Engine.isPicks(value.picks) || !Engine.isBet(value.bet)) return null;
+    var races = Array.isArray(value.races) ? value.races : value.balls ? [value.balls] : null;
+    if (!races || !Engine.isRaces(races.length) || !races.every(Engine.isDraw)) return null;
+    return {
+      id: value.id, picks: value.picks.slice(), bet: value.bet,
+      races: races.map(function (balls) { return balls.slice(); }), at: safeCount(value.at)
+    };
+  }
+
+  // What a saved game took from the balance.
+  function roundStake(round) {
+    return round.bet * round.races.length;
   }
 
   // Applies a settled game to the statistics.
@@ -144,6 +157,7 @@
     normalizeStats: normalizeStats,
     normalizeRound: normalizeRound,
     roundSnapshot: roundSnapshot,
+    roundStake: roundStake,
     recordGame: recordGame,
     readJSON: Pit.readJSON,
     writeJSON: Pit.writeJSON,

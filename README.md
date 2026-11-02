@@ -112,7 +112,8 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Odds counted from all 216 rolls**: every one of the 52 bets is checked on every roll against the rules, and its house edge matches the published one, from 2.78% on Small and Big to 18.98% on the totals 9 and 12.
 - **The dice light the layout**: after each roll every spot the dice win lights up, losing chips are swept away and winners are paid beside their stake; the last rolls beside the dice show small, big and triples.
 - **Saved before the dice show**: the bets, the stake and the dice; a reload settles the very same roll.
-- **Keyboard shortcuts**: `Space`/`Enter` roll · `1`–`6` chips · `S` Small · `B` Big · `Z` or `Backspace` undo · `C` clear · `R` rebet · `M` sound.
+- **Statistics**: the last 500 rolls charted by total, by single number and by Small, Big, Odd, Even and triples, each bar marked with its exact chance and the rolls since it last came.
+- **Keyboard shortcuts**: `Space`/`Enter` roll · `1`–`6` chips · `S` Small · `B` Big · `I` statistics · `Z` or `Backspace` undo · `C` clear · `R` rebet · `M` sound.
 
 ### Keno 80 · Keno
 
@@ -130,7 +131,8 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Seven bets**: a dollar symbol pays its number to 1, the Joker and the logo 40 to 1. Every bet is checked on all 54 segments, and its house edge matches the published one, from 11.11% on $1 to 24.07% on the Joker and the logo.
 - **The wheel lights the layout**: the winning spot lights up, losing chips are swept away, winners are paid beside their stake, and the last spins line up beside the banner in the colours of the wheel.
 - **Saved before the wheel turns**: the bets, the stake and the segment; a reload settles the very same spin and shows the wheel where it stopped.
-- **Keyboard shortcuts**: `Space`/`Enter` spin · `1`–`6` chips · `Z` or `Backspace` undo · `C` clear · `R` rebet · `M` sound.
+- **Statistics**: the last 500 spins charted by symbol, each bar marked with its share of the wheel and the spins since it last came.
+- **Keyboard shortcuts**: `Space`/`Enter` spin · `1`–`6` chips · `I` statistics · `Z` or `Backspace` undo · `C` clear · `R` rebet · `M` sound.
 
 ## One pit
 
@@ -155,7 +157,7 @@ The core test suite uses only Node's built-in test runner (Node.js 22.12 or newe
 npm test                 # node --test "tests/**/*.test.js" "tests/**/*.test.cjs"
 ```
 
-The suite currently executes **869 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals and its 6-Card Bonus against all 20,358,520 six-card deals, the blackjack side bets against every draw of a full shoe, the slot machine's against all 33,554,432 stops of its reels, every craps bet against the 36 rolls of two dice and the Fire Bet against every shooter, the AA Bonus against all 2,598,960 five-card hands, video poker's best play in each of its three games against every one of its 2,598,960 deals, every Sic Bo bet against the 216 rolls of three dice, every keno pay table against all 3,535,316,142,212,174,320 draws, and every Big Six bet against the 54 segments of the wheel), a pit-wide economy check that every table settles in whole dollars and accounts for every dollar staked over thousands of seeded rounds, that long runs return what the exact odds say and that whole-dollar rounding costs exactly what the rules texts say, the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
+The suite currently executes **873 deterministic cases**. It covers every table's engine, rules, payouts and strategy charts (baccarat's odds against an exhaustive count of every coup an eight-deck shoe can deal, Three Card Poker's against every one of its 407,170,400 deals and its 6-Card Bonus against all 20,358,520 six-card deals, the blackjack side bets against every draw of a full shoe, the slot machine's against all 33,554,432 stops of its reels, every craps bet against the 36 rolls of two dice and the Fire Bet against every shooter, the AA Bonus against all 2,598,960 five-card hands, video poker's best play in each of its three games against every one of its 2,598,960 deals, every Sic Bo bet against the 216 rolls of three dice, every keno pay table against all 3,535,316,142,212,174,320 draws, and every Big Six bet against the 54 segments of the wheel), a pit-wide economy check that every table settles in whole dollars and accounts for every dollar staked over thousands of seeded rounds, that long runs return what the exact odds say and that whole-dollar rounding costs exactly what the rules texts say, the shared wallet and its Web Locks, the one-round-at-a-time rule, saved-state validation, translation parity on every page, the service worker and its safe updates, and the complete offline shell of the lobby and every table. GitHub Actions runs it on Node 22, 24 and 26 for every push and pull request.
 
 The optional real-browser suite adds **348 Chromium tests**: `file://` play, the shared balance between the lobby and every table, rounds resumed after reloads and closed tabs, offline PWA reloads, multiple tabs, keyboard use, both languages and screen sizes from 320 px to 1920 px. Puppeteer is declared as a development-only dependency in `package.json`; the pit itself never loads it:
 

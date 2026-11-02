@@ -343,3 +343,37 @@
   background: linear-gradient(180deg, rgba(217,182,95,.32), rgba(217,182,95,.12));
   color: #fff4cf;
 }
+
+/* ----------------------- Statistics (shared/js/tally.js) ----------------------- */
+/* Each result: how often it came as a bar, its exact chance as a mark on it. */
+.tally {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.tally thead th {
+  padding: 2px 4px 4px;
+  color: rgba(232, 202, 125, .62);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: right;
+  text-transform: uppercase;
+}
+.tally thead th:first-child { text-align: left; }
+.tally tbody th { padding: 3px 6px 3px 0; color: var(--cream); font-weight: 600; text-align: left; white-space: nowrap; }
+.tally td { padding: 3px 4px; color: rgba(244, 239, 226, .82); text-align: right; white-space: nowrap; }
+.tally tbody tr + tr { border-top: 1px solid rgba(217, 182, 95, .1); }
+.tally-bar { width: 42%; min-width: 70px; }
+.tally-track { position: relative; display: block; height: 10px; border-radius: 5px; background: rgba(0, 0, 0, .3); }
+.tally-fill { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: linear-gradient(90deg, #c9a24b, #f3d985); }
+.tally-chance { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: #8fe0b0; border-radius: 1px; }
+.tally-expected { color: rgba(143, 224, 176, .9); }
+.tally-since { min-width: 5.5em; }
+.stats-card .rules-title { margin-top: 4px; }
+@media (max-width: 420px) {
+  .tally { font-size: 11px; }
+  .tally-expected { display: none; }
+  .tally thead th:nth-child(4) { display: none; }
+}

@@ -141,6 +141,15 @@
     return 1 - returned / SEGMENTS.length;
   }
 
+  /* ---------------- Statistics ---------------- */
+  // What the wheel charts about its last spins: every symbol, with its
+  // exact chance, the segments showing it out of 54.
+  function statSpecs() {
+    return BETS.map(function (key) {
+      return { key: key, chance: countOf(key) / SEGMENTS.length, test: function (segment) { return SEGMENTS[segment] === key; } };
+    });
+  }
+
   return {
     BETS: BETS,
     PAYS: PAYS,
@@ -159,6 +168,7 @@
     isLegalLayout: isLegalLayout,
     resolve: resolve,
     countOf: countOf,
-    houseEdge: houseEdge
+    houseEdge: houseEdge,
+    statSpecs: statSpecs
   };
 });

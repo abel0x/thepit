@@ -40,8 +40,9 @@
   var SPEEDS = ["fast", "normal", "cinematic"];
   var DEFAULT_SETTINGS = { animationSpeed: "normal" };
   var DEFAULT_STATS = { spins: 0, winningSpins: 0, jackpots: 0, wagered: 0, returned: 0, biggestWin: 0 };
-  // The spins the wheel remembers for its history strip.
-  var HISTORY_LIMIT = 24;
+  // The last spins the table remembers, for its history strip and its
+  // statistics.
+  var HISTORY_LIMIT = 500;
 
   function safeCount(value) {
     value = Math.floor(Number(value));

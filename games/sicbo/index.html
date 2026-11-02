@@ -90,6 +90,13 @@
         <span class="sound-led" aria-hidden="true"></span>
       </button>
 
+      <button id="statsBtn" class="icon-btn" type="button" aria-label="Statistics" title="Statistics"
+              data-i18n-title="statsTitle" data-i18n-aria-label="statsTitle" aria-haspopup="dialog" aria-keyshortcuts="I">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 20h16M7 17v-5M12 17V7M17 17v-8" />
+        </svg>
+      </button>
+
       <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
               data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -227,6 +234,27 @@
   </main>
 
   <!-- Settings -->
+  <!-- Statistics of the last rolls -->
+  <div id="statsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card stats-card" role="dialog" aria-modal="true" aria-labelledby="statsHeading">
+      <div class="modal-head">
+        <h2 id="statsHeading" data-i18n="statsTitle">Statistics</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-hint" id="statsLead"></p>
+        <h3 class="rules-title" data-i18n="statsTotals">Totals</h3>
+        <table class="tally"><thead><tr><th scope="col" data-i18n="statsResult">Result</th><th scope="col"><span class="sr-only" data-i18n="statsBar">Share</span></th><th scope="col" data-i18n="statsSeen">Seen</th><th scope="col" data-i18n="statsChance">Chance</th><th scope="col" data-i18n="statsSince">Last</th></tr></thead><tbody id="tallyTotals"></tbody></table>
+        <h3 class="rules-title" data-i18n="statsFaces">Single numbers</h3>
+        <table class="tally"><thead><tr><th scope="col" data-i18n="statsResult">Result</th><th scope="col"><span class="sr-only" data-i18n="statsBar">Share</span></th><th scope="col" data-i18n="statsSeen">Seen</th><th scope="col" data-i18n="statsChance">Chance</th><th scope="col" data-i18n="statsSince">Last</th></tr></thead><tbody id="tallyFaces"></tbody></table>
+        <h3 class="rules-title" data-i18n="statsGroups">Small, Big, Odd, Even and triples</h3>
+        <table class="tally"><thead><tr><th scope="col" data-i18n="statsResult">Result</th><th scope="col"><span class="sr-only" data-i18n="statsBar">Share</span></th><th scope="col" data-i18n="statsSeen">Seen</th><th scope="col" data-i18n="statsChance">Chance</th><th scope="col" data-i18n="statsSince">Last</th></tr></thead><tbody id="tallyGroups"></tbody></table>
+        <p class="settings-hint" data-i18n="statsHint">The bar is how often each result came, the mark on it its exact chance. Every roll is independent: a result that has not come for a while is no more likely to come next.</p>
+      </div>
+    </div>
+  </div>
+
   <div id="settingsModal" class="modal" hidden>
     <div class="modal-backdrop" data-close></div>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -370,6 +398,7 @@
   <script src="js/strings.js"></script>
   <script src="../../shared/js/card-sound.js"></script>
   <script src="../../shared/js/chips.js"></script>
+  <script src="../../shared/js/tally.js"></script>
   <script src="js/engine.js"></script>
   <script src="js/store.js"></script>
   <script src="js/game.js"></script>

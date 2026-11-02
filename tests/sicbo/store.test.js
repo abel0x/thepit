@@ -25,7 +25,7 @@ test("settings, statistics and the last rolls fall back field by field", functio
   assert.deepEqual(stats, { rolls: 3, winningRolls: 3, triples: 3, wagered: 2, returned: 0, biggestWin: 0 });
   assert.deepEqual(Store.normalizeTable({ history: [[1, 2, 3], [1, 2], [0, 1, 1], "x", [6, 6, 6]] }), { history: [[1, 2, 3], [6, 6, 6]] });
   var long = [];
-  for (var i = 0; i < 40; i++) long.push([1, 2, 3]);
+  for (var i = 0; i < 520; i++) long.push([1, 2, 3]);
   assert.equal(Store.normalizeTable({ history: long }).history.length, Store.HISTORY_LIMIT);
 });
 

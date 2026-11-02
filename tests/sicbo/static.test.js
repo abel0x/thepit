@@ -100,7 +100,7 @@ test("the page is well formed: unique ids, typed buttons, labelled controls, eve
 test("scripts and stylesheets load in dependency order", function () {
   var scripts = Array.from(html.matchAll(/<script\b[^>]*src="([^"]+)"/g), function (m) { return m[1]; });
   assert.deepEqual(scripts, ["../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "../../shared/js/card-sound.js",
-    "../../shared/js/chips.js", "js/engine.js", "js/store.js", "js/game.js", "../../shared/js/pwa.js"]);
+    "../../shared/js/chips.js", "../../shared/js/tally.js", "js/engine.js", "js/store.js", "js/game.js", "../../shared/js/pwa.js"]);
   var sheets = Array.from(html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g), function (m) { return m[1]; });
   assert.deepEqual(sheets, ["../../shared/css/pit.css", "../../shared/css/table.css", "../../shared/css/chip-tables.css", "css/styles.css"]);
 });

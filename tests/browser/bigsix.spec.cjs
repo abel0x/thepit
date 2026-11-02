@@ -212,6 +212,23 @@ test("Turkish names the bets, the odds and the stop", async () => {
   });
 });
 
+test("the statistics chart every symbol of the last spins against its share of the wheel", async () => {
+  await scene({ lang: "tr" }, async page => {
+    const segments = await page.evaluate(() => ["one", "one", "joker", "twenty"].map(symbol => BigSixEngine.SEGMENTS.indexOf(symbol)));
+    await page.evaluate(history => {
+      localStorage.setItem("pit.bigsix.table", JSON.stringify({ history }));
+      window.dispatchEvent(new StorageEvent("storage", { key: "pit.bigsix.table" }));
+    }, segments);
+    await page.click("#statsBtn");
+    await page.waitForFunction(() => !document.getElementById("statsModal").hidden);
+    assert.equal(await page.$eval("#statsLead", node => node.textContent), "Son 4 çevirme, en çok 500.");
+    const row = key => page.$eval('#tallySymbols tr[data-key="' + key + '"]', tr => [...tr.children].map(cell => cell.textContent));
+    assert.deepEqual(await row("one"), ["$1", "", "2 · 50,0%", "44,4%", "2 önce"]);
+    assert.deepEqual(await row("twenty"), ["$20", "", "1 · 25,0%", "3,7%", "son çevirme"]);
+    assert.deepEqual(await row("logo"), ["Logo", "", "0 · 0,0%", "1,9%", "henüz yok"]);
+  });
+});
+
 test("a round left open at another table holds the spin back", async () => {
   await scene({ seed: { "pit.blackjack.round": { v: 1, resume: "player" } } }, async page => {
     await bet(page, "one");

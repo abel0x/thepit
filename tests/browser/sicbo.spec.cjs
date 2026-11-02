@@ -221,6 +221,24 @@ test("Turkish names the bets, the odds and the roll", async () => {
   });
 });
 
+test("the statistics chart the last rolls with their exact chances and the rolls since", async () => {
+  const history = [[6, 6, 6], [1, 2, 4], [3, 3, 5], [1, 2, 4]];
+  await scene({ seed: { "pit.sicbo.table": { history } } }, async page => {
+    await page.keyboard.press("i");
+    await page.waitForFunction(() => !document.getElementById("statsModal").hidden);
+    assert.equal(await page.$eval("#statsLead", node => node.textContent), "The last 4 rolls, up to 500.");
+    const row = (body, key) => page.$eval("#" + body + ' tr[data-key="' + key + '"]', tr => [...tr.children].map(cell => cell.textContent));
+    assert.deepEqual(await row("tallyTotals", 7), ["7", "", "2 · 50.0%", "6.9%", "last roll"]);
+    assert.deepEqual(await row("tallyTotals", 11), ["11", "", "1 · 25.0%", "12.5%", "1 ago"]);
+    assert.deepEqual(await row("tallyTotals", 3), ["3", "", "0 · 0.0%", "0.5%", "not yet"]);
+    assert.deepEqual(await row("tallyFaces", 6), ["Number 6", "", "1 · 25.0%", "42.1%", "3 ago"]);
+    assert.deepEqual(await row("tallyGroups", "triple"), ["Any triple", "", "1 · 25.0%", "2.8%", "3 ago"]);
+    assert.deepEqual(await row("tallyGroups", "small"), ["Small", "", "2 · 50.0%", "48.6%", "last roll"]);
+    await page.keyboard.press("Escape");
+    assert.equal(await page.$eval("#statsModal", node => node.hidden), true);
+  });
+});
+
 test("a round left open at another table holds the roll back", async () => {
   await scene({ seed: { "pit.blackjack.round": { v: 1, resume: "player" } } }, async page => {
     await bet(page, "small");

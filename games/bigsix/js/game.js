@@ -17,7 +17,8 @@
   var Store = global.BigSixStore;
   var Chips = global.ChipArt;
   var Sound = global.Sound;
-  if (!Pit || !Engine || !Store || !Chips || !Sound) {
+  var PitTally = global.PitTally;
+  if (!Pit || !Engine || !Store || !Chips || !Sound || !PitTally) {
     throw new Error("Table modules must load before game.js");
   }
 
@@ -94,6 +95,8 @@
     lastWin: $("lastWin"),
     toast: $("toast"),
     settings: $("settingsModal"),
+    stats: $("statsModal"),
+    statsLead: $("statsLead"),
     btn: {
       undo: $("btnUndo"), clear: $("btnClear"), rebet: $("btnRebet"), spin: $("btnSpin"),
       sound: $("soundToggle"), settings: $("settingsBtn"), resetStats: $("btnResetStats")
@@ -658,6 +661,38 @@
     });
   }
 
+  /* ---------------- Statistics ---------------- */
+  // How often each result came in the last spins the table remembers.
+  function percentText(fraction) {
+    return (fraction * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+  }
+
+  function sinceText(rounds) {
+    if (rounds === null) return t("statsNever");
+    return rounds === 0 ? t("statsLatest") : t("statsAgo", { n: fmt(rounds) });
+  }
+
+  function renderTallies() {
+    var list = state.history;
+    el.statsLead.textContent = list.length ? t("statsLead", { n: fmt(list.length) }) : t("statsEmpty");
+    PitTally.draw($("tallySymbols"), PitTally.rows(list, Engine.statSpecs()), { name: betName, percent: percentText, since: sinceText });
+  }
+
+  function openStats() {
+    if (!el.settings.hidden) return;
+    dialogReturn = document.activeElement;
+    renderTallies();
+    el.stats.hidden = false;
+    el.stats.querySelector(".modal-head [data-close]").focus();
+  }
+
+  function closeStats() {
+    if (el.stats.hidden) return;
+    el.stats.hidden = true;
+    if (dialogReturn && typeof dialogReturn.focus === "function") dialogReturn.focus();
+    dialogReturn = null;
+  }
+
   /* ---------------- Dialogs ---------------- */
   var dialogReturn = null;
 
@@ -741,6 +776,17 @@
 
     el.btn.settings.addEventListener("click", openSettings);
     el.settings.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", closeSettings); });
+    $("statsBtn").addEventListener("click", openStats);
+    el.stats.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", closeStats); });
+    el.stats.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); closeStats(); return; }
+      if (event.key !== "Tab") return;
+      var items = focusables(el.stats);
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
     el.settings.addEventListener("keydown", function (event) {
       if (event.key === "Escape") { event.preventDefault(); closeSettings(); return; }
       if (event.key !== "Tab") return;
@@ -809,7 +855,7 @@
 
   function onGlobalKey(event) {
     if (event.defaultPrevented || event.altKey || event.metaKey || event.repeat || event.isComposing) return;
-    if (!el.settings.hidden) return;
+    if (!el.settings.hidden || !el.stats.hidden) return;
     var target = event.target;
     var typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
     if (typing) return;
@@ -827,6 +873,7 @@
       case "z": undo(); break;
       case "c": clearBets(); break;
       case "r": rebet(); break;
+      case "i": openStats(); break;
       case "m": setSound(!soundEnabled); break;
     }
   }

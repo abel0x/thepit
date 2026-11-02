@@ -215,6 +215,41 @@
     return 1 - returned / 216;
   }
 
+  /* ---------------- Statistics ---------------- */
+  // What the table charts about its last rolls: every total, every face,
+  // and Small, Big, Odd, Even and the triples, each with its exact chance
+  // from the 216 ways three dice can land.
+  function chanceOf(test) {
+    var ways = 0;
+    FACES.forEach(function (a) {
+      FACES.forEach(function (b) {
+        FACES.forEach(function (c) { if (test([a, b, c])) ways++; });
+      });
+    });
+    return ways / 216;
+  }
+
+  function sumOf(dice) { return dice[0] + dice[1] + dice[2]; }
+
+  function statSpecs() {
+    function spec(key, test) { return { key: key, test: test, chance: chanceOf(test) }; }
+    var totals = [];
+    for (var total = 3; total <= 18; total++) {
+      totals.push(spec(total, (function (n) { return function (dice) { return sumOf(dice) === n; }; })(total)));
+    }
+    var faces = FACES.map(function (face) {
+      return spec(face, function (dice) { return dice.indexOf(face) !== -1; });
+    });
+    var groups = [
+      spec("small", function (dice) { return !isTriple(dice) && sumOf(dice) <= 10; }),
+      spec("big", function (dice) { return !isTriple(dice) && sumOf(dice) >= 11; }),
+      spec("odd", function (dice) { return !isTriple(dice) && sumOf(dice) % 2 === 1; }),
+      spec("even", function (dice) { return !isTriple(dice) && sumOf(dice) % 2 === 0; }),
+      spec("triple", isTriple)
+    ];
+    return { totals: totals, faces: faces, groups: groups };
+  }
+
   return {
     FACES: FACES,
     DICE: DICE,
@@ -240,6 +275,7 @@
     payFor: payFor,
     winners: winners,
     resolve: resolve,
-    houseEdge: houseEdge
+    houseEdge: houseEdge,
+    statSpecs: statSpecs
   };
 });

@@ -25,6 +25,10 @@
   if (!Pit) throw new Error("Pit must load before game.js");
   var PitCards = global.PitCards;
   if (!PitCards) throw new Error("PitCards must load before game.js");
+  var SideBets = global.SideBets;
+  if (!SideBets) throw new Error("SideBets must load before game.js");
+  var CardCount = global.CardCount;
+  if (!CardCount) throw new Error("CardCount must load before game.js");
 
   var buildShoe = Engine.buildShoe;
   var shuffle = Engine.shuffle;
@@ -58,9 +62,13 @@
   var DEFAULT_SETTINGS = Rules.applyProfile({
     theme: Pit.DEFAULT_THEME,
     animationSpeed: "normal",
-    coach: "off"
+    coach: "off",
+    count: "off"
   }, "atlanticCity");
-  var DEFAULT_STATS = { hands: 0, wins: 0, losses: 0, pushes: 0, blackjacks: 0, strategyDecisions: 0, strategyCorrect: 0 };
+  var DEFAULT_STATS = {
+    hands: 0, wins: 0, losses: 0, pushes: 0, blackjacks: 0, strategyDecisions: 0, strategyCorrect: 0,
+    sideWagered: 0, sideReturned: 0, countChecks: 0, countCorrect: 0
+  };
   var START_BANKROLL = Pit.START_BANKROLL;
   var MIN_BET = 100;            // smallest chip on this table
   var MAX_BANKROLL = Pit.MAX_BANKROLL;
@@ -95,7 +103,8 @@
       maxHands: value.maxHands === 2 ? 2 : 4,
       theme: ALLOWED_THEMES.indexOf(theme) !== -1 ? theme : DEFAULT_SETTINGS.theme,
       animationSpeed: ALLOWED_ANIMATION_SPEEDS.indexOf(animationSpeed) !== -1 ? animationSpeed : DEFAULT_SETTINGS.animationSpeed,
-      coach: ALLOWED_COACH_MODES.indexOf(value.coach) !== -1 ? value.coach : DEFAULT_SETTINGS.coach
+      coach: ALLOWED_COACH_MODES.indexOf(value.coach) !== -1 ? value.coach : DEFAULT_SETTINGS.coach,
+      count: CardCount.MODES.indexOf(value.count) !== -1 ? value.count : DEFAULT_SETTINGS.count
     };
     if (explicitProfile) Rules.applyProfile(settings, explicitProfile);
     // A no-hole-card table cannot perform an American peek. Keep malformed or
@@ -113,7 +122,11 @@
       pushes: safeCount(value.pushes),
       blackjacks: safeCount(value.blackjacks),
       strategyDecisions: safeCount(value.strategyDecisions),
-      strategyCorrect: Math.min(safeCount(value.strategyCorrect), safeCount(value.strategyDecisions))
+      strategyCorrect: Math.min(safeCount(value.strategyCorrect), safeCount(value.strategyDecisions)),
+      sideWagered: safeCount(value.sideWagered),
+      sideReturned: safeCount(value.sideReturned),
+      countChecks: safeCount(value.countChecks),
+      countCorrect: Math.min(safeCount(value.countCorrect), safeCount(value.countChecks))
     };
   }
 
@@ -143,6 +156,14 @@
     evenMoney: false,
     pendingPayoutVisual: false,
     roundStakeLimit: 0,
+    // Perfect Pairs and 21+3 on the felt between hands, those of the last
+    // round, and where the next chip goes: "main", "pairs" or "trio".
+    sideBets: { pairs: 0, trio: 0 },
+    lastSideBets: { pairs: 0, trio: 0 },
+    betTarget: "main",
+    // The side bets of the round in play: { stakes, returned, lines },
+    // returned null until the opening cards settle them.
+    side: null,
     busy: false
   };
 
@@ -254,11 +275,16 @@
     discardStack: $("discardStack"),
     discardCount: $("discardCount"),
     tableFelt: document.querySelector(".table-felt"),
+    sideSpots: [].slice.call(document.querySelectorAll("[data-side-bet]")),
+    countBadge: $("countBadge"),
+    countModal: $("countModal"),
+    countAnswer: $("countAnswer"),
     btn: {
       clear: $("btnClear"), deal: $("btnDeal"), rebet: $("btnRebet"),
       hit: $("btnHit"), stand: $("btnStand"), double: $("btnDouble"),
       split: $("btnSplit"), surrender: $("btnSurrender"),
-      insYes: $("btnInsYes"), insNo: $("btnInsNo")
+      insYes: $("btnInsYes"), insNo: $("btnInsNo"),
+      count: $("btnCount")
     }
   };
 
@@ -273,6 +299,22 @@
     // The account itself can retain every safe integer. Only new wagers are
     // restricted when there is insufficient headroom for a winning return.
     return Math.max(0, Math.min(Engine.MAX_WAGER, Math.floor((MAX_BANKROLL - state.bankroll) / 2)));
+  }
+  /* ---------------- Side bets ---------------- */
+  var SIDE_OUTCOME_WORDS = {
+    perfect: "outcomePerfect", coloured: "outcomeColoured", mixed: "outcomeMixed",
+    suitedTrips: "outcomeSuitedTrips", straightFlush: "outcomeStraightFlush", trips: "outcomeTrips",
+    straight: "outcomeStraight", flush: "outcomeFlush"
+  };
+  function sideOffered() {
+    return SideBets.offered(state.settings.decks);
+  }
+  function sideTotal() {
+    return state.sideBets.pairs + state.sideBets.trio;
+  }
+  // Everything on the felt before the deal: the bet and the side bets.
+  function stakeOnFelt() {
+    return state.bet + sideTotal();
   }
   function canFundStake(amount) {
     var committed = state.insurance;
@@ -497,6 +539,8 @@
       el.dealerScore.className = "score-chip" +
         (v.total > 21 ? " bust" : (isBlackjack(state.dealer.cards) ? " bj" : ""));
     }
+    // The hole card counts once it is turned.
+    renderCount();
   }
 
   function handIsLive(hand) {
@@ -658,7 +702,140 @@
   function renderBet() {
     el.currentBet.textContent = fmt(state.bet);
     renderBetStack();
+    renderSideBets();
   }
+
+  // The two side circles: their stakes, which one takes the next chip, and
+  // once the opening cards are out, whether each won.
+  function renderSideBets() {
+    document.body.setAttribute("data-side-bets", String(sideOffered()));
+    document.body.setAttribute("data-bet-target", state.betTarget);
+    var lines = state.side && state.side.lines;
+    el.sideSpots.forEach(function (spot) {
+      var bet = spot.getAttribute("data-side-bet");
+      var stake = state.side ? state.side.stakes[bet] : state.sideBets[bet];
+      var line = lines && lines.filter(function (l) { return l.bet === bet; })[0];
+      spot.querySelector(".side-value").textContent = stake ? "$" + fmt(stake) : "";
+      renderChipPile(spot.querySelector(".side-stack"), stake, "bet-stack side-stack");
+      spot.setAttribute("aria-pressed", String(state.betTarget === bet));
+      spot.classList.toggle("won", !!(line && line.returned));
+      spot.classList.toggle("lost", !!(line && !line.returned));
+      spot.setAttribute("aria-label", t(bet === "pairs" ? "sidePairsLabel" : "sideTrioLabel", { amount: "$" + fmt(stake) }));
+    });
+  }
+
+  // A tap on a side circle sends the next chips there; another tap sends
+  // them back to the main bet.
+  function chooseBetTarget(bet) {
+    if (state.phase !== "betting" || state.busy || !sideOffered()) return;
+    state.betTarget = state.betTarget === bet ? "main" : bet;
+    Sound.chip();
+    renderSideBets();
+  }
+
+  // The words for the side bets the opening cards won.
+  function sideWinText(lines) {
+    return lines.filter(function (line) { return line.returned; }).map(function (line) {
+      return t("sideWin", {
+        bet: t(line.bet === "pairs" ? "sidePairs" : "sideTrio"),
+        outcome: t(SIDE_OUTCOME_WORDS[line.outcome]),
+        amount: "$" + fmt(line.returned)
+      });
+    }).join(" · ");
+  }
+
+  // The side bets are settled the moment the player's two cards and the
+  // dealer's up-card are out. What they return is paid with the round.
+  function settleSideBets() {
+    var side = state.side;
+    if (!side || side.returned !== null) return;
+    var settled = SideBets.settle(side.stakes, state.hands[0].cards, state.dealer.cards[0]);
+    side.returned = settled.returned;
+    side.lines = settled.lines;
+    renderSideBets();
+    if (settled.returned) {
+      Sound.win();
+      toastKey("sideWins", "win", { wins: function () { return sideWinText(settled.lines); } });
+    }
+  }
+
+  // A side bet return saved with a round is trusted only when the stakes
+  // can make it.
+  function sideReturnPossible(side) {
+    var possible = [0];
+    SideBets.BETS.forEach(function (bet) {
+      var stake = side.stakes[bet];
+      if (!stake) return;
+      var next = [];
+      possible.forEach(function (sum) {
+        next.push(sum);
+        SideBets.OUTCOMES[bet].forEach(function (outcome) { next.push(sum + stake * (SideBets.PAYS[bet][outcome] + 1)); });
+      });
+      possible = next;
+    });
+    return possible.indexOf(side.returned) !== -1;
+  }
+
+  /* ---------------- Card counting trainer ---------------- */
+  // The cards the player has not seen: those in the shoe, the opening cards
+  // drawn but not yet laid out, and the dealer's hole card while it is down.
+  function unseenCards() {
+    var total = state.settings.decks * 52;
+    if (state.shoe.length === 0 && state.discarded === 0) return null;
+    var unseen = state.shoe.concat(state.pendingDeal || []);
+    if (state.dealer.hideHole && state.dealer.cards[1]) unseen.push(state.dealer.cards[1]);
+    return unseen.length <= total ? unseen : null;
+  }
+
+  function currentCount() {
+    var unseen = unseenCards();
+    if (!unseen) return { running: 0, true: 0 };
+    var running = CardCount.runningCount(unseen);
+    return { running: running, true: CardCount.trueCount(running, unseen.length) };
+  }
+
+  function renderCount() {
+    var mode = state.settings.count;
+    document.body.setAttribute("data-count", mode);
+    if (!el.countBadge) return;
+    var count = currentCount();
+    el.countBadge.hidden = mode !== "show";
+    el.countBadge.textContent = t("countBadge", {
+      running: CardCount.signed(count.running),
+      true: CardCount.signed(count.true, 1)
+    });
+  }
+
+  function openCountCheck() {
+    if (state.settings.count !== "check" || state.phase !== "betting" || state.busy) return;
+    countReturnFocus = document.activeElement;
+    el.countAnswer.value = "";
+    el.countModal.hidden = false;
+    el.countAnswer.focus();
+  }
+
+  function closeCountCheck() {
+    if (el.countModal.hidden) return;
+    el.countModal.hidden = true;
+    if (countReturnFocus && typeof countReturnFocus.focus === "function") countReturnFocus.focus();
+    countReturnFocus = null;
+  }
+
+  function answerCountCheck() {
+    var answer = CardCount.parseAnswer(el.countAnswer.value);
+    if (answer === null) { toastKey("countInvalid", "lose"); return; }
+    var running = currentCount().running;
+    closeCountCheck();
+    withAccount(function () {
+      state.stats.countChecks++;
+      if (answer === running) state.stats.countCorrect++;
+      persistStats();
+      renderStats();
+    });
+    if (answer === running) toastKey("countRight", "win", { count: CardCount.signed(running) });
+    else toastKey("countWrong", "lose", { count: CardCount.signed(running), answer: CardCount.signed(answer) });
+  }
+  var countReturnFocus = null;
 
   function renderChipPile(target, amount, className) {
     target.className = className;
@@ -753,6 +930,14 @@
     $("stStrategy").textContent = decisions
       ? Math.round((state.stats.strategyCorrect / decisions) * 100) + "% (" + fmt(decisions) + ")"
       : "\u2013";
+    var sideNet = state.stats.sideReturned - state.stats.sideWagered;
+    $("stSide").textContent = state.stats.sideWagered
+      ? (sideNet < 0 ? "\u2212" : "") + "$" + fmt(Math.abs(sideNet)) + " / $" + fmt(state.stats.sideWagered)
+      : "\u2013";
+    var checks = state.stats.countChecks;
+    $("stCount").textContent = checks
+      ? Math.round((state.stats.countCorrect / checks) * 100) + "% (" + fmt(checks) + ")"
+      : "\u2013";
   }
 
   /* ---------------- Strategy coach ---------------- */
@@ -831,9 +1016,11 @@
     var hand = state.hands[state.active];
 
     // Betting controls
-    el.btn.deal.disabled = !(betting && state.bet > 0 && state.bet <= state.bankroll && state.bet <= wagerLimit()) || state.busy;
-    el.btn.clear.disabled = !betting || state.bet === 0 || state.busy;
-    el.btn.rebet.disabled = !(betting && state.lastBet > 0 && state.bet === 0) || state.busy;
+    el.btn.deal.disabled = !(betting && state.bet > 0 && stakeOnFelt() <= state.bankroll && stakeOnFelt() <= wagerLimit()) || state.busy;
+    el.btn.clear.disabled = !betting || stakeOnFelt() === 0 || state.busy;
+    el.btn.rebet.disabled = !(betting && state.lastBet > 0 && stakeOnFelt() === 0) || state.busy;
+    if (el.btn.count) el.btn.count.disabled = !betting || state.busy || state.settings.count !== "check";
+    el.sideSpots.forEach(function (spot) { spot.disabled = !betting || state.busy || !sideOffered(); });
 
     // Deposits are deliberately limited to the interval between hands. A live
     // round is not persisted, so changing the stored balance mid-hand would
@@ -852,10 +1039,10 @@
       var raw = chip.getAttribute("data-value");
       if (raw === "allin") {
         // All-in is available whenever there's a balance left to wager.
-        chip.disabled = !betting || state.busy || state.bankroll < MIN_BET || state.bankroll <= state.bet || state.bankroll > wagerLimit();
+        chip.disabled = !betting || state.busy || state.bankroll - sideTotal() < MIN_BET || state.bankroll <= stakeOnFelt() || state.bankroll > wagerLimit();
       } else {
         var v = parseInt(raw, 10);
-        chip.disabled = !betting || state.busy || (state.bet + v) > Math.min(state.bankroll, wagerLimit());
+        chip.disabled = !betting || state.busy || (stakeOnFelt() + v) > Math.min(state.bankroll, wagerLimit());
       }
     });
     var limitHint = t("wagerLimit", { amount: "$" + fmt(wagerLimit()) });
@@ -974,6 +1161,7 @@
   }
 
   function renderShoeStatus() {
+    renderCount();
     var total = state.settings.decks * 52;
     var untouched = state.shoe.length === 0 && state.discarded === 0;
     // Opening cards drawn for the snapshot are still physically in the shoe.
@@ -1072,9 +1260,11 @@
     if (state.phase !== "betting" || state.busy || accountPending) return;
     syncIdleAccount();
     if (value === "allin") {
-      if (state.bankroll < MIN_BET) { toastKey("insufficientFunds", "lose"); return; }
+      // All in is always the main bet, beside any side bets already down.
+      state.betTarget = "main";
+      if (state.bankroll - sideTotal() < MIN_BET) { toastKey("insufficientFunds", "lose"); return; }
       if (state.bankroll > wagerLimit()) { toastKey("wagerLimit", "lose", { amount: function () { return "$" + fmt(wagerLimit()); } }); return; }
-      state.bet = state.bankroll;        // wager everything
+      state.bet = state.bankroll - sideTotal();   // wager everything
       Sound.chipStack(4);
       renderBet();
       updateControls();
@@ -1082,9 +1272,19 @@
     }
     value = Math.floor(Number(value));
     if (!isFinite(value) || value <= 0) return;
-    if (state.bet + value > wagerLimit()) { toastKey("wagerLimit", "lose", { amount: function () { return "$" + fmt(wagerLimit()); } }); return; }
-    if (state.bet + value > state.bankroll) {
+    if (stakeOnFelt() + value > wagerLimit()) { toastKey("wagerLimit", "lose", { amount: function () { return "$" + fmt(wagerLimit()); } }); return; }
+    if (stakeOnFelt() + value > state.bankroll) {
       toastKey("insufficientFunds", "lose");
+      return;
+    }
+    var target = sideOffered() ? state.betTarget : "main";
+    if (target !== "main") {
+      // A side bet is at most the main bet.
+      if (state.sideBets[target] + value > state.bet) { toastKey("sideBetCap", "lose"); return; }
+      state.sideBets[target] += value;
+      Sound.chip(betClicks++);
+      renderBet();
+      updateControls();
       return;
     }
     state.bet += value;
@@ -1095,6 +1295,8 @@
   function clearBet() {
     if (state.phase !== "betting") return;
     state.bet = 0;
+    state.sideBets = { pairs: 0, trio: 0 };
+    state.betTarget = "main";
     renderBet();
     updateControls();
   }
@@ -1104,6 +1306,12 @@
     var target = Math.min(state.lastBet, state.bankroll, wagerLimit());
     if (target < MIN_BET) return;
     state.bet = target;
+    // The side bets come back too when they fit beside the bet.
+    var sides = state.lastSideBets;
+    if (sideOffered() && sides.pairs <= target && sides.trio <= target &&
+        target + sides.pairs + sides.trio <= Math.min(state.bankroll, wagerLimit())) {
+      state.sideBets = { pairs: sides.pairs, trio: sides.trio };
+    }
     Sound.chip();
     renderBet();
     updateControls();
@@ -1168,9 +1376,11 @@
       toastKey("roundElsewhere", "lose", { table: Pit.TABLES[elsewhere[0]] });
       return;
     }
+    if (!sideOffered()) state.sideBets = { pairs: 0, trio: 0 };
     if (state.bet < MIN_BET) { toastKey("minBet", "lose"); return; }
-    if (state.bet > state.bankroll) { toastKey("insufficientFunds", "lose"); return; }
-    if (state.bet > wagerLimit()) { toastKey("wagerLimit", "lose", { amount: function () { return "$" + fmt(wagerLimit()); } }); return; }
+    if (state.sideBets.pairs > state.bet || state.sideBets.trio > state.bet) { toastKey("sideBetCap", "lose"); return; }
+    if (stakeOnFelt() > state.bankroll) { toastKey("insufficientFunds", "lose"); return; }
+    if (stakeOnFelt() > wagerLimit()) { toastKey("wagerLimit", "lose", { amount: function () { return "$" + fmt(wagerLimit()); } }); return; }
 
     // Preserve the pre-hand balance on reload; other tabs cannot overwrite it
     // while this tab owns the account lock.
@@ -1186,8 +1396,11 @@
       await delay(760);
     }
     state.roundStakeLimit = Math.floor((MAX_BANKROLL - state.bankroll) / 2);
-    state.bankroll -= state.bet;
+    state.bankroll -= stakeOnFelt();
     state.lastBet = state.bet;
+    state.lastSideBets = { pairs: state.sideBets.pairs, trio: state.sideBets.trio };
+    state.side = sideTotal() ? { stakes: state.lastSideBets, returned: null, lines: null } : null;
+    state.betTarget = "main";
     renderBankroll();
     Sound.chipStack(2);
 
@@ -1225,6 +1438,7 @@
     var hand = state.hands[0];
     state.busy = false;
     dealerSay("sayDeal");
+    settleSideBets();
 
     var dealerUp = state.dealer.cards[0];
     var playerBJ = isBlackjack(hand.cards);
@@ -1579,8 +1793,17 @@
       state.stats[key] += round.counts[key];
     });
 
-    state.bankroll += round.totalReturn;
-    state.pendingPayoutVisual = round.totalReturn > 0;
+    // The side bets were settled on the opening cards; what they won is paid
+    // now, with the round.
+    var side = state.side;
+    var sideReturn = side ? side.returned || 0 : 0;
+    if (side) {
+      state.stats.sideWagered += SideBets.totalStake(side.stakes);
+      state.stats.sideReturned += sideReturn;
+    }
+    var totalReturn = round.totalReturn + sideReturn;
+    state.bankroll = Math.min(MAX_BANKROLL, state.bankroll + totalReturn);
+    state.pendingPayoutVisual = totalReturn > 0;
     state.insurance = 0;
     state.evenMoney = false;
     renderDealer();
@@ -1628,7 +1851,7 @@
       else { summaryKey = "push"; summaryClass = ""; Sound.push(); showResult("push", "pushShort"); }
     }
     if (summaryKey) setBannerKey(summaryKey, summaryClass);
-    finishRound(profit, round.totalReturn, { sidePaymentAmount: round.insuranceReturn });
+    finishRound(profit, totalReturn, { sidePaymentAmount: round.insuranceReturn + sideReturn });
   }
 
   function prepareHandSettlements() {
@@ -1740,6 +1963,9 @@
           state.hands = [];
           state.phase = "betting";
           state.bet = 0;
+          state.sideBets = { pairs: 0, trio: 0 };
+          state.side = null;
+          state.betTarget = "main";
           state.insurance = 0;
           state.insuranceMode = null;
           state.evenMoney = false;
@@ -1808,7 +2034,7 @@
       rules: state.settings, ruleFields: Rules.RULE_FIELDS,
       ranks: Engine.RANKS, suits: Engine.SUITS, maxWager: Engine.MAX_WAGER
     });
-    if (!round || round.stake > state.bankroll) {
+    if (!round || round.stake > state.bankroll || (round.side && round.side.returned !== null && !sideReturnPossible(round.side))) {
       clearRound();
       toastKey("roundVoided", "");
       return false;
@@ -1826,6 +2052,9 @@
     state.insurance = round.insurance;
     state.insuranceMode = round.insuranceMode;
     state.evenMoney = round.evenMoney;
+    state.side = round.side ? { stakes: round.side.stakes, returned: round.side.returned, lines: null } : null;
+    state.sideBets = round.side ? { pairs: round.side.stakes.pairs, trio: round.side.stakes.trio } : { pairs: 0, trio: 0 };
+    state.betTarget = "main";
     state.shoe = round.shoe;
     state.discarded = round.discarded;
     state.discardTrayCount = round.discardTrayCount;
@@ -1878,6 +2107,8 @@
     applyTheme();
     applyAnimationSpeed();
     applyCoachUI();
+    applyCountUI();
+    renderSideBets();
     renderRuleProfileUI();
     renderTableRules();
     updateRuleAvailability();
@@ -1903,6 +2134,16 @@
       button.setAttribute("aria-checked", String(active));
       button.tabIndex = active ? 0 : -1;
     });
+  }
+
+  function applyCountUI() {
+    document.querySelectorAll("[data-set-count]").forEach(function (button) {
+      var active = button.getAttribute("data-set-count") === state.settings.count;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-checked", String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    renderCount();
   }
 
   function applyCoachUI() {
@@ -2079,6 +2320,15 @@
     el.btn.surrender.addEventListener("click", surrender);
     el.btn.insYes.addEventListener("click", function () { takeInsurance(true); });
     el.btn.insNo.addEventListener("click", function () { takeInsurance(false); });
+    el.sideSpots.forEach(function (spot) {
+      spot.addEventListener("click", function () { chooseBetTarget(spot.getAttribute("data-side-bet")); });
+    });
+    el.btn.count.addEventListener("click", openCountCheck);
+    $("btnCountAnswer").addEventListener("click", answerCountCheck);
+    el.countModal.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", closeCountCheck); });
+    el.countAnswer.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") { event.preventDefault(); answerCountCheck(); }
+    });
 
     // Language switch (topbar)
     document.querySelectorAll(".lang-btn").forEach(function (b) {
@@ -2179,6 +2429,7 @@
         state.shoe = []; // force reshuffle with new deck count next round
         state.discarded = 0;
         state.discardTrayCount = 0;
+        if (!sideOffered()) { state.sideBets = { pairs: 0, trio: 0 }; state.betTarget = "main"; renderBet(); }
         persistSettings();
         applySettingsUI();
         renderShoeStatus();
@@ -2229,6 +2480,28 @@
         event.preventDefault();
         animationButtons[next].click();
         animationButtons[next].focus();
+      });
+    });
+    var countButtons = [].slice.call(document.querySelectorAll("[data-set-count]"));
+    countButtons.forEach(function (button, index) {
+      button.addEventListener("click", function () {
+        var mode = button.getAttribute("data-set-count");
+        if (CardCount.MODES.indexOf(mode) === -1) return;
+        state.settings.count = mode;
+        persistSettings();
+        applyCountUI();
+        updateControls();
+      });
+      button.addEventListener("keydown", function (event) {
+        var next = index;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % countButtons.length;
+        else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + countButtons.length) % countButtons.length;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = countButtons.length - 1;
+        else return;
+        event.preventDefault();
+        countButtons[next].click();
+        countButtons[next].focus();
       });
     });
     var coachButtons = [].slice.call(document.querySelectorAll("[data-set-coach]"));
@@ -2283,6 +2556,11 @@
         else if (e.key === "Tab") trapFocus(modal, e);
         return;
       }
+      if (el.countModal.hidden === false) {
+        if (e.key === "Escape") closeCountCheck();
+        else if (e.key === "Tab") trapFocus(el.countModal, e);
+        return;
+      }
       if (state.phase === "insurance") {
         if (e.key === "Escape") { e.preventDefault(); takeInsurance(false); }
         else if (e.key === "Tab") trapFocus(el.insuranceOverlay, e);
@@ -2300,6 +2578,10 @@
         if (k === "enter" || k === "d") { if (!el.btn.deal.disabled) deal(); }
         else if (k === "r") { if (!el.btn.rebet.disabled) rebet(); }
         else if (k === "c") { if (!el.btn.clear.disabled) clearBet(); }
+        else if (k === "k") {
+          // The key opens the question; it must not become the first letter of the answer.
+          if (!el.btn.count.disabled) { e.preventDefault(); openCountCheck(); }
+        }
       } else if (state.phase === "player") {
         if (k === "h") { if (!el.btn.hit.disabled) hit(); }
         else if (k === "s") { if (!el.btn.stand.disabled) stand(); }

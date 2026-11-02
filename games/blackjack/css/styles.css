@@ -850,7 +850,81 @@ body[data-hands="4"] .table-specs { opacity: 0; visibility: hidden; }
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(8px, 1.6vw, 18px);
 }
+
+/* The two side bets flank the main circle: Perfect Pairs and 21+3. A tap
+   sends the next chips there; the circle taking chips is lit. */
+.side-spot {
+  --side: clamp(46px, 7vh, 60px);
+  position: relative;
+  width: var(--side);
+  height: var(--side);
+  margin-bottom: calc(var(--side) * .12);
+  padding: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(226, 194, 109, .5);
+  background: radial-gradient(circle, rgba(0,0,0,.2), rgba(0,0,0,.05) 68%, rgba(0,0,0,.24));
+  color: rgba(244, 226, 166, .66);
+  font: 700 9px/1 var(--font-ui);
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: border-color .2s ease, box-shadow .2s ease, opacity .25s ease;
+}
+.side-spot:disabled { cursor: default; }
+.side-spot[aria-pressed="true"] {
+  border-style: solid;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 2px rgba(244, 226, 166, .25), 0 0 14px rgba(244, 226, 166, .35);
+  color: var(--gold-bright);
+}
+.side-name { position: absolute; top: 16%; left: 0; right: 0; text-align: center; }
+.side-value {
+  position: absolute;
+  bottom: 9%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--gold-bright);
+  text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  font-variant-numeric: tabular-nums;
+}
+.side-spot .side-stack {
+  --stack-w: calc(var(--side) * .58);
+  --stack-t: 4px;
+  --stack-face: calc(var(--side) * .28);
+  bottom: 34%;
+}
+.side-spot.won { border-color: var(--good); box-shadow: 0 0 16px rgba(110, 220, 160, .45); }
+.side-spot.lost .side-stack,
+.side-spot.lost .side-value { opacity: 0; transition: opacity .4s ease .3s; }
+body[data-side-bets="false"] .side-spot { display: none; }
+
+/* The Hi-Lo count rides on the shoe while the trainer shows it. */
+.count-badge {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: -32px;
+  transform: translateX(-50%);
+  padding: 3px 7px;
+  border-radius: 9px;
+  background: rgba(2, 7, 5, .82);
+  border: 1px solid rgba(226, 194, 109, .5);
+  color: var(--gold-bright);
+  font: 700 10px/1 var(--font-ui);
+  letter-spacing: .3px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.count-badge[hidden] { display: none; }
+body:not([data-count="check"]) .count-btn { display: none; }
 .bet-circle {
   width: clamp(74px, 11vh, 94px); height: clamp(74px, 11vh, 94px);
   border-radius: 50%;
@@ -1638,6 +1712,8 @@ body[data-animation-speed="cinematic"] .ins-panel { animation-duration: .47s; }
     bottom: 70px;
     transform: scale(.74);
   }
+  /* The side circles flank the bet: the plaque waits above them. */
+  body[data-side-bets="true"][data-phase="betting"] .table-specs { bottom: 104px; }
   /* The oval narrows at the bottom corners; during play the retired bet circle
      leaves the bottom centre free, which keeps the plaque inside the rail. */
   body:not([data-phase="betting"]) .table-specs {
@@ -1727,6 +1803,9 @@ body[data-animation-speed="cinematic"] .ins-panel { animation-duration: .47s; }
   .banner { font-size: 10px; letter-spacing: .4px; padding: 5px 7px; white-space: normal; }
   .felt-print .print-label { display: none; }
   .table-specs { bottom: 24px; left: 18%; transform: scale(.68); transform-origin: bottom left; }
+  /* Beside the side circles there is no room on the left: the plaque takes
+     the matching place on the right. */
+  body[data-side-bets="true"][data-phase="betting"] .table-specs { left: auto; right: 12%; transform-origin: bottom right; }
   .table-spec:nth-child(1), .table-spec:nth-child(3) { display: none; }
   .shoe { top: 25px; right: 16%; transform: rotateZ(-7deg) scale(.62); transform-origin: top right; }
   .discard-tray { top: 25px; left: 16%; transform: rotateZ(6deg) scale(.62); transform-origin: top left; }

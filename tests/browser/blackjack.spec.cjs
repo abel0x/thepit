@@ -903,3 +903,152 @@ test("without cross-tab locks a reload resumes the hand from the session account
     assert.equal(await page.evaluate(() => sessionStorage.getItem("pit.session.bankroll")), "9900");
   });
 });
+
+// Side bets (2026-11-02): Perfect Pairs and 21+3 beside the main circle.
+async function sideBet(page, bet, chip = "100") {
+  await page.click('[data-side-bet="' + bet + '"]');
+  await page.click('.chip[data-value="' + chip + '"]');
+  await page.click('[data-side-bet="' + bet + '"]');   // back to the main bet
+}
+
+test("side bets settle on the opening cards and are paid with the round", async () => {
+  const draw = [{ rank: "7", suit: "♥" }, { rank: "7", suit: "♣" }, { rank: "7", suit: "♦" }, "10"];
+  await scene({ draw }, async page => {
+    await page.click('.chip[data-value="100"]');
+    await sideBet(page, "pairs");
+    await sideBet(page, "trio");
+    assert.deepEqual(await page.$$eval(".side-value", nodes => nodes.map(n => n.textContent)), ["$100", "$100"]);
+    assert.equal(await page.$eval(".bet-spot", node => document.body.dataset.betTarget), "main");
+    await page.click("#btnDeal");
+    await phase(page, "player");
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("pit.bankroll"))), 10000, "the saved balance stays the one before the round");
+    assert.equal(await page.$eval("#toast", node => node.textContent), "Perfect Pairs: coloured pair pays $1,300 · 21+3: three of a kind pays $3,100");
+    assert.deepEqual(await page.$$eval(".side-spot", nodes => nodes.map(n => n.classList.contains("won"))), [true, true]);
+    await page.click("#btnStand");
+    await phase(page, "betting");
+    assert.equal(await page.evaluate(() => lastSettlement.profit), -100, "the main hand lost");
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("pit.bankroll"))), 10000 - 300 + 1300 + 3100);
+    const saved = await stats(page);
+    assert.deepEqual([saved.sideWagered, saved.sideReturned], [200, 4400]);
+    assert.deepEqual(await page.$$eval(".side-value", nodes => nodes.map(n => n.textContent)), ["", ""], "the felt is cleared");
+    await page.click("#btnRebet");
+    assert.deepEqual(await page.$$eval(".side-value", nodes => nodes.map(n => n.textContent)), ["$100", "$100"], "rebet brings the side bets back");
+  });
+});
+
+test("a side bet is at most the main bet, and lost side bets fade from the felt", async () => {
+  await scene({ draw: [{ rank: "2", suit: "♠" }, { rank: "9", suit: "♥" }, { rank: "K", suit: "♦" }, "8"] }, async page => {
+    await page.click('[data-side-bet="pairs"]');
+    await page.click('.chip[data-value="100"]');
+    assert.equal(await page.$eval("#toast", node => node.textContent), "A side bet can be at most the main bet");
+    await page.click('[data-side-bet="pairs"]');
+    await page.click('.chip[data-value="500"]');
+    await sideBet(page, "trio", "500");
+    await page.click("#btnDeal");
+    await phase(page, "player");
+    assert.deepEqual(await page.$$eval(".side-spot", nodes => nodes.map(n => [n.classList.contains("won"), n.classList.contains("lost")])), [[false, false], [false, true]]);
+    await page.click("#btnStand");
+    await phase(page, "betting");
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("pit.bankroll"))), 10000 - 500 - 500, "the dealer's 17 beats 12 and the 21+3 is lost");
+  });
+});
+
+test("a reload mid-hand keeps the side bets already settled", async () => {
+  const draw = [{ rank: "Q", suit: "♠" }, "6", { rank: "Q", suit: "♠" }, "10"];
+  await scene({ draw }, async page => {
+    await page.click('.chip[data-value="100"]');
+    await sideBet(page, "pairs");
+    await page.click("#btnDeal");
+    await phase(page, "player");
+    assert.match(await page.$eval("#toast", node => node.textContent), /perfect pair pays \$2,600/);
+    const saved = JSON.parse(await page.evaluate(() => localStorage.getItem("pit.blackjack.round")));
+    assert.deepEqual(saved.side, { pairs: 100, trio: 0, returned: 2600 });
+    await page.reload({ waitUntil: "load" });
+    await phase(page, "player");
+    assert.equal(await page.$$eval(".side-spot.won", nodes => nodes.length), 0, "the result marks belong to the deal, not to the reload");
+    await page.click("#btnStand");
+    await phase(page, "betting");
+    const settled = await page.evaluate(() => lastSettlement.profit);
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("pit.bankroll"))), 10000 - 200 + (settled + 100) + 2600);
+  });
+});
+
+test("side bets are not offered with one or two decks", async () => {
+  await scene({ settings: { ruleProfile: null, decks: 2 } }, async page => {
+    assert.equal(await page.$eval("body", node => node.dataset.sideBets), "false");
+    assert.deepEqual(await page.$$eval(".side-spot", nodes => nodes.map(n => getComputedStyle(n).display)), ["none", "none"]);
+  });
+});
+
+test("the side circles stay on the felt and clear of the rules plaque at every size", async () => {
+  await scene({ lang: "tr" }, async page => {
+    await page.click('.chip[data-value="500"]');
+    await sideBet(page, "pairs");
+    await sideBet(page, "trio");
+    const found = [];
+    for (const [width, height] of LAYOUT_VIEWPORTS) {
+      await page.setViewport({ width, height });
+      await page.waitForFunction((w, h) => innerWidth === w && innerHeight === h, {}, width, height);
+      await new Promise(resolve => setTimeout(resolve, 120));
+      const problems = await page.evaluate(() => {
+        const felt = document.querySelector(".table-felt").getBoundingClientRect();
+        const plaque = document.querySelector(".table-specs");
+        const plaqueBox = plaque.getBoundingClientRect();
+        const plaqueShown = getComputedStyle(plaque).visibility !== "hidden" && getComputedStyle(plaque).display !== "none";
+        const overlap = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+        const spots = [...document.querySelectorAll(".side-spot, .bet-circle")].map(n => n.getBoundingClientRect());
+        const out = [];
+        spots.forEach((box, i) => {
+          if (box.left < felt.left || box.right > felt.right || box.bottom > felt.bottom) out.push("spot " + i + " leaves the felt");
+          if (plaqueShown && overlap(box, plaqueBox)) out.push("spot " + i + " covers the plaque");
+        });
+        if (overlap(spots[0], spots[1]) || overlap(spots[1], spots[2])) out.push("circles overlap");
+        return out;
+      });
+      problems.forEach(problem => found.push(width + "x" + height + ": " + problem));
+    }
+    assert.deepEqual(found, []);
+  });
+});
+
+// The Hi-Lo trainer (2026-11-02).
+test("the count rides on the shoe and leaves the hole card out until it is turned", async () => {
+  await scene({ settings: { count: "show" }, draw: ["2", "5", "3", "K"] }, async page => {
+    assert.equal(await page.$eval("#countBadge", node => node.hidden), false);
+    assert.equal(await page.$eval("#countBadge", node => node.textContent), "RC 0 · TC 0.0");
+    await deal(page); await phase(page, "player");
+    assert.equal(await page.$eval("#countBadge", node => node.textContent), "RC +3 · TC +0.4", "2, 5 and 3 seen; 413 cards unseen");
+    await page.click("#btnStand");
+    await phase(page, "betting");
+    // The king turned and whatever the dealer drew to 15 are counted too.
+    assert.match(await page.$eval("#countBadge", node => node.textContent), /^RC [+−]?\d+ · TC [+−]?\d\.\d$/);
+  });
+});
+
+test("the count quiz asks between hands and keeps score", async () => {
+  await scene({ settings: { count: "check" }, draw: ["2", "10", "3", "7"] }, async page => {
+    assert.equal(await page.$eval("#countBadge", node => node.hidden), true, "the quiz hides the count");
+    await deal(page); await phase(page, "player");
+    await page.click("#btnStand");
+    await phase(page, "betting");
+    await page.evaluate(() => document.activeElement.blur());
+    await page.keyboard.press("k");
+    await page.waitForFunction(() => !document.getElementById("countModal").hidden);
+    await page.type("#countAnswer", "+1");
+    await page.keyboard.press("Enter");
+    assert.equal(await page.$eval("#toast", node => node.textContent), "Right: the running count is +1");
+    await page.click("#btnCount");
+    await page.type("#countAnswer", "-3");
+    await page.click("#btnCountAnswer");
+    assert.equal(await page.$eval("#toast", node => node.textContent), "The running count is +1, not −3");
+    await page.click("#btnCount");
+    await page.type("#countAnswer", "lots");
+    await page.keyboard.press("Enter");
+    assert.equal(await page.$eval("#countModal", node => node.hidden), false, "a word is not an answer");
+    await page.keyboard.press("Escape");
+    const saved = await stats(page);
+    assert.deepEqual([saved.countChecks, saved.countCorrect], [2, 1]);
+    await page.click("#settingsBtn");
+    assert.equal(await page.$eval("#stCount", node => node.textContent), "50% (2)");
+  });
+});

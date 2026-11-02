@@ -63,8 +63,25 @@
       evenMoney: !!state.evenMoney,
       shoe: ids(state.shoe),
       discarded: state.discarded,
-      discardTrayCount: state.discardTrayCount
+      discardTrayCount: state.discardTrayCount,
+      // The side bets of the round and, once the opening cards have settled
+      // them, what they return (null until then).
+      side: state.side ? { pairs: state.side.stakes.pairs, trio: state.side.stakes.trio, returned: state.side.returned } : null
     };
+  }
+
+  // Side bets in a snapshot: none, or two stakes and what they returned.
+  // Whether that return is one the cards could make is for the caller.
+  function restoreSide(raw, resume, maxWager) {
+    if (raw == null) return { stakes: { pairs: 0, trio: 0 }, returned: 0, none: true };
+    if (typeof raw !== "object") return null;
+    var pairs = raw.pairs, trio = raw.trio;
+    if (!isCount(pairs) || !isCount(trio) || pairs > maxWager || trio > maxWager || pairs + trio === 0) return null;
+    if (raw.returned === null) {
+      // Only a round still being dealt has side bets waiting for the cards.
+      if (resume !== "deal") return null;
+    } else if (!isCount(raw.returned) || resume === "deal") return null;
+    return { stakes: { pairs: pairs, trio: trio }, returned: raw.returned };
   }
 
   /**
@@ -128,6 +145,9 @@
         splitAces: hand.splitAces, fromSplit: hand.fromSplit
       });
     }
+    var side = restoreSide(raw.side, raw.resume, maxWager);
+    if (!side) return null;
+    stake += side.stakes.pairs + side.stakes.trio;
     if (!Number.isSafeInteger(stake)) return null;
 
     var dealerCards = cards(raw.dealer.cards, 2);
@@ -171,6 +191,7 @@
       shoe: shoe,
       discarded: raw.discarded,
       discardTrayCount: raw.discardTrayCount,
+      side: side.none ? null : { stakes: side.stakes, returned: side.returned },
       stake: stake
     };
   }

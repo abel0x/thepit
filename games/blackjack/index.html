@@ -140,6 +140,7 @@
           </div>
           <span class="shoe-mouth"></span>
           <span class="shoe-count" id="shoeCount" aria-hidden="true">312</span>
+          <span class="count-badge" id="countBadge" aria-hidden="true" hidden></span>
         </div>
         <div id="resultBadge" class="result-badge" hidden aria-hidden="true"></div>
 
@@ -167,12 +168,22 @@
 
         <!-- Bet spot -->
         <div class="bet-spot">
+          <button class="side-spot" data-side-bet="pairs" type="button" aria-pressed="false" aria-label="Perfect Pairs">
+            <span class="side-name" aria-hidden="true">PP</span>
+            <span class="side-value" aria-hidden="true"></span>
+            <span class="bet-stack side-stack" aria-hidden="true"></span>
+          </button>
           <div class="bet-circle">
             <span class="bet-circle-label" data-i18n="betLabel">BET</span>
             <span class="bet-circle-value">$<span id="currentBet">0</span></span>
             <div class="bet-stack" id="betStack" aria-hidden="true"></div>
             <div class="payout-stack" id="payoutStack" aria-hidden="true"></div>
           </div>
+          <button class="side-spot" data-side-bet="trio" type="button" aria-pressed="false" aria-label="21+3">
+            <span class="side-name" aria-hidden="true">21+3</span>
+            <span class="side-value" aria-hidden="true"></span>
+            <span class="bet-stack side-stack" aria-hidden="true"></span>
+          </button>
         </div>
 
         <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
@@ -212,6 +223,7 @@
         <button id="btnClear" class="btn btn-ghost btn-bet-control" type="button" data-i18n="clearBet" aria-keyshortcuts="C">Clear</button>
         <button id="btnDeal" class="btn btn-primary btn-bet-control" type="button" data-i18n="deal" aria-keyshortcuts="D Enter">Deal</button>
         <button id="btnRebet" class="btn btn-ghost btn-bet-control" type="button" data-i18n="rebet" aria-keyshortcuts="R">Rebet</button>
+        <button id="btnCount" class="btn btn-ghost btn-bet-control count-btn" type="button" data-i18n="countCheck" aria-keyshortcuts="K" aria-haspopup="dialog">Count?</button>
 
         <span class="action-sep" aria-hidden="true"></span>
 
@@ -299,6 +311,24 @@
           </div>
         </div>
         <p class="settings-hint" id="coachHint" data-i18n="coachHint">Basic strategy for the active table rules. Feedback flags a different play; Hints also mark the best one.</p>
+
+        <div class="setting-row count-setting">
+          <span class="setting-label" id="countLabel" data-i18n="countTrainer">Card counting</span>
+          <div class="seg count-seg" role="radiogroup" aria-labelledby="countLabel" aria-describedby="countHint">
+            <button class="seg-btn active" data-set-count="off" type="button" role="radio" aria-checked="true" data-i18n="countOff">Off</button>
+            <button class="seg-btn" data-set-count="show" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="countShow">Show</button>
+            <button class="seg-btn" data-set-count="check" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="countQuiz">Quiz</button>
+          </div>
+        </div>
+        <p class="settings-hint" id="countHint" data-i18n="countHint">The Hi-Lo count: twos to sixes add one, tens and aces take one away. Show keeps the running and true count beside the shoe; Quiz asks you for the running count between hands.</p>
+
+        <div class="side-bets-setting">
+          <div class="setting-section-label" data-i18n="sideBetsTitle">Side bets</div>
+          <p class="settings-hint" data-i18n="sideBetsHow">Tap PP or 21+3 on the felt, then add chips: they go to that side bet until you tap it again. Each side bet is at most the main bet and is settled on the opening cards.</p>
+          <p class="settings-hint" data-i18n="sidePairsPays">Perfect Pairs, on your first two cards: the same card 25 to 1, a pair in one colour 12 to 1, a pair in both colours 6 to 1.</p>
+          <p class="settings-hint" data-i18n="sideTrioPays">21+3, on your two cards and the dealer's up-card as a poker hand: suited three of a kind 100 to 1, straight flush 40 to 1, three of a kind 30 to 1, straight 10 to 1, flush 5 to 1.</p>
+          <p class="settings-hint" data-i18n="sideBetsEdge">With six decks the house keeps 6.11% of Perfect Pairs and 4.62% of 21+3, with eight decks 4.10% and 3.70%. Side bets are offered with six or eight decks only.</p>
+        </div>
 
         <div class="rule-profile-setting">
           <div class="setting-section-label" id="ruleProfileLabel" data-i18n="ruleProfiles">Table rules</div>
@@ -389,6 +419,8 @@
           <div class="stat"><span data-i18n="blackjacks">Blackjacks</span><b id="stBj">0</b></div>
           <div class="stat"><span data-i18n="winRate">Win rate</span><b id="stRate">0%</b></div>
           <div class="stat"><span data-i18n="strategyAccuracy">Strategy accuracy</span><b id="stStrategy">–</b></div>
+          <div class="stat"><span data-i18n="sideBetsNet">Side bets, net of wagered</span><b id="stSide">–</b></div>
+          <div class="stat"><span data-i18n="countAccuracy">Count checks</span><b id="stCount">–</b></div>
         </div>
 
         <div class="setting-row deposit-row">
@@ -426,6 +458,25 @@
     </div>
   </div>
 
+  <!-- The count check -->
+  <div id="countModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card count-card" role="dialog" aria-modal="true" aria-labelledby="countTitle" aria-describedby="countPrompt">
+      <div class="modal-head">
+        <h2 id="countTitle" data-i18n="countTitle">Running count</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-hint" id="countPrompt" data-i18n="countPrompt">What is the Hi-Lo running count of every card seen since the shuffle?</p>
+        <div class="deposit-field">
+          <input id="countAnswer" class="deposit-input" type="text" inputmode="numeric" autocomplete="off" placeholder="0"
+                 aria-label="Running count" data-i18n-aria-label="countTitle" />
+          <button id="btnCountAnswer" class="btn btn-primary deposit-btn" type="button" data-i18n="countSubmit">Check</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating payout toast -->
   <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
 
@@ -439,6 +490,8 @@
   <script src="../../shared/js/chips.js"></script>
   <script src="js/chip-stack.js"></script>
   <script src="js/strategy.js"></script>
+  <script src="js/sidebets.js"></script>
+  <script src="js/count.js"></script>
   <script src="js/round.js"></script>
   <script src="js/game.js"></script>
   <script src="../../shared/js/pwa.js"></script>

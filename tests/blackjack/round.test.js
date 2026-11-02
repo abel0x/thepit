@@ -144,3 +144,45 @@ test("every resume point the game writes is accepted", function () {
     assert.ok(RoundStore.restore(roundTrip(state, mode), context(state.settings)), mode);
   });
 });
+
+test("side bets travel with the round: their stakes count, and what they returned once the opening cards are out", function () {
+  var state = liveState();
+  state.side = { stakes: { pairs: 100, trio: 50 }, returned: 1300, lines: [] };
+  var round = RoundStore.restore(roundTrip(state, "player"), context(state.settings));
+  assert.deepEqual(round.side, { stakes: { pairs: 100, trio: 50 }, returned: 1300 });
+  assert.equal(round.stake, 300 + 150);
+
+  var none = RoundStore.restore(roundTrip(liveState(), "player"), context(state.settings));
+  assert.equal(none.side, null, "a round without side bets");
+  assert.equal(none.stake, 300);
+
+  [
+    ["a fractional stake", function (raw) { raw.side.pairs = 1.5; }],
+    ["no stake at all", function (raw) { raw.side.pairs = 0; raw.side.trio = 0; }],
+    ["a return still waiting after the deal", function (raw) { raw.side.returned = null; }],
+    ["a negative return", function (raw) { raw.side.returned = -1; }],
+    ["side bets that are not an object", function (raw) { raw.side = "pairs"; }]
+  ].forEach(function (entry) {
+    var raw = roundTrip(state, "player");
+    entry[1](raw);
+    assert.equal(RoundStore.restore(raw, context(state.settings)), null, entry[0]);
+  });
+});
+
+test("side bets still waiting for the cards come back only with the opening deal", function () {
+  var rules = settings();
+  var shoe = Engine.buildShoe(rules.decks);
+  var pending = [shoe.pop(), shoe.pop(), shoe.pop(), shoe.pop()];
+  var state = {
+    settings: rules, bet: 500, lastBet: 500, roundStakeLimit: 9000,
+    hands: [{ cards: [], bet: 500, done: false, doubled: false, splitAces: false, fromSplit: false }],
+    active: 0, dealer: { cards: [], hideHole: true }, pendingDeal: pending,
+    insurance: 0, insuranceMode: null, evenMoney: false, shoe: shoe, discarded: 4, discardTrayCount: 0,
+    side: { stakes: { pairs: 0, trio: 200 }, returned: null, lines: null }
+  };
+  var round = RoundStore.restore(roundTrip(state, "deal"), context(rules));
+  assert.deepEqual(round.side, { stakes: { pairs: 0, trio: 200 }, returned: null });
+  assert.equal(round.stake, 700);
+  state.side.returned = 0;
+  assert.equal(RoundStore.restore(roundTrip(state, "deal"), context(rules)), null, "nothing is settled before the cards are out");
+});

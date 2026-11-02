@@ -8,6 +8,8 @@ The first version of the pit: seven tables, a money wheel, a slot machine, a vid
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
+- Table 21 side bets: Perfect Pairs and 21+3 beside the main circle, each up to the main bet, settled on the opening cards and paid with the round, offered with six or eight decks and their house edges counted exactly over every draw of a full shoe.
+- Table 21 card counting trainer: the Hi-Lo running and true count on the shoe, or a quiz between hands that keeps score, with the hole card counted only once it is turned.
 - One play-money balance shared by every table, guarded by a single Web Lock across pages and tabs; without Web Locks each tab keeps its own session balance, as before.
 - One round at a time across the pit: a hand or a spin left unfinished at one table is played out there before another table takes a bet, and the lobby marks that table.
 - The cloth and the language chosen anywhere follow the player to every page.

@@ -13,7 +13,7 @@ var root = path.resolve(__dirname, "../../games/blackjack");
 var read = function (file) { return fs.readFileSync(path.join(root, file), "utf8"); };
 var runtimeTextFiles = [
   "index.html", "css/styles.css", "js/strings.js", "js/engine.js",
-  "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"
+  "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/sidebets.js", "js/count.js", "js/round.js", "js/game.js"
 ];
 
 runtimeTextFiles.forEach(function (file) {
@@ -27,7 +27,7 @@ runtimeTextFiles.forEach(function (file) {
 
 [
   "js/strings.js", "js/engine.js", "js/rules.js",
-  "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"
+  "js/chip-stack.js", "js/strategy.js", "js/sidebets.js", "js/count.js", "js/round.js", "js/game.js"
 ].forEach(function (file) {
   test("JavaScript parses successfully: " + file, function () {
     assert.doesNotThrow(function () { new vm.Script(read(file), { filename: file }); });
@@ -61,7 +61,7 @@ test("runtime scripts load in dependency order", function () {
   });
   assert.deepEqual(scripts, [
     "../../shared/js/pit.js", "../../shared/js/i18n.js", "js/strings.js", "../../shared/js/card-sound.js", "../../shared/js/cards.js", "js/engine.js", "js/rules.js",
-    "../../shared/js/chips.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js", "../../shared/js/pwa.js"
+    "../../shared/js/chips.js", "js/chip-stack.js", "js/strategy.js", "js/sidebets.js", "js/count.js", "js/round.js", "js/game.js", "../../shared/js/pwa.js"
   ]);
 });
 
@@ -100,7 +100,7 @@ test("HTML has no inline executable event handlers", function () {
 });
 
 test("runtime JavaScript avoids dynamic code execution", function () {
-  ["js/strings.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/round.js", "js/game.js"]
+  ["js/strings.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/strategy.js", "js/sidebets.js", "js/count.js", "js/round.js", "js/game.js"]
     .forEach(function (file) {
       assert.doesNotMatch(read(file), /\beval\s*\(|\bnew\s+Function\b/, file);
     });

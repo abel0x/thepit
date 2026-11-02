@@ -42,7 +42,7 @@ test("statistics stay whole and consistent", function () {
 test("a settled hand is recorded once, with its best hand", function () {
   var won = Engine.settle({ ante: 25, pairPlus: 10 }, hand("KS KD 4C"), hand("QS 8D 3C"), "play");
   var stats = Store.recordHand(null, won);
-  assert.deepEqual(stats, { hands: 1, played: 1, folded: 0, winningHands: 1, noQualify: 0, pairPlusWins: 1, wagered: 60, returned: 120, biggestWin: 60, bestHand: won.player.score });
+  assert.deepEqual(stats, { hands: 1, played: 1, folded: 0, winningHands: 1, noQualify: 0, pairPlusWins: 1, sixCardWins: 0, wagered: 60, returned: 120, biggestWin: 60, bestHand: won.player.score });
   var folded = Engine.settle({ ante: 25 }, hand("2S 5D 9C"), hand("QS 8D 3C"), "fold");
   stats = Store.recordHand(stats, folded);
   assert.equal(stats.hands, 2);

@@ -27,8 +27,13 @@
   var TRAY = Chips.trayValues(document.getElementById("chipTray"));
   var MIN_CHIP = TRAY[0];
   var PACE = { fast: 0.55, normal: 1, cinematic: 1.45 };
-  var SPOTS = ["pairPlus", "ante", "play"];
-  var BET_NAMES = { pairPlus: "pairPlusName", ante: "anteName", play: "playName" };
+  var SPOTS = ["pairPlus", "ante", "play", "sixCard"];
+  var BET_NAMES = { pairPlus: "pairPlusName", ante: "anteName", play: "playName", sixCard: "sixCardName" };
+  // The five-card hands of the 6-Card Bonus, as the rules name them.
+  var SIX_CARD_WORDS = {
+    royalFlush: "handRoyalFlush", straightFlush: "handStraightFlush", quads: "handQuads", fullHouse: "handFullHouse",
+    flush: "handFlush", straight: "handStraight", trips: "handTripsPrint"
+  };
   var reducedMotion = global.matchMedia ? global.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
 
   var t = function (key, params) { return I18n.t(key, params); };
@@ -348,6 +353,7 @@
     $("stFolded").textContent = fmt(s.folded);
     $("stNoQualify").textContent = fmt(s.noQualify);
     $("stPairPlus").textContent = fmt(s.pairPlusWins);
+    $("stSixCard").textContent = fmt(s.sixCardWins);
     var best = Engine.fromScore(s.bestHand);
     $("stBestHand").textContent = best ? handName(best) : t("noHandYet");
     $("stWagered").textContent = money(s.wagered);
@@ -493,7 +499,7 @@
   // pushes stay; the Ante Bonus is paid beside the Ante. The balance changes
   // when the chips come back.
   async function settleChips(settlement) {
-    var payouts = { pairPlus: 0, ante: 0, play: 0 };
+    var payouts = { pairPlus: 0, ante: 0, play: 0, sixCard: 0 };
     settlement.lines.forEach(function (line) {
       var key = line.key === "anteBonus" ? "ante" : line.key;
       if (line.key !== "anteBonus") {
@@ -720,7 +726,11 @@
       : { key: "returnedLine", params: { amount: money(settlement.returned) } };
     setBanner(line.key, line.params, sub, net > 0 ? "win" : net < 0 ? "lose" : "");
     var bonus = settlement.lines.filter(function (l) { return l.key === "anteBonus"; })[0];
-    if (bonus) toast(t("anteBonusPaid", { amount: money(bonus.returned) }), "win");
+    var six = settlement.lines.filter(function (l) { return l.key === "sixCard" && l.returned; })[0];
+    var notes = [];
+    if (bonus) notes.push(t("anteBonusPaid", { amount: money(bonus.returned) }));
+    if (six) notes.push(t("sixCardPaid", { hand: t(SIX_CARD_WORDS[settlement.sixCard]), amount: money(six.returned) }));
+    if (notes.length) toast(notes.join(" · "), "win");
     if (net > 0) Sound.win();
     else if (net < 0) Sound.lose();
     else Sound.push();
@@ -1040,6 +1050,7 @@
     switch (lower) {
       case "a": addChip("ante"); break;
       case "s": addChip("pairPlus"); break;
+      case "b": addChip("sixCard"); break;
       case "z": undo(); break;
       case "c": clearBets(); break;
       case "d": doubleBets(); break;

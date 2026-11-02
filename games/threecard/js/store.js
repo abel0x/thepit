@@ -38,7 +38,10 @@
   var SPEEDS = ["fast", "normal", "cinematic"];
   var DECISIONS = ["play", "fold"];
   var DEFAULT_SETTINGS = { payTable: "standard", animationSpeed: "normal", coach: false };
-  var DEFAULT_STATS = { hands: 0, played: 0, folded: 0, winningHands: 0, noQualify: 0, pairPlusWins: 0, wagered: 0, returned: 0, biggestWin: 0, bestHand: 0 };
+  var DEFAULT_STATS = {
+    hands: 0, played: 0, folded: 0, winningHands: 0, noQualify: 0, pairPlusWins: 0, sixCardWins: 0,
+    wagered: 0, returned: 0, biggestWin: 0, bestHand: 0
+  };
 
   function safeCount(value) {
     value = Math.floor(Number(value));
@@ -64,6 +67,7 @@
     stats.winningHands = Math.min(stats.winningHands, stats.hands);
     stats.noQualify = Math.min(stats.noQualify, stats.played);
     stats.pairPlusWins = Math.min(stats.pairPlusWins, stats.played);
+    stats.sixCardWins = Math.min(stats.sixCardWins, stats.hands);
     return stats;
   }
 
@@ -127,6 +131,7 @@
     else next.folded += 1;
     if (settlement.outcome === "noQualify") next.noQualify += 1;
     if (settlement.lines.some(function (line) { return line.key === "pairPlus" && line.result === "win"; })) next.pairPlusWins += 1;
+    if (settlement.lines.some(function (line) { return line.key === "sixCard" && line.result === "win"; })) next.sixCardWins += 1;
     next.wagered = Math.min(Number.MAX_SAFE_INTEGER, next.wagered + settlement.stake);
     next.returned = Math.min(Number.MAX_SAFE_INTEGER, next.returned + settlement.returned);
     if (settlement.net > 0) {

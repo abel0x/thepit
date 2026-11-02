@@ -5,8 +5,9 @@
    Table 3 — pure Three Card Poker engine
    The deck, the ranking of three-card hands, the dealer's qualifier,
    the Ante, Play, Ante Bonus and Pair Plus settlements under either Pair
-   Plus pay table. No DOM,
-   storage, network, or third-party dependencies.
+   Plus pay table, and the 6-Card Bonus on the best five of the player's
+   and the dealer's six cards. No DOM, storage, network, or third-party
+   dependencies.
    Exposed as window.ThreeCardEngine and CommonJS for tests.
    ========================================================= */
 (function (root, factory) {
@@ -25,9 +26,9 @@
 
   // The bets a player places before the deal; the Play bet is made after
   // seeing the cards and always equals the Ante.
-  var BETS = ["pairPlus", "ante"];
+  var BETS = ["pairPlus", "ante", "sixCard"];
   // Table maximum for each bet; the minimum is the smallest chip.
-  var LIMITS = { ante: 2500, pairPlus: 500 };
+  var LIMITS = { ante: 2500, pairPlus: 500, sixCard: 100 };
 
   // Three-card hands, weakest first. With three cards a straight is rarer
   // than a flush, so it ranks above it.
@@ -41,6 +42,11 @@
   };
   // The Ante Bonus pays a hand that is played, whatever the dealer holds.
   var ANTE_BONUS = { straightFlush: 5, trips: 4, straight: 1 };
+  // The 6-Card Bonus pays the best five-card hand among the player's three
+  // cards and the dealer's three, played or folded. Five-card hands, weakest
+  // paying hand first.
+  var SIX_CARD_HANDS = ["trips", "straight", "flush", "fullHouse", "quads", "straightFlush", "royalFlush"];
+  var SIX_CARD = { royalFlush: 1000, straightFlush: 200, quads: 100, fullHouse: 20, flush: 15, straight: 10, trips: 7 };
 
   /* ---------------- Cards ---------------- */
   function colorOf(suit) {
@@ -194,6 +200,44 @@
     return a.score > b.score ? 1 : a.score < b.score ? -1 : 0;
   }
 
+  /* ---------------- Six cards ---------------- */
+  // Rank bits of five ranks in a row, two as bit 0 and ace as bit 12; the
+  // wheel runs ace to five.
+  var RUNS = [0x100F];
+  for (var low = 0; low <= 8; low++) RUNS.push(0x1F << low);
+  var ROYAL = 0x1F << 8;
+
+  function hasRun(bits) {
+    for (var i = RUNS.length - 1; i >= 0; i--) if ((bits & RUNS[i]) === RUNS[i]) return RUNS[i];
+    return 0;
+  }
+
+  // The best five-card poker hand among six cards, as one of
+  // SIX_CARD_HANDS, or "nothing" below three of a kind.
+  function sixCardHand(cards) {
+    var counts = {}, suitBits = {}, suitCounts = {}, bits = 0;
+    cards.forEach(function (c) {
+      var bit = 1 << (rankValue(c.rank) - 2);
+      counts[c.rank] = (counts[c.rank] || 0) + 1;
+      suitBits[c.suit] = (suitBits[c.suit] || 0) | bit;
+      suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1;
+      bits |= bit;
+    });
+    var flushSuit = SUITS.filter(function (suit) { return suitCounts[suit] >= 5; })[0];
+    if (flushSuit) {
+      var run = hasRun(suitBits[flushSuit]);
+      if (run === ROYAL) return "royalFlush";
+      if (run) return "straightFlush";
+    }
+    var sizes = Object.keys(counts).map(function (rank) { return counts[rank]; }).sort(function (a, b) { return b - a; });
+    if (sizes[0] >= 4) return "quads";
+    if (sizes[0] === 3 && sizes[1] >= 2) return "fullHouse";
+    if (flushSuit) return "flush";
+    if (hasRun(bits)) return "straight";
+    if (sizes[0] === 3) return "trips";
+    return "nothing";
+  }
+
   /* ---------------- Settlement ---------------- */
   function wholeAmount(value) {
     value = Number(value);
@@ -236,6 +280,8 @@
     var versus = compare(mine, theirs);
     var lines = [];
 
+    var sixCard = bets.sixCard || 0;
+    var sixHand = sixCardHand(player.concat(dealer));
     if (pairPlus) {
       // Folding gives up the Pair Plus with the Ante.
       var pairPay = played ? pairPlusPays(payTable)[mine.category] || 0 : 0;
@@ -255,6 +301,12 @@
         if (bonus) lines.push({ key: "anteBonus", amount: 0, returned: ante * bonus });
       }
     }
+    if (sixCard) {
+      // Every card is turned whatever the decision, so the 6-Card Bonus is
+      // paid on a folded hand too.
+      var sixPay = SIX_CARD[sixHand] || 0;
+      lines.push({ key: "sixCard", amount: sixCard, returned: sixPay ? sixCard * (sixPay + 1) : 0 });
+    }
     lines.forEach(function (line) {
       line.result = line.returned > line.amount ? "win" : line.returned === line.amount ? "push" : "lose";
     });
@@ -269,6 +321,8 @@
       dealer: theirs,
       played: played,
       qualified: qualified,
+      // The best five of all six cards, for the 6-Card Bonus.
+      sixCard: sixHand,
       // Who holds the better hand, when the hands were compared.
       outcome: !played ? "fold" : !qualified ? "noQualify" : versus > 0 ? "win" : versus < 0 ? "lose" : "tie"
     };
@@ -283,6 +337,8 @@
     PAY_TABLES: PAY_TABLES,
     PAIR_PLUS: PAIR_PLUS,
     ANTE_BONUS: ANTE_BONUS,
+    SIX_CARD_HANDS: SIX_CARD_HANDS,
+    SIX_CARD: SIX_CARD,
     QUALIFY_SCORE: QUALIFY_SCORE,
     PLAY_SCORE: PLAY_SCORE,
     card: card,
@@ -301,6 +357,7 @@
     shouldPlay: shouldPlay,
     compare: compare,
     pairPlusPays: pairPlusPays,
+    sixCardHand: sixCardHand,
     wholeAmount: wholeAmount,
     normalizeBets: normalizeBets,
     totalStake: totalStake,

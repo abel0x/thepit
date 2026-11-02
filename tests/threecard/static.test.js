@@ -78,8 +78,9 @@ test("a choice of the two Pair Plus pay tables, one radio button each", function
 
 test("a spot for every bet, each a real button, and the Play spot beside them", function () {
   var spots = Array.from(html.matchAll(/<button class="spot [^"]*" data-bet="(\w+)" type="button"/g), function (m) { return m[1]; });
-  assert.deepEqual(spots, Engine.BETS.concat(["play"]));
-  ["A", "S", "F"].forEach(function (key) { assert.match(html, new RegExp('aria-keyshortcuts="' + key + '"')); });
+  assert.deepEqual(spots, ["pairPlus", "ante", "play", "sixCard"]);
+  assert.deepEqual(spots.filter(function (key) { return key !== "play"; }), Engine.BETS);
+  ["A", "S", "F", "B"].forEach(function (key) { assert.match(html, new RegExp('aria-keyshortcuts="' + key + '"')); });
   assert.match(html, /id="btnPlay"[^>]*aria-keyshortcuts="P Space Enter"/);
 });
 

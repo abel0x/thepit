@@ -8,6 +8,7 @@ The first version of the pit: seven tables, a money wheel, a slot machine, a vid
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
+- Table 3 6-Card Bonus: up to $100 on the best five of the player's and the dealer's six cards, paid on a folded hand too, from 7 to 1 for three of a kind to 1000 to 1 for a royal flush, with its 8.56% house edge counted over all 20,358,520 six-card deals.
 - Table 9 Dragon Bonus on the Player and on the Banker: a winning natural pays 1 to 1 and a tie of naturals is returned, other wins pay by their margin up to 30 to 1, with house edges of 2.65% and 9.37% counted over the whole shoe.
 - Table 21 side bets: Perfect Pairs and 21+3 beside the main circle, each up to the main bet, settled on the opening cards and paid with the round, offered with six or eight decks and their house edges counted exactly over every draw of a full shoe.
 - Table 21 card counting trainer: the Hi-Lo running and true count on the shoe, or a quiz between hands that keeps score, with the hole card counted only once it is turned.

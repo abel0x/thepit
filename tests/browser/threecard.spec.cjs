@@ -131,6 +131,21 @@ test("a hand plays straight from file://: Ante, Play and Pair Plus win against a
   });
 });
 
+test("the 6-Card Bonus pays four of a kind on a folded hand", async () => {
+  await scene({ player: "7S 7D 2C", dealer: "7C 7H 9D" }, async page => {
+    await chip(page, 10); await bet(page, "ante");
+    await page.keyboard.press("b");
+    assert.equal(await balance(page), "9,980");
+    await dealToDecision(page);
+    await page.click("#btnFold");
+    await settled(page);
+    // Stake 10 + 10; the Ante is given up, the 6-Card Bonus returns 10 × 101.
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 20 + 1010);
+    assert.match(await text(page, "#toast"), /6-Card Bonus, Four of a kind: \$1,010/);
+    assert.equal((await stored(page, "pit.threecard.stats")).sixCardWins, 1);
+  });
+});
+
 test("the dealer without Queen high pays the Ante and returns the Play bet", async () => {
   await scene({ player: "KS 9D 4C", dealer: "JS 8D 3C" }, async page => {
     await chip(page, 100); await bet(page, "ante");

@@ -268,7 +268,7 @@ body[data-theme="bordeaux"] { --red: #c3202a; }
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 1fr 1.25fr 1.25fr;
+  grid-template-columns: 1fr 1.25fr 1.25fr 1fr;
   width: min(760px, 100%);
   justify-self: center;
   gap: clamp(6px, 1vw, 12px);
@@ -293,7 +293,7 @@ body[data-theme="bordeaux"] { --red: #c3202a; }
   transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .spot-main { border-width: 2.2px; }
-.spot-pair-plus { --spot-ink: #f3dfa2; }
+.spot-pair-plus, .spot-six-card { --spot-ink: #f3dfa2; }
 /* The Play spot only takes the Play bet, while the hand waits for it. */
 .spot-play { border-style: dashed; }
 body[data-phase="deciding"] .spot-play:not(:disabled) { cursor: pointer; border-color: var(--gold-bright); box-shadow: 0 0 18px rgba(244, 226, 166, .25); }

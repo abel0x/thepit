@@ -223,3 +223,85 @@ test("an exhaustive count of every deal gives Ante and Play their 3.37% house ed
   assert.equal(deals, 22100 * 18424);
   assert.equal((-net / deals * 100).toFixed(2), "3.37");
 });
+
+/* ---------------- The 6-Card Bonus ---------------- */
+// An independent judge of the best five of six cards, by rank counts and
+// suit bits, fast enough to go through every six-card deal.
+var RUNS = [0x100F];
+for (var low = 0; low <= 8; low++) RUNS.push(0x1F << low);
+function sixJudge(indexes) {
+  var count = new Int8Array(13), suitBits = [0, 0, 0, 0], suitCount = [0, 0, 0, 0], bits = 0;
+  indexes.forEach(function (index) {
+    var r = index % 13, s = (index - r) / 13;
+    count[r]++; suitBits[s] |= 1 << r; suitCount[s]++; bits |= 1 << r;
+  });
+  var run = function (b) { return RUNS.filter(function (w) { return (b & w) === w; }).pop() || 0; };
+  var flush = suitCount.findIndex(function (n) { return n >= 5; });
+  if (flush !== -1 && run(suitBits[flush])) return run(suitBits[flush]) === 0x1F << 8 ? "royalFlush" : "straightFlush";
+  var sizes = Array.from(count).filter(Boolean).sort(function (a, b) { return b - a; });
+  if (sizes[0] >= 4) return "quads";
+  if (sizes[0] === 3 && sizes[1] >= 2) return "fullHouse";
+  if (flush !== -1) return "flush";
+  if (run(bits)) return "straight";
+  return sizes[0] === 3 ? "trips" : "nothing";
+}
+
+test("the 6-Card Bonus names the best five of the six cards", function () {
+  function six(text) { return Engine.sixCardHand(hand(text)); }
+  assert.equal(six("AS KS QS JS 10S 2D"), "royalFlush");
+  assert.equal(six("9S KS QS JS 10S AD"), "straightFlush", "a straight flush beats the ace-high straight beside it");
+  assert.equal(six("AS 2S 3S 4S 5S KD"), "straightFlush", "the wheel");
+  assert.equal(six("7S 7D 7C 7H 2S 3D"), "quads");
+  assert.equal(six("7S 7D 7C 2H 2S 2D"), "fullHouse", "two threes of a kind make a full house");
+  assert.equal(six("7S 7D 7C 2H 2S 3D"), "fullHouse");
+  assert.equal(six("2S 5S 9S JS KS 3D"), "flush");
+  assert.equal(six("2S 3D 4C 5H 6S KD"), "straight");
+  assert.equal(six("QS KD AC 2H 3S 9D"), "nothing", "no straight round the corner");
+  assert.equal(six("7S 7D 7C 2H 3S 5D"), "trips");
+  assert.equal(six("7S 7D 2C 2H 3S 3D"), "nothing", "three pairs pay nothing");
+  // The engine agrees with the independent judge on any deal.
+  var deck = Engine.buildDeck();
+  for (var n = 0; n < 4000; n++) {
+    var cards = Engine.newDeck().slice(0, 6);
+    assert.equal(Engine.sixCardHand(cards), sixJudge(cards.map(function (c) { return deck.findIndex(function (d) { return d.id === c.id; }); })));
+  }
+});
+
+test("the 6-Card Bonus is paid on a folded hand too, and on its own stake", function () {
+  var player = hand("7S 7D 2C"), dealer = hand("7C 7H 9D");
+  var folded = Engine.settle({ ante: 10, sixCard: 5 }, player, dealer, "fold", "standard");
+  assert.deepEqual(folded.lines.map(function (l) { return [l.key, l.amount, l.returned, l.result]; }), [
+    ["ante", 10, 0, "lose"], ["sixCard", 5, 505, "win"]
+  ]);
+  assert.equal(folded.sixCard, "quads");
+  assert.equal(folded.net, 505 - 15);
+  var nothing = Engine.settle({ ante: 10, sixCard: 5 }, hand("2S 5D 9C"), hand("JC KH 4D"), "play", "standard");
+  assert.deepEqual(nothing.lines.filter(function (l) { return l.key === "sixCard"; })[0], { key: "sixCard", amount: 5, returned: 0, result: "lose" });
+  assert.equal(Engine.LIMITS.sixCard, 100);
+});
+
+test("every one of the 20,358,520 six-card deals gives the 6-Card Bonus its 8.56% house edge", function () {
+  var tally = {}, total = 0;
+  var h = [0, 0, 0, 0, 0, 0];
+  for (h[0] = 0; h[0] < 52; h[0]++)
+    for (h[1] = h[0] + 1; h[1] < 52; h[1]++)
+      for (h[2] = h[1] + 1; h[2] < 52; h[2]++)
+        for (h[3] = h[2] + 1; h[3] < 52; h[3]++)
+          for (h[4] = h[3] + 1; h[4] < 52; h[4]++)
+            for (h[5] = h[4] + 1; h[5] < 52; h[5]++) {
+              var name = sixJudge(h);
+              tally[name] = (tally[name] || 0) + 1;
+              total++;
+            }
+  assert.equal(total, 20358520);
+  assert.deepEqual(tally, {
+    royalFlush: 188, straightFlush: 1656, quads: 14664, fullHouse: 165984,
+    flush: 205792, straight: 361620, trips: 732160, nothing: 18876456
+  });
+  var expected = -1;
+  Engine.SIX_CARD_HANDS.forEach(function (name) { expected += tally[name] / total * (Engine.SIX_CARD[name] + 1); });
+  assert.equal((-expected * 100).toFixed(2), "8.56");
+  var words = require("../helpers/i18n.js").loadI18n("games/threecard/js/strings.js").I18n._dict;
+  assert.match(words.en.sixCardRules, /20,358,520 six-card deals the house keeps 8\.56%/);
+  assert.match(words.tr.sixCardRules, /20\.358\.520 .*%8,56/);
+});

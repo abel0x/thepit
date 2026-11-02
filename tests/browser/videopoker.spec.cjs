@@ -131,14 +131,84 @@ test("the strategy hint breaks a flush for four to a royal, and the royal flush 
     await dealToHold(page);
     await page.waitForFunction(() => document.querySelectorAll(".hand-slot.coach-pick").length > 0);
     assert.deepEqual(await page.$$eval(".hand-slot", nodes => nodes.map(n => n.classList.contains("coach-pick"))), [true, true, true, true, false]);
-    assert.equal(await text(page, "#bannerSub"), "Strategy: hold the marked cards");
+    assert.match(await text(page, "#bannerSub"), /^Strategy: hold the marked cards · 18\.\d{3} a coin$/);
     await page.keyboard.press("1"); await page.keyboard.press("2"); await page.keyboard.press("3"); await page.keyboard.press("4");
     await page.evaluate(() => document.activeElement.blur());
     await page.keyboard.press("Enter");
     await settled(page);
     assert.equal(await text(page, "#bannerText"), "Royal flush: you win $4,000");
     assert.equal(await stored(page, "pit.bankroll"), 10000 - 5 + 4000);
-    assert.equal((await stored(page, "pit.videopoker.stats")).royalFlushes, 1);
+    const stats = await stored(page, "pit.videopoker.stats");
+    assert.deepEqual([stats.royalFlushes, stats.decisions, stats.bestHolds, stats.missedMilli], [1, 1, 1, 0], "the best hold, judged");
+  });
+});
+
+test("all holds lists the 32 best first and holds the one picked; a weaker hold is told what it gave up", async () => {
+  await scene({ deck: "JH JD 3C 7S 9D 2C 4D 5H 6S 8C", settings: { coach: true, denomination: 1 } }, async page => {
+    assert.equal(await page.$eval("#btnHolds", node => getComputedStyle(node).display !== "none"), true, "shown with the hint on");
+    await dealToHold(page);
+    await page.waitForFunction(() => !document.getElementById("btnHolds").disabled);
+    await page.keyboard.press("h");
+    await page.waitForFunction(() => !document.getElementById("holdsModal").hidden);
+    const rows = await page.$$eval(".hold-choice", nodes => nodes.map(n => [n.querySelector(".hold-cards").textContent, n.querySelector(".hold-value").textContent, n.classList.contains("best")]));
+    assert.equal(rows.length, 32);
+    assert.deepEqual(rows[0], ["J♥ J♦", "1.537", true], "the pair of Jacks, 24,915 coins over 16,215 draws");
+    assert.equal(rows.filter(r => r[2]).length, 1);
+    assert.ok(rows.some(r => r[0] === "Draw five new cards"));
+    const values = rows.map(r => Number(r[1]));
+    assert.deepEqual(values, values.slice().sort((a, b) => b - a), "best first");
+    // Keep only the Jack of hearts.
+    const single = rows.findIndex(r => r[0] === "J♥");
+    await page.evaluate(index => document.querySelectorAll(".hold-choice")[index].click(), single);
+    assert.equal(await page.$eval("#holdsModal", node => node.hidden), true, "a pick closes the list");
+    assert.deepEqual(await page.$$eval(".hold-btn", nodes => nodes.map(n => n.getAttribute("aria-pressed"))), ["true", "false", "false", "false", "false"]);
+    await page.evaluate(() => document.activeElement.blur());
+    await page.keyboard.press("Enter");
+    await settled(page);
+    assert.match(await text(page, "#toast"), /^The best hold returned 1\.537 a coin on average, yours \d\.\d{3}\.$/);
+    const stats = await stored(page, "pit.videopoker.stats");
+    assert.deepEqual([stats.decisions, stats.bestHolds], [1, 0]);
+    assert.ok(stats.missedMilli > 0 && stats.missedMilli < 5 * 1537, String(stats.missedMilli));
+    await page.click("#settingsBtn");
+    assert.equal(await text(page, "#stBestHolds"), "0% (1)");
+    assert.match(await text(page, "#stMissed"), /^\$\d+\.\d{2}$|^\$\d+$/);
+  });
+});
+
+test("Deuces Wild: its own pay table, and a two that makes five of a kind", async () => {
+  await scene({ deck: "2S 7D 7C 5H 9S 7H 7S 4C 5C 6C", settings: { denomination: 1 } }, async page => {
+    assert.equal(await page.$eval("#btnHolds", node => getComputedStyle(node).display), "none", "hidden with the hint off");
+    await page.click("#settingsBtn");
+    await page.click('.rule-profile[data-profile="deucesWild"]');
+    assert.match(await text(page, "#toast"), /Deuces Wild rules applied/);
+    await page.keyboard.press("Escape");
+    assert.equal(await text(page, "#subtitle"), "Deuces Wild");
+    assert.equal(await text(page, "#tableRtp"), "99.73%");
+    const rows = await page.$$eval("#payRows tr", nodes => nodes.map(n => [n.querySelector("th").textContent, n.querySelector("td.active").textContent]));
+    assert.deepEqual(rows, [["Natural royal", "4,000"], ["Four deuces", "1,000"], ["Wild royal", "125"], ["Five of a kind", "80"],
+      ["Straight flush", "50"], ["Four of a kind", "20"], ["Full house", "20"], ["Flush", "15"], ["Straight", "10"], ["Three of a kind", "5"]]);
+    await dealToHold(page);
+    assert.equal((await stored(page, "pit.videopoker.round")).payTable, "deucesWild");
+    await hold(page, [0, 1, 2]);
+    await page.click("#btnDeal");
+    await settled(page);
+    assert.equal(await text(page, "#bannerText"), "Five of a kind: you win $80");
+    assert.equal(await page.$eval('#payRows tr[data-category="fiveOfAKind"]', node => node.classList.contains("won")), true);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 5 + 80);
+    assert.equal((await stored(page, "pit.videopoker.stats")).bestHand, 12);
+  });
+});
+
+test("Double Bonus pays four aces 160 a coin, in Turkish too", async () => {
+  await scene({ deck: "AS AD AC 7H 9S AH 3D 4C 5C 6C", lang: "tr", settings: { denomination: 1, coins: 1, payTable: "doubleBonus" } }, async page => {
+    assert.equal(await text(page, "#subtitle"), "Double Bonus");
+    assert.equal(await text(page, '#payRows tr[data-category="quadAces"] th'), "As kare");
+    assert.equal(await text(page, '#payRows tr[data-category="quads"] th'), "5 ile Papaz arası kare");
+    await dealToHold(page);
+    await hold(page, [0, 1, 2]);
+    await page.click("#btnDeal");
+    await settled(page);
+    assert.equal(await text(page, "#bannerText"), "As kare: $160 kazandınız");
   });
 });
 
@@ -256,7 +326,8 @@ test("a round left open at another table holds the deal back", async () => {
 
 for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390], [1280, 720], [1920, 1080]]) {
   test("the machine fits " + size[0] + "×" + size[1] + " without scrolling", async () => {
-    await scene({ width: size[0], height: size[1], deck: "QH KH AH 2S 5D 9C 3D 4C 5C 6C" }, async page => {
+    // Double Bonus prints the most rows.
+    await scene({ width: size[0], height: size[1], deck: "QH KH AH 2S 5D 9C 3D 4C 5C 6C", settings: { payTable: "doubleBonus" } }, async page => {
       await dealToHold(page);
       await hold(page, [0]);
       await new Promise(resolve => setTimeout(resolve, 300));
@@ -270,7 +341,8 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
         const table = document.querySelector("#payTable").getBoundingClientRect();
         return {
           scroll: document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight,
-          controls: inside(".hold-btn, #btnDeal, #btnBetOne, #btnBetMax, .chips-tray .chip, #bankroll, #payTable, #bannerText"),
+          controls: inside(".hold-btn, #btnDeal, #btnBetOne, #btnBetMax, .chips-tray .chip, #bankroll, #payTable, #bannerText") &&
+            document.querySelectorAll("#payRows tr").length === 11,
           cards: cards.length === 5 && inside(".slot-card .card"),
           clear: cards.every(card => !overlaps(card, table))
         };

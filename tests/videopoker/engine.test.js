@@ -16,8 +16,8 @@ function hand(text) {
   });
 }
 
-function category(text) {
-  return Engine.evaluate(hand(text)).category;
+function category(text, payTable) {
+  return Engine.evaluate(hand(text), payTable).category;
 }
 
 function heldCodes(text, payTable, coins) {
@@ -77,17 +77,28 @@ function eachHand(visit) {
           for (h[4] = h[3] + 1; h[4] < 52; h[4]++) visit(h);
 }
 
-var GAMES = [["nineSix", 5], ["eightFive", 5], ["nineSix", 1]];
+var GAMES = [["nineSix", 5], ["eightFive", 5], ["nineSix", 1], ["doubleBonus", 5], ["deucesWild", 5]];
 var PAY = GAMES.map(function (game) {
   return Engine.CATEGORIES.map(function (name) { return Engine.payPerCoin(name, game[0], game[1]); });
 });
 var TOTALS = GAMES.map(function () { return new Float64Array(OFFSET[6]); });
-var COUNTS = new Array(Engine.CATEGORIES.length).fill(0);
+// Every hand counted by category, in Jacks or Better (by the test's own
+// count of ranks) and by the engine under Double Bonus and Deuces Wild.
+var COUNTS = { jacks: {}, bonus: {}, deuces: {} };
+function tally(game, name) { COUNTS[game][name] = (COUNTS[game][name] || 0) + 1; }
+var CAT = {};
+Engine.CATEGORIES.forEach(function (name, i) { CAT[name] = i; });
 eachHand(function (h) {
-  var c = categoryIndex(h);
-  COUNTS[c]++;
+  var jacks = categoryIndex(h);
+  var cards = h.map(Engine.fromIndex);
+  var bonus = CAT[Engine.evaluate(cards, "doubleBonus").category];
+  var deuces = CAT[Engine.evaluate(cards, "deucesWild").category];
+  tally("jacks", Engine.CATEGORIES[jacks]);
+  tally("bonus", Engine.CATEGORIES[bonus]);
+  tally("deuces", Engine.CATEGORIES[deuces]);
   numberSubsets(h);
   GAMES.forEach(function (game, g) {
+    var c = game[0] === "doubleBonus" ? bonus : game[0] === "deucesWild" ? deuces : jacks;
     var pay = PAY[g][c];
     if (pay) for (var mask = 0; mask < 32; mask++) TOTALS[g][subset[mask]] += pay;
   });
@@ -107,13 +118,84 @@ function holdTotals(sorted, g) {
   return values;
 }
 
-test("every five-card hand of one deck, by the machine's categories", function () {
-  var counts = {};
-  Engine.CATEGORIES.forEach(function (name, i) { counts[name] = COUNTS[i]; });
-  assert.deepEqual(counts, {
+test("every five-card hand of one deck, by the machine's categories in each game", function () {
+  var jacks = {
     nothing: 2062860, jacksOrBetter: 337920, twoPair: 123552, trips: 54912, straight: 10200,
     flush: 5108, fullHouse: 3744, quads: 624, straightFlush: 36, royalFlush: 4
+  };
+  assert.deepEqual(COUNTS.jacks, jacks);
+  // Double Bonus splits the 624 fours by rank: 48 of aces, 144 of twos,
+  // threes or fours, 432 of the rest.
+  var bonus = Object.assign({}, jacks, { quads: 432, quadsLow: 144, quadAces: 48 });
+  assert.deepEqual(COUNTS.bonus, bonus);
+  // The published counts of a Deuces Wild deal.
+  assert.deepEqual(COUNTS.deuces, {
+    nothing: 2119728, trips: 355080, straight: 62232, flush: 14472, fullHouse: 12672, quads: 31552,
+    straightFlush: 2068, fiveOfAKind: 624, wildRoyal: 480, fourDeuces: 48, royalFlush: 4
   });
+});
+
+/* An independent judge of Deuces Wild: every two is tried as every card of
+   the deck, duplicates allowed, and the best plain hand wins. */
+function plainCategory(cards) {
+  var counts = {};
+  cards.forEach(function (c) { counts[c.rank] = (counts[c.rank] || 0) + 1; });
+  var sizes = Object.keys(counts).map(function (r) { return counts[r]; }).sort(function (a, b) { return b - a; });
+  var order = cards.map(function (c) { return Engine.RANKS.indexOf(c.rank); }).sort(function (a, b) { return a - b; });
+  var distinct = sizes.length === 5;
+  var straight = distinct && (order[4] - order[0] === 4 || order.join() === "0,1,2,3,12");
+  var flush = cards.every(function (c) { return c.suit === cards[0].suit; });
+  if (sizes[0] === 5) return "fiveOfAKind";
+  if (straight && flush) return order[0] === 8 ? "royalFlush" : "straightFlush";
+  if (sizes[0] === 4) return "quads";
+  if (sizes[0] === 3 && sizes[1] === 2) return "fullHouse";
+  if (flush) return "flush";
+  if (straight) return "straight";
+  if (sizes[0] === 3) return "trips";
+  return "nothing";
+}
+
+// Deuces Wild hands from the weakest; a full house and four of a kind pay
+// the same, so the stronger is named.
+var DEUCES_ORDER = ["nothing", "trips", "straight", "flush", "fullHouse", "quads", "straightFlush", "fiveOfAKind", "wildRoyal"];
+
+function deucesJudge(cards) {
+  var deuces = cards.filter(function (c) { return c.rank === "2"; }).length;
+  if (deuces === 4) return "fourDeuces";
+  if (deuces === 0) return plainCategory(cards);
+  var others = cards.filter(function (c) { return c.rank !== "2"; });
+  var deck = Engine.buildDeck();
+  var best = "nothing";
+  (function fill(list, left) {
+    if (left === 0) {
+      var name = plainCategory(list);
+      if (name === "royalFlush") name = "wildRoyal";
+      if (DEUCES_ORDER.indexOf(name) > DEUCES_ORDER.indexOf(best)) best = name;
+      return;
+    }
+    deck.forEach(function (c) { fill(list.concat([c]), left - 1); });
+  })(others, deuces);
+  return best;
+}
+
+test("Deuces Wild names every hand as trying each two as every card would", function () {
+  var deck = Engine.buildDeck();
+  var twos = deck.filter(function (c) { return c.rank === "2"; });
+  var rest = deck.filter(function (c) { return c.rank !== "2"; });
+  var random = (function () { var seed = 7; return function () { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }; })();
+  var checked = 0;
+  // Hands with one, two and three twos, and hands without any.
+  [0, 1, 2, 3].forEach(function (deuces) {
+    for (var n = 0; n < (deuces === 3 ? 60 : 1500); n++) {
+      var pool = rest.slice(), cards = [], i;
+      var two = twos.slice();
+      for (i = 0; i < deuces; i++) cards.push(two.splice(Math.floor(random() * two.length), 1)[0]);
+      while (cards.length < 5) cards.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+      assert.equal(Engine.evaluate(cards, "deucesWild").category, deucesJudge(cards), cards.map(Engine.code).join(" "));
+      checked++;
+    }
+  });
+  assert.equal(checked, 4560);
 });
 
 test("hands are named as the machine pays them", function () {
@@ -132,8 +214,57 @@ test("hands are named as the machine pays them", function () {
   assert.equal(category("10S 10D 2C 5H 9S"), "nothing", "a pair of tens pays nothing");
 });
 
-test("the pays of both tables, and the royal flush at five coins", function () {
-  assert.deepEqual(Engine.PAY_TABLES, ["nineSix", "eightFive"]);
+test("hands are named as Double Bonus and Deuces Wild pay them", function () {
+  assert.equal(category("AS AD AC AH 5S", "doubleBonus"), "quadAces");
+  assert.equal(category("4S 4D 4C 4H 5S", "doubleBonus"), "quadsLow");
+  assert.equal(category("2S 2D 2C 2H 5S", "doubleBonus"), "quadsLow");
+  assert.equal(category("5S 5D 5C 5H AS", "doubleBonus"), "quads");
+  assert.equal(category("JS JD 2C 5H 9S", "doubleBonus"), "jacksOrBetter");
+  assert.equal(category("2S 2D 2C 2H 5S", "deucesWild"), "fourDeuces");
+  assert.equal(category("AS KS QS JS 10S", "deucesWild"), "royalFlush", "a natural royal");
+  assert.equal(category("2S KS QS JS 10S", "deucesWild"), "wildRoyal");
+  assert.equal(category("2S 2D QS JS 10S", "deucesWild"), "wildRoyal");
+  assert.equal(category("7S 7D 7C 7H 2C", "deucesWild"), "fiveOfAKind");
+  assert.equal(category("2S 2D 2C 9H 9S", "deucesWild"), "fiveOfAKind");
+  assert.equal(category("2S 3S 4S 5S 7S", "deucesWild"), "straightFlush");
+  assert.equal(category("2S 7D 7C 7H 5S", "deucesWild"), "quads");
+  assert.equal(category("2S 7D 7C 5H 5S", "deucesWild"), "fullHouse");
+  assert.equal(category("2S 3S 5S 9S JS", "deucesWild"), "flush");
+  assert.equal(category("2S 3D 4C 5H 7S", "deucesWild"), "straight");
+  assert.equal(category("2S AD KC QH JS", "deucesWild"), "straight", "the two stands in for the ten");
+  assert.equal(category("2S 9D 9C 5H 7S", "deucesWild"), "trips", "a two with a pair is three of a kind");
+  assert.equal(category("2S 9D AC 5H 7S", "deucesWild"), "nothing", "a two with no pair makes only a pair");
+  assert.equal(category("2S 4D AC 5H 3S", "deucesWild"), "straight", "A 3 4 5 with a wild two");
+  assert.equal(category("2S 9D KC 5H 3S", "deucesWild"), "nothing");
+  assert.equal(category("AS AD KC KH 3S", "deucesWild"), "nothing", "two pair pays nothing");
+  assert.equal(Engine.evaluate(hand("2S 2D 2C 2H 5S")).category, "quads", "Jacks or Better when no table is given");
+});
+
+test("each game prints its own rows, best first, and names the strongest hand drawn", function () {
+  assert.deepEqual(Engine.PAY_ROWS.nineSix, ["royalFlush", "straightFlush", "quads", "fullHouse", "flush", "straight", "trips", "twoPair", "jacksOrBetter"]);
+  assert.deepEqual(Engine.PAY_ROWS.doubleBonus, ["royalFlush", "straightFlush", "quadAces", "quadsLow", "quads", "fullHouse", "flush", "straight", "trips", "twoPair", "jacksOrBetter"]);
+  assert.deepEqual(Engine.PAY_ROWS.deucesWild, ["royalFlush", "fourDeuces", "wildRoyal", "fiveOfAKind", "straightFlush", "quads", "fullHouse", "flush", "straight", "trips"]);
+  Engine.PAY_TABLES.forEach(function (table) {
+    var paying = Engine.CATEGORIES.filter(function (name) { return Engine.payPerCoin(name, table, 1) > 0; });
+    assert.deepEqual(Engine.PAY_ROWS[table].slice().sort(), paying.sort(), table + " prints every paying hand once");
+  });
+  assert.deepEqual(Engine.CATEGORIES.slice(0, 10), ["nothing", "jacksOrBetter", "twoPair", "trips", "straight", "flush", "fullHouse", "quads", "straightFlush", "royalFlush"], "saved places stay");
+  assert.equal(Engine.stronger("quads", "quadAces"), "quadAces");
+  assert.equal(Engine.stronger("royalFlush", "fourDeuces"), "royalFlush");
+  assert.equal(Engine.stronger("fullHouse", "twoPair"), "fullHouse");
+});
+
+test("the pays of every table, and the royal flush at five coins", function () {
+  assert.deepEqual(Engine.PAY_TABLES, ["nineSix", "eightFive", "doubleBonus", "deucesWild"]);
+  assert.deepEqual(Engine.GAME_OF, { nineSix: "jacks", eightFive: "jacks", doubleBonus: "bonus", deucesWild: "deuces" });
+  assert.equal(Engine.payPerCoin("royalFlush", "deucesWild", 5), 800);
+  assert.equal(Engine.payPerCoin("wildRoyal", "deucesWild", 5), 25);
+  assert.equal(Engine.payPerCoin("twoPair", "deucesWild", 5), 0);
+  assert.equal(Engine.payPerCoin("quadAces", "nineSix", 5), 0, "a hand of another game pays nothing");
+  var aces = Engine.settle({ denomination: 1, coins: 5 }, hand("AS AD AC AH 5S"), "doubleBonus");
+  assert.deepEqual([aces.hand.category, aces.returned], ["quadAces", 800]);
+  var wild = Engine.settle({ denomination: 5, coins: 1 }, hand("2S 7D 7C 5H 9S"), "deucesWild");
+  assert.deepEqual([wild.hand.category, wild.returned, wild.net], ["trips", 5, 0]);
   assert.deepEqual(Engine.PAYS.eightFive, Object.assign({}, Engine.PAYS.nineSix, { fullHouse: 8, flush: 5 }));
   assert.equal(Engine.payPerCoin("royalFlush", "nineSix", 4), 250);
   assert.equal(Engine.payPerCoin("royalFlush", "nineSix", 5), 800);
@@ -192,13 +323,16 @@ test("an exhaustive count of all 2,598,960 deals with the best hold gives 99.54%
   });
   assert.equal(deals, 2598960);
   var percent = sums.map(function (sum) { return (sum / deals * 100).toFixed(4); });
-  assert.deepEqual(percent, ["99.5439", "97.2984", "98.3735"], "9/6 and 8/5 with five coins, 9/6 with one");
+  assert.deepEqual(percent, ["99.5439", "97.2984", "98.3735", "99.1065", "99.7283"],
+    "9/6 and 8/5 with five coins, 9/6 with one, Double Bonus and Deuces Wild with five");
   assert.equal(Engine.RETURN_PERCENT.nineSix.toFixed(2), (sums[0] / deals * 100).toFixed(2));
   assert.equal(Engine.RETURN_PERCENT.eightFive.toFixed(2), (sums[1] / deals * 100).toFixed(2));
+  assert.equal(Engine.RETURN_PERCENT.doubleBonus.toFixed(2), (sums[3] / deals * 100).toFixed(2));
+  assert.equal(Engine.RETURN_PERCENT.deucesWild.toFixed(2), (sums[4] / deals * 100).toFixed(2));
 });
 
 test("the machine's own count of every hold agrees with the exhaustive tables, value for value", function () {
-  var deals = ["AS KS QS JS 9S", "JH JD 3C 7S 9D", "2C 4D 7H 9S 3H", "10H JH QH 2S 2D", "5C 6D 7H 8S KC"];
+  var deals = ["AS KS QS JS 9S", "JH JD 3C 7S 9D", "2C 4D 7H 9S 3H", "10H JH QH 2S 2D", "5C 6D 7H 8S KC", "2S 2D 2C AH AS", "AS AD AC 4H 4S"];
   for (var i = 0; i < 12; i++) deals.push(Engine.newDeck().slice(0, 5).map(Engine.code).join(" "));
   deals.forEach(function (text) {
     var cards = hand(text);
@@ -231,4 +365,27 @@ test("the best hold of textbook hands", function () {
   var best = Engine.bestHold(hand("AS KS QS JS 9S"), "nineSix", 5);
   assert.equal(best.mask, 15);
   assert.ok(best.value > 18 && best.value < 19, String(best.value));
+  assert.equal(heldCodes("2S 2D 7C 9H KS", "deucesWild"), "2S 2D", "in Deuces Wild hold the twos");
+  assert.equal(heldCodes("2S 2D 2C 2H KS", "deucesWild"), "2S 2D 2C 2H", "four deuces never break");
+  assert.equal(heldCodes("AS AD AC 4H 4S", "doubleBonus"), "AS AD AC", "Double Bonus breaks a full house of aces");
+  assert.equal(heldCodes("AS AD AC 4H 4S"), "AS AD AC 4H 4S", "Jacks or Better keeps it");
+});
+
+test("every hold is ranked, best first, values compared exactly", function () {
+  var ranked = Engine.rankHolds(hand("JH JD 3C 7S 9D"), "nineSix", 5);
+  assert.equal(ranked.length, 32);
+  assert.deepEqual(ranked.map(function (r) { return r.mask; }).sort(function (a, b) { return a - b; }), Array.from({ length: 32 }, function (_, i) { return i; }));
+  assert.equal(ranked[0].mask, 3);
+  assert.equal(ranked[0].total, 24915);
+  assert.equal(ranked[0].draws, 16215);
+  for (var i = 1; i < 32; i++) {
+    assert.ok(ranked[i - 1].total * ranked[i].draws >= ranked[i].total * ranked[i - 1].draws, "in order at " + i);
+  }
+  assert.deepEqual(ranked.filter(function (r) { return r.best; }).map(function (r) { return r.mask; }), [3]);
+  var royal = Engine.rankHolds(hand("AS KS QS JS 10S"), "nineSix", 5);
+  assert.deepEqual([royal[0].mask, royal[0].value], [31, 800]);
+  // Holds worth exactly the same are all best, the lower mask first: in a
+  // hand of four deuces the kicker changes nothing.
+  var deuces = Engine.rankHolds(hand("2S 2D 2C 2H KS"), "deucesWild", 5);
+  assert.deepEqual(deuces.filter(function (r) { return r.best; }).map(function (r) { return r.mask; }), [15, 31]);
 });

@@ -36,9 +36,14 @@
 
   var SPEEDS = ["fast", "normal", "cinematic"];
   var DEFAULT_SETTINGS = { payTable: "nineSix", denomination: 5, coins: 5, animationSpeed: "normal", coach: false };
-  // bestHand is the index of the best category the player has drawn
-  // (Engine.CATEGORIES; 0 for none yet).
-  var DEFAULT_STATS = { hands: 0, winningHands: 0, royalFlushes: 0, wagered: 0, returned: 0, biggestWin: 0, bestHand: 0 };
+  // bestHand is the place in Engine.CATEGORIES of the strongest hand the
+  // player has drawn (0 for none yet). decisions counts the holds judged
+  // against the best one, bestHolds those that returned as much, and
+  // missedMilli what the others cost on average, in thousandths of a dollar.
+  var DEFAULT_STATS = {
+    hands: 0, winningHands: 0, royalFlushes: 0, wagered: 0, returned: 0, biggestWin: 0, bestHand: 0,
+    decisions: 0, bestHolds: 0, missedMilli: 0
+  };
 
   function safeCount(value) {
     value = Math.floor(Number(value));
@@ -65,6 +70,8 @@
     stats.winningHands = Math.min(stats.winningHands, stats.hands);
     stats.royalFlushes = Math.min(stats.royalFlushes, stats.winningHands);
     stats.bestHand = Math.min(stats.bestHand, Engine.CATEGORIES.length - 1);
+    stats.decisions = Math.min(stats.decisions, stats.hands);
+    stats.bestHolds = Math.min(stats.bestHolds, stats.decisions);
     return stats;
   }
 
@@ -106,8 +113,10 @@
     return { id: value.id, bet: bet, payTable: value.payTable, hand: hand, draws: draws, held: held, at: safeCount(value.at) };
   }
 
-  // Applies a settled hand to the statistics.
-  function recordHand(stats, settlement) {
+  // Applies a settled hand to the statistics. judged, when the hold was
+  // compared with the best one: { best, missed } where missed is the
+  // average dollars the hold gave up.
+  function recordHand(stats, settlement, judged) {
     var next = normalizeStats(stats);
     next.hands += 1;
     next.wagered = Math.min(Number.MAX_SAFE_INTEGER, next.wagered + settlement.stake);
@@ -115,7 +124,13 @@
     if (settlement.returned > 0) next.winningHands += 1;
     if (settlement.hand.category === "royalFlush") next.royalFlushes += 1;
     next.biggestWin = Math.max(next.biggestWin, settlement.net);
-    next.bestHand = Math.max(next.bestHand, Engine.CATEGORIES.indexOf(settlement.hand.category));
+    var best = Engine.stronger(Engine.CATEGORIES[next.bestHand], settlement.hand.category);
+    next.bestHand = Engine.CATEGORIES.indexOf(best);
+    if (judged) {
+      next.decisions += 1;
+      if (judged.best) next.bestHolds += 1;
+      next.missedMilli = Math.min(Number.MAX_SAFE_INTEGER, next.missedMilli + Math.max(0, Math.round(judged.missed * 1000)));
+    }
     return next;
   }
 

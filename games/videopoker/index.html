@@ -11,13 +11,13 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="ThePit" />
   <meta name="application-name" content="ThePit" />
-  <meta name="description" content="A free, play-money Jacks or Better video poker simulation that works completely offline."
+  <meta name="description" content="A free, play-money video poker simulation, Jacks or Better, Double Bonus and Deuces Wild, that works completely offline."
         data-i18n-content="appDescription" />
   <title>Poker 11 · ThePit</title>
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="ThePit" />
   <meta property="og:title" content="Poker 11 · ThePit" />
-  <meta property="og:description" content="A free, play-money Jacks or Better video poker simulation that works completely offline." />
+  <meta property="og:description" content="A free, play-money video poker simulation, Jacks or Better, Double Bonus and Deuces Wild, that works completely offline." />
   <meta property="og:url" content="https://abel0x.github.io/thepit/games/videopoker/" />
   <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
   <meta property="og:image:width" content="1200" />
@@ -70,7 +70,7 @@
         <h1 aria-label="Poker 11" data-i18n-aria-label="brandName">
           <span class="brand-word">POKER</span><span class="brand-number" aria-hidden="true">11</span>
         </h1>
-        <p class="subtitle" data-i18n="subtitle">Jacks or Better</p>
+        <p class="subtitle" id="subtitle" data-i18n="subtitleJacks">Jacks or Better</p>
       </div>
     </div>
     <div class="topbar-actions">
@@ -141,17 +141,7 @@
                 <th scope="col" data-coins="4">4</th><th scope="col" data-coins="5">5</th>
               </tr>
             </thead>
-            <tbody>
-              <tr data-category="royalFlush"><th scope="row" data-i18n="catRoyalFlush">Royal flush</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="straightFlush"><th scope="row" data-i18n="catStraightFlush">Straight flush</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="quads"><th scope="row" data-i18n="catQuads">Four of a kind</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="fullHouse"><th scope="row" data-i18n="catFullHouse">Full house</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="flush"><th scope="row" data-i18n="catFlush">Flush</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="straight"><th scope="row" data-i18n="catStraight">Straight</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="trips"><th scope="row" data-i18n="catTrips">Three of a kind</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="twoPair"><th scope="row" data-i18n="catTwoPair">Two pair</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-              <tr data-category="jacksOrBetter"><th scope="row" data-i18n="catJacksOrBetter">Jacks or better</th><td data-coins="1"></td><td data-coins="2"></td><td data-coins="3"></td><td data-coins="4"></td><td data-coins="5"></td></tr>
-            </tbody>
+            <tbody id="payRows"></tbody>
           </table>
         </div>
 
@@ -179,6 +169,7 @@
         <div class="bet-buttons">
           <button id="btnBetOne" class="btn btn-tool" type="button" aria-keyshortcuts="B"><span data-i18n="betOne">Bet one</span></button>
           <button id="btnBetMax" class="btn btn-tool" type="button" aria-keyshortcuts="X"><span data-i18n="betMax">Bet max</span></button>
+          <button id="btnHolds" class="btn btn-tool holds-btn" type="button" aria-keyshortcuts="H" aria-haspopup="dialog"><span data-i18n="allHolds">All holds</span></button>
         </div>
         <div class="bet-total" aria-live="off">
           <small data-i18n="totalBet">Total bet</small>
@@ -247,15 +238,29 @@
             <button class="rule-profile" data-profile="nineSix" type="button" role="radio" aria-checked="true">
               <span class="rule-profile-code" aria-hidden="true">9/6</span>
               <span class="rule-profile-copy">
-                <strong data-i18n="profileNineSix">9/6</strong>
+                <strong data-i18n="profileNineSix">Jacks or Better 9/6</strong>
                 <small data-i18n="profileNineSixSummary">Full house pays 9, flush 6 · Returns 99.54% with the best play</small>
               </span>
             </button>
             <button class="rule-profile" data-profile="eightFive" type="button" role="radio" aria-checked="false" tabindex="-1">
               <span class="rule-profile-code" aria-hidden="true">8/5</span>
               <span class="rule-profile-copy">
-                <strong data-i18n="profileEightFive">8/5</strong>
+                <strong data-i18n="profileEightFive">Jacks or Better 8/5</strong>
                 <small data-i18n="profileEightFiveSummary">Full house pays 8, flush 5 · Returns 97.30% with the best play</small>
+              </span>
+            </button>
+            <button class="rule-profile" data-profile="doubleBonus" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="rule-profile-code" aria-hidden="true">DB</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileDoubleBonus">Double Bonus</strong>
+                <small data-i18n="profileDoubleBonusSummary">Four aces pay 160, four 2-4 pay 80 · Returns 99.11% with the best play</small>
+              </span>
+            </button>
+            <button class="rule-profile" data-profile="deucesWild" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="rule-profile-code" aria-hidden="true">2W</span>
+              <span class="rule-profile-copy">
+                <strong data-i18n="profileDeucesWild">Deuces Wild</strong>
+                <small data-i18n="profileDeucesWildSummary">Every two is wild, three of a kind pays · Returns 99.73% with the best play</small>
               </span>
             </button>
           </div>
@@ -270,7 +275,7 @@
               <span class="slider"></span>
             </label>
           </div>
-          <p class="settings-hint" data-i18n="coachHint">Marks the hold that returns the most on average, worked out exactly from every possible draw.</p>
+          <p class="settings-hint" data-i18n="coachHint">Marks the hold that returns the most on average, worked out exactly from every possible draw, tells you what a different hold gave up, and lists all 32 holds with their values.</p>
         </div>
 
         <div class="setting-row animation-setting">
@@ -313,9 +318,10 @@
         <details class="payout-table">
           <summary data-i18n="payoutsTitle">How to play</summary>
           <p class="settings-hint" data-i18n="howToPlay">Pick a coin value and bet one to five coins, then deal five cards. Hold any of them and draw once: every card you let go is replaced from the same deck. The hand you end with pays by the table.</p>
-          <p class="settings-hint" data-i18n="paysHint">Pays are in coins for the coins bet, the bet included. A pair pays only when it is Jacks or better.</p>
-          <p class="settings-hint" data-i18n="royalNote">A royal flush pays 250 a coin, and 800 a coin when all five coins are bet.</p>
-          <p class="settings-hint" data-i18n="returnNote">With the best play on every hand and five coins bet, the 9/6 table returns 99.54% and the 8/5 table 97.30%. With fewer coins the return is lower.</p>
+          <p class="settings-hint" data-i18n="paysHint">Pays are in coins for the coins bet, the bet included. In Jacks or Better and Double Bonus a pair pays only when it is Jacks or better, and Double Bonus gives only the bet back for two pair.</p>
+          <p class="settings-hint" data-i18n="deucesNote">In Deuces Wild every two stands for whatever card makes the best hand. A natural royal flush has no twos in it, a wild royal does. A pair or two pair pays nothing.</p>
+          <p class="settings-hint" data-i18n="royalNote">A natural royal flush pays 250 a coin, and 800 a coin when all five coins are bet.</p>
+          <p class="settings-hint" data-i18n="returnNote">With the best play on every hand and five coins bet, Jacks or Better returns 99.54% at 9/6 and 97.30% at 8/5, Double Bonus 99.11% and Deuces Wild 99.73%. With fewer coins the return is lower.</p>
           <p class="settings-hint" data-i18n="rulesHint">One deck, shuffled for every hand. Amounts use whole dollars.</p>
         </details>
 
@@ -329,6 +335,8 @@
           <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
           <div class="stat"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
           <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+          <div class="stat"><span data-i18n="statBestHolds">Best holds</span><b id="stBestHolds">0%</b></div>
+          <div class="stat"><span data-i18n="statMissed">Given up by other holds</span><b id="stMissed">$0</b></div>
         </div>
         <p class="settings-hint" data-i18n="statsHint">For entertainment: every hand is dealt from a freshly shuffled deck, so past hands never make the next one more or less likely.</p>
 
@@ -363,6 +371,21 @@
             <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
           </p>
         </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Every hold of the hand, best first -->
+  <div id="holdsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card holds-card" role="dialog" aria-modal="true" aria-labelledby="holdsTitle" aria-describedby="holdsHint">
+      <div class="modal-head">
+        <h2 id="holdsTitle" data-i18n="allHolds">All holds</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-hint" id="holdsHint" data-i18n="holdsHint">What each hold returns on average for every coin bet, over every possible draw. Pick one to hold it.</p>
+        <ol class="holds-list" id="holdsList"></ol>
       </div>
     </div>
   </div>

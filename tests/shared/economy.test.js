@@ -194,7 +194,7 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     count("slot");
   }
 
-  // Poker 11: any hold of any deal, every coin count and coin value, both tables.
+  // Poker 11: any hold of any deal, every coin count and coin value, every game and table.
   for (round = 0; round < ROUNDS; round++) {
     var vpDeal = VideoPoker.deal(VideoPoker.newDeck(random));
     var held = [0, 1, 2, 3, 4].map(function () { return random() < 0.5; });
@@ -345,7 +345,7 @@ test("the returns the lobby prints are the engines' exact returns", function () 
     return lang === "tr" ? "%" + text.replace(".", ",") : text + "%";
   }
   var slot = Slot.returnToPlayer().total;
-  var poker = VideoPoker.RETURN_PERCENT[VideoPoker.PAY_TABLES[0]] / 100;
+  var poker = Math.max.apply(null, VideoPoker.PAY_TABLES.map(function (table) { return VideoPoker.RETURN_PERCENT[table]; })) / 100;
   var keno = Math.max.apply(null, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(Keno.returnFor));
   ["en", "tr"].forEach(function (lang) {
     assert.ok(lobby[lang].slotSummary.indexOf(percent(slot, lang)) !== -1, lang + " slot");

@@ -38,10 +38,11 @@ test("every word the page and the machine ask for exists", function () {
   while ((match = call.exec(game))) used.push(match[1]);
   var keyed = /\{ key: "(\w+)"/g;
   while ((match = keyed.exec(game))) used.push(match[1]);
-  // Words the machine builds from a hand.
+  // Words the machine builds from a hand, a game and a pay table.
   Engine.CATEGORIES.slice(1).forEach(function (name) { used.push("cat" + name.charAt(0).toUpperCase() + name.slice(1)); });
   for (var rank = 11; rank <= 14; rank++) used.push("rankPlural" + rank);
-  used.push("coachHold", "coachDrawAll", "coachStand", "held", "draw", "profileEightFive");
+  used.push("coachHold", "coachDrawAll", "coachStand", "held", "draw");
+  Array.from(game.matchAll(/: "((?:cat|subtitle|profile)\w+)"/g), function (m) { used.push(m[1]); });
   assert.ok(used.length > 80, used.length + " words");
   used.forEach(function (key) {
     assert.ok(Object.prototype.hasOwnProperty.call(DICT.en, key), "missing word: " + key);
@@ -49,24 +50,28 @@ test("every word the page and the machine ask for exists", function () {
 });
 
 test("the printed returns are the engine's, in both languages", function () {
-  assert.deepEqual(Engine.RETURN_PERCENT, { nineSix: 99.54, eightFive: 97.30 });
+  assert.deepEqual(Engine.RETURN_PERCENT, { nineSix: 99.54, eightFive: 97.30, doubleBonus: 99.11, deucesWild: 99.73 });
+  assert.match(DICT.en.profileDoubleBonusSummary, /Returns 99\.11% /);
+  assert.match(DICT.en.profileDeucesWildSummary, /Returns 99\.73% /);
+  assert.match(DICT.tr.profileDoubleBonusSummary, /%99,11$/);
+  assert.match(DICT.tr.profileDeucesWildSummary, /%99,73$/);
+  assert.match(DICT.en.returnNote, /Double Bonus 99\.11% and Deuces Wild 99\.73%/);
+  assert.match(DICT.tr.returnNote, /Double Bonus %99,11, Deuces Wild %99,73/);
   assert.match(DICT.en.profileNineSixSummary, /^Full house pays 9, flush 6 · Returns 99\.54% /);
   assert.match(DICT.en.profileEightFiveSummary, /^Full house pays 8, flush 5 · Returns 97\.30% /);
   assert.match(DICT.tr.profileNineSixSummary, /^Ful 9, renk 6 öder · .*%99,54$/);
   assert.match(DICT.tr.profileEightFiveSummary, /^Ful 8, renk 5 öder · .*%97,30$/);
-  assert.match(DICT.en.returnNote, /9\/6 table returns 99\.54% and the 8\/5 table 97\.30%/);
-  assert.match(DICT.tr.returnNote, /9\/6 tablo %99,54, 8\/5 tablo %97,30/);
+  assert.match(DICT.en.returnNote, /returns 99\.54% at 9\/6 and 97\.30% at 8\/5/);
+  assert.match(DICT.tr.returnNote, /9\/6'da %99,54, 8\/5'te %97,30/);
   assert.match(DICT.en.royalNote, new RegExp(Engine.PAYS.nineSix.royalFlush + " a coin, and " + Engine.ROYAL_MAX_COINS + " a coin"));
   assert.match(DICT.tr.royalNote, new RegExp("jeton başına " + Engine.PAYS.nineSix.royalFlush + ".*jeton başına " + Engine.ROYAL_MAX_COINS));
 });
 
-test("the pay table has a row for every paying hand and a column for every coin", function () {
-  var rows = Array.from(html.matchAll(/<tr data-category="(\w+)">/g), function (m) { return m[1]; });
-  assert.deepEqual(rows, Engine.CATEGORIES.slice(1).reverse());
-  rows.forEach(function (row) {
-    var cells = html.match(new RegExp('<tr data-category="' + row + '">([\\s\\S]*?)</tr>'))[1];
-    assert.deepEqual(Array.from(cells.matchAll(/<td data-coins="(\d)">/g), function (m) { return Number(m[1]); }), [1, 2, 3, 4, 5], row);
-  });
+test("the pay table has a column for every coin, its rows laid by the machine for each game", function () {
+  var head = html.match(/<thead>([\s\S]*?)<\/thead>/)[1];
+  assert.deepEqual(Array.from(head.matchAll(/data-coins="(\d)"/g), function (m) { return Number(m[1]); }), [1, 2, 3, 4, 5]);
+  assert.match(html, /<tbody id="payRows"><\/tbody>/);
+  assert.match(game, /Engine\.PAY_ROWS\[payTable\]\.forEach/);
   var profiles = Array.from(html.matchAll(/<button class="rule-profile" data-profile="(\w+)" type="button" role="radio"/g), function (m) { return m[1]; });
   assert.deepEqual(profiles, Engine.PAY_TABLES);
 });
@@ -122,7 +127,7 @@ test("the hand, its draw and its stake are saved before the first card is shown"
 test("the hold is saved before the new cards are turned", function () {
   var drawing = game.slice(game.indexOf("  function drawCards()"), game.indexOf("  async function finishRound"));
   var save = drawing.indexOf('account.write("round", Store.roundSnapshot(saved))');
-  var show = drawing.indexOf("return finishRound(saved)");
+  var show = drawing.indexOf("return finishRound(saved, judged)");
   assert.ok(save > 0 && show > save);
   assert.match(read("css/styles.css"), /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(game, /prefers-reduced-motion: reduce/);

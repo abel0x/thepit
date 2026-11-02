@@ -29,6 +29,7 @@ test("settings, with the bet, fall back to the defaults field by field", functio
   assert.deepEqual(Store.DEFAULT_SETTINGS, { payTable: "nineSix", denomination: 5, coins: 5, animationSpeed: "normal", coach: false });
   var chosen = { payTable: "eightFive", denomination: 100, coins: 3, animationSpeed: "cinematic", coach: true };
   assert.deepEqual(Store.normalizeSettings(chosen), chosen);
+  assert.deepEqual(Store.normalizeSettings({ payTable: "deucesWild" }).payTable, "deucesWild");
   assert.deepEqual(Store.normalizeSettings({ payTable: "tenSeven", denomination: 2, coins: 6, animationSpeed: 2, coach: "yes" }), Store.DEFAULT_SETTINGS);
   assert.equal(Store.normalizeSettings({ coins: 2.5 }).coins, 5);
 });
@@ -44,13 +45,31 @@ test("statistics stay whole and consistent", function () {
 test("a settled hand is recorded once, with its best hand", function () {
   var royal = Engine.settle({ denomination: 1, coins: 5 }, hand("AS KS QS JS 10S"), "nineSix");
   var stats = Store.recordHand(null, royal);
-  assert.deepEqual(stats, { hands: 1, winningHands: 1, royalFlushes: 1, wagered: 5, returned: 4000, biggestWin: 3995, bestHand: 9 });
+  assert.deepEqual(stats, {
+    hands: 1, winningHands: 1, royalFlushes: 1, wagered: 5, returned: 4000, biggestWin: 3995, bestHand: 9,
+    decisions: 0, bestHolds: 0, missedMilli: 0
+  });
   var nothing = Engine.settle({ denomination: 1, coins: 5 }, hand("2C 4D 7H 9S 3H"), "nineSix");
   stats = Store.recordHand(stats, nothing);
   assert.equal(stats.hands, 2);
   assert.equal(stats.winningHands, 1);
   assert.equal(stats.bestHand, 9, "the best hand stays");
   assert.equal(stats.wagered, 10);
+});
+
+test("the strongest hand is kept across games, and every judged hold is counted", function () {
+  var aces = Engine.settle({ denomination: 1, coins: 5 }, hand("AS AD AC AH 5S"), "doubleBonus");
+  var stats = Store.recordHand(null, aces, { best: true, missed: 0 });
+  assert.equal(Engine.CATEGORIES[stats.bestHand], "quadAces");
+  var flush = Engine.settle({ denomination: 1, coins: 5 }, hand("2C 7C 9C JC KC"), "nineSix");
+  stats = Store.recordHand(stats, flush, { best: false, missed: 1.23456 });
+  assert.equal(Engine.CATEGORIES[stats.bestHand], "quadAces", "a flush is weaker than four aces, though it comes later in the list");
+  var deuces = Engine.settle({ denomination: 1, coins: 5 }, hand("2C 2D 2H 2S KC"), "deucesWild");
+  stats = Store.recordHand(stats, deuces);
+  assert.equal(Engine.CATEGORIES[stats.bestHand], "fourDeuces");
+  assert.deepEqual([stats.hands, stats.decisions, stats.bestHolds, stats.missedMilli], [3, 2, 1, 1235]);
+  var odd = Store.normalizeStats({ hands: 2, decisions: 5, bestHolds: 9 });
+  assert.deepEqual([odd.decisions, odd.bestHolds], [2, 2], "never more judged holds than hands");
 });
 
 test("a hand is saved with its cards and its draw, and comes back only when everything agrees", function () {

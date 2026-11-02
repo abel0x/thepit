@@ -3,8 +3,8 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* =========================================================
    Poker 11 — the machine
-   The bet, the deal, the hold and the draw, the pays and the
-   statistics. Every hand is dealt and saved, with its stake already
+   The bet, the deal, the hold and the draw, the pays, the strategy
+   hint with the value of every hold, and the statistics. Every hand is dealt and saved, with its stake already
    taken and the cards of its draw already chosen, before the first
    card is shown, and the hold is saved before the new cards are
    turned, so a reload brings back the very same hand.
@@ -28,8 +28,17 @@
   var PACE = { fast: 0.55, normal: 1, cinematic: 1.45 };
   var CATEGORY_WORDS = {
     royalFlush: "catRoyalFlush", straightFlush: "catStraightFlush", quads: "catQuads", fullHouse: "catFullHouse",
-    flush: "catFlush", straight: "catStraight", trips: "catTrips", twoPair: "catTwoPair", jacksOrBetter: "catJacksOrBetter"
+    flush: "catFlush", straight: "catStraight", trips: "catTrips", twoPair: "catTwoPair", jacksOrBetter: "catJacksOrBetter",
+    quadsLow: "catQuadsLow", quadAces: "catQuadAces", fiveOfAKind: "catFiveOfAKind", wildRoyal: "catWildRoyal", fourDeuces: "catFourDeuces"
   };
+  // Where a game names a hand its own way: Deuces Wild calls a royal flush
+  // without twos natural, Double Bonus pays the other fours apart.
+  var GAME_WORDS = {
+    deuces: { royalFlush: "catNaturalRoyal" },
+    bonus: { quads: "catQuadsHigh" }
+  };
+  var GAME_TITLES = { jacks: "subtitleJacks", bonus: "subtitleBonus", deuces: "subtitleDeuces" };
+  var PROFILE_WORDS = { nineSix: "profileNineSix", eightFive: "profileEightFive", doubleBonus: "profileDoubleBonus", deucesWild: "profileDeucesWild" };
   var reducedMotion = global.matchMedia ? global.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
 
   var t = function (key, params) { return I18n.t(key, params); };
@@ -62,7 +71,8 @@
     shown: null,
     result: null,
     lastWin: 0,
-    // The best hold of the hand in the machine, worked out once per hand.
+    // Every hold of the hand in the machine with its value, best first,
+    // worked out once per hand.
     coach: null,
     banner: { key: "placeBet", params: null, sub: null, tone: "" }
   };
@@ -98,6 +108,10 @@
     tableMax: $("tableMax"),
     tableRtp: $("tableRtp"),
     payTable: $("payTable"),
+    payRows: $("payRows"),
+    subtitle: $("subtitle"),
+    holds: $("holdsModal"),
+    holdsList: $("holdsList"),
     slots: Array.prototype.slice.call(document.querySelectorAll(".hand-slot")),
     chipTray: $("chipTray"),
     totalBet: $("totalBet"),
@@ -108,7 +122,7 @@
     toast: $("toast"),
     settings: $("settingsModal"),
     btn: {
-      betOne: $("btnBetOne"), betMax: $("btnBetMax"), deal: $("btnDeal"),
+      betOne: $("btnBetOne"), betMax: $("btnBetMax"), deal: $("btnDeal"), holds: $("btnHolds"),
       sound: $("soundToggle"), settings: $("settingsBtn"), resetStats: $("btnResetStats")
     }
   };
@@ -130,11 +144,18 @@
   }
 
   /* ---------------- Words for hands ---------------- */
+  // The word for a hand under the game of a pay table.
+  function categoryWord(category, payTable) {
+    var own = GAME_WORDS[Engine.gameOf(payTable)];
+    return (own && own[category]) || CATEGORY_WORDS[category];
+  }
+
   // "Full house", "Pair of Kings": a paying hand as the machine names it.
+  // A hand carries the pay table it was played under.
   function handName(hand) {
     if (!hand || hand.category === "nothing") return "";
     if (hand.category === "jacksOrBetter") return t("handPair", { ranks: t("rankPlural" + (Engine.RANKS.indexOf(hand.pairRank) + 2)) });
-    return t(CATEGORY_WORDS[hand.category]);
+    return t(categoryWord(hand.category, hand.payTable || currentPayTable()));
   }
 
   // Banner and toast parameters may hold hands; they are named in the
@@ -179,14 +200,14 @@
   }
 
   // The words for how a hand ended.
-  function resultLine(settlement) {
+  function resultLine(settlement, payTable) {
     return settlement.returned
-      ? { key: "resultWin", params: { hand: settlement.hand, amount: money(settlement.returned) } }
+      ? { key: "resultWin", params: { hand: Object.assign({ payTable: payTable }, settlement.hand), amount: money(settlement.returned) } }
       : { key: "resultNothing", params: null };
   }
 
-  function resultText(settlement) {
-    var line = resultLine(settlement);
+  function resultText(settlement, payTable) {
+    var line = resultLine(settlement, payTable);
     return t(line.key, localize(line.params));
   }
 
@@ -257,11 +278,38 @@
     el.balancePill.classList.add("win-flash");
   }
 
+  // The rows of a pay table, best hand first, each with a cell for one to
+  // five coins. They are laid again only when the pay table changes.
+  function layPayRows(payTable) {
+    if (el.payRows.getAttribute("data-pay-table") === payTable) return;
+    el.payRows.textContent = "";
+    Engine.PAY_ROWS[payTable].forEach(function (category) {
+      var row = document.createElement("tr");
+      row.setAttribute("data-category", category);
+      var head = document.createElement("th");
+      head.scope = "row";
+      head.setAttribute("data-i18n", categoryWord(category, payTable));
+      head.textContent = t(categoryWord(category, payTable));
+      row.appendChild(head);
+      for (var coins = 1; coins <= Engine.MAX_COINS; coins++) {
+        var cell = document.createElement("td");
+        cell.setAttribute("data-coins", String(coins));
+        row.appendChild(cell);
+      }
+      el.payRows.appendChild(row);
+    });
+    el.payRows.setAttribute("data-pay-table", payTable);
+  }
+
   // The pay table in coins, the column of the coins bet lit and, after a
   // win, the winning row.
   function renderPayTable() {
     var payTable = currentPayTable();
     var coins = currentBet().coins;
+    layPayRows(payTable);
+    var title = GAME_TITLES[Engine.gameOf(payTable)];
+    el.subtitle.setAttribute("data-i18n", title);
+    el.subtitle.textContent = t(title);
     el.payTable.querySelectorAll("tbody tr").forEach(function (row) {
       var category = row.getAttribute("data-category");
       row.querySelectorAll("td").forEach(function (cell) {
@@ -303,12 +351,14 @@
     netNode.classList.toggle("positive", net > 0);
     netNode.classList.toggle("negative", net < 0);
     $("stBiggest").textContent = money(s.biggestWin);
+    $("stBestHolds").textContent = s.decisions ? Math.round(s.bestHolds / s.decisions * 100) + "% (" + fmt(s.decisions) + ")" : "0%";
+    $("stMissed").textContent = money(Math.round(s.missedMilli / 10) / 100);
   }
 
   // The hold buttons follow the hold, and the strategy hint marks its pick.
   function renderHolds() {
     var holding = state.phase === "holding" && state.round;
-    var pick = holding && state.settings.coach && state.coach ? state.coach.held : null;
+    var pick = holding && state.settings.coach && state.coach ? state.coach.ranked[0].held : null;
     el.slots.forEach(function (slot, position) {
       var held = !!(holding && state.held[position]);
       var button = holdButton(position);
@@ -328,6 +378,7 @@
     el.btn.betMax.disabled = !betting;
     el.btn.deal.disabled = !(betting || holding);
     el.btn.deal.classList.toggle("ready", betting || holding);
+    el.btn.holds.disabled = !(holding && state.settings.coach && state.coach && state.coach.id === state.round.id);
     var labelKey = state.phase === "holding" ? "draw" : "deal";
     el.dealLabel.setAttribute("data-i18n", labelKey);
     el.dealLabel.textContent = t(labelKey);
@@ -394,32 +445,61 @@
   }
 
   /* ---------------- The strategy hint ---------------- */
-  // The best hold is worked out from every possible draw, once a hand, after
-  // the cards are on show; it takes a moment, so it waits for the next frame.
+  // Every hold is valued from every possible draw, once a hand, after the
+  // cards are on show; it takes a moment, so it waits for the next frame.
+  // The values are worked out whether the hint is on or not: they judge
+  // each hold for the statistics.
+  function rankRound(round) {
+    if (!state.coach || state.coach.id !== round.id) {
+      state.coach = { id: round.id, ranked: Engine.rankHolds(round.hand, round.payTable, round.bet.coins) };
+    }
+    return state.coach;
+  }
+
   function updateCoach() {
     var round = state.round;
-    if (!round || state.phase !== "holding" || !state.settings.coach) {
+    if (!round || state.phase !== "holding") {
       renderHolds();
       return;
     }
     if (state.coach && state.coach.id === round.id) {
-      renderHolds();
-      setBanner("holdPrompt", null, coachLine());
+      showCoach();
       return;
     }
     global.requestAnimationFrame(function () {
       if (state.round !== round || state.phase !== "holding") return;
-      var best = Engine.bestHold(round.hand, round.payTable, round.bet.coins);
-      state.coach = { id: round.id, held: best.held };
-      renderHolds();
-      setBanner("holdPrompt", null, coachLine());
+      rankRound(round);
+      showCoach();
     });
+  }
+
+  function showCoach() {
+    renderHolds();
+    updateControls();
+    if (state.settings.coach) setBanner("holdPrompt", null, coachLine());
   }
 
   function coachLine() {
     if (!state.coach) return null;
-    var count = state.coach.held.filter(Boolean).length;
-    return { key: count === 0 ? "coachDrawAll" : count === Engine.HAND_SIZE ? "coachStand" : "coachHold" };
+    var best = state.coach.ranked[0];
+    var count = best.held.filter(Boolean).length;
+    var key = count === 0 ? "coachDrawAll" : count === Engine.HAND_SIZE ? "coachStand" : "coachHold";
+    return { key: key, params: { value: coinValue(best.value) } };
+  }
+
+  // A value per coin, to three places: "1.537".
+  function coinValue(value) {
+    return value.toLocaleString(I18n.locale(), { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  }
+
+  // How a hold compares with the best: whether it returns as much, and the
+  // dollars it gives up on average for the bet in play.
+  function judgeHold(round, held) {
+    var ranked = rankRound(round).ranked;
+    var mask = Engine.holdMask(held);
+    var chosen = ranked.filter(function (entry) { return entry.mask === mask; })[0];
+    var stake = Engine.stakeOf(round.bet);
+    return { best: chosen.best, missed: (ranked[0].value - chosen.value) * stake, value: chosen.value, bestValue: ranked[0].value };
   }
 
   function setCoach(on) {
@@ -431,14 +511,66 @@
       if (state.settings.coach) updateCoach();
       else { renderHolds(); setBanner("holdPrompt"); }
     }
+    updateControls();
+  }
+
+  /* ---------------- Every hold ---------------- */
+  // The hold as words: the cards kept, or "Draw five new cards".
+  function holdWords(round, held) {
+    var kept = round.hand.filter(function (c, i) { return held[i]; });
+    if (!kept.length) return t("holdNothing");
+    return kept.map(function (c) { return c.rank + c.suit; }).join(" ");
+  }
+
+  function renderHoldsList() {
+    var round = state.round;
+    el.holdsList.textContent = "";
+    if (!round || !state.coach || state.coach.id !== round.id) return;
+    var current = Engine.holdMask(state.held);
+    state.coach.ranked.forEach(function (entry) {
+      var item = document.createElement("li");
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "hold-choice" + (entry.best ? " best" : "") + (entry.mask === current ? " current" : "");
+      button.setAttribute("data-mask", String(entry.mask));
+      button.setAttribute("aria-pressed", String(entry.mask === current));
+      var cards = document.createElement("span");
+      cards.className = "hold-cards";
+      cards.textContent = holdWords(round, entry.held);
+      var value = document.createElement("span");
+      value.className = "hold-value";
+      value.textContent = coinValue(entry.value);
+      button.appendChild(cards);
+      button.appendChild(value);
+      if (entry.best) button.setAttribute("aria-description", t("bestHoldLabel"));
+      item.appendChild(button);
+      el.holdsList.appendChild(item);
+    });
+  }
+
+  function openHolds() {
+    if (el.btn.holds.disabled || !canHold()) return;
+    openDialog(el.holds);
+    renderHoldsList();
+    var current = el.holdsList.querySelector(".current") || el.holdsList.querySelector("button");
+    if (current) current.focus();
+  }
+
+  function pickHold(mask) {
+    if (!canHold()) return;
+    state.held = Engine.holdFromMask(mask);
+    Sound.chip(1);
+    renderHolds();
+    closeDialog();
   }
 
   /* ---------------- The hand ---------------- */
   // Credits the account, records the hand and closes the saved round.
-  function commitSettlement(settlement) {
+  // judged is how the hold compared with the best one, when known.
+  function commitSettlement(settlement, judged) {
     var bankroll = Store.normalizeBankroll(account.read("bankroll", state.bankroll));
     bankroll = Math.min(Store.MAX_BANKROLL, bankroll + settlement.returned);
-    var stats = Store.recordHand(account.read("stats", state.stats), settlement);
+    var stats = Store.recordHand(account.read("stats", state.stats), settlement, judged);
     account.write("bankroll", bankroll);
     account.write("stats", stats);
     account.remove("round");
@@ -475,7 +607,7 @@
     var settled = settleRound(round);
     commitSettlement(settled.settlement);
     renderBankroll();
-    toast(t("roundRestored", { result: resultText(settled.settlement) }), settled.settlement.returned ? "win" : "");
+    toast(t("roundRestored", { result: resultText(settled.settlement, round.payTable) }), settled.settlement.returned ? "win" : "");
     return { settlement: settled.settlement };
   }
 
@@ -566,11 +698,13 @@
     renderHolds();
   }
 
-  // The hold is saved before the new cards are turned.
+  // The hold is saved before the new cards are turned. It is judged
+  // against the best hold first, while the hand is still on show.
   function drawCards() {
     if (!canHold()) return;
     var current = state.round;
     var held = state.held.slice();
+    var judged = judgeHold(current, held);
     Sound.unlock();
     state.busy = true;
     updateControls();
@@ -580,7 +714,7 @@
       saved.held = held;
       account.write("round", Store.roundSnapshot(saved));
       state.round = saved;
-      return finishRound(saved);
+      return finishRound(saved, judged);
     }, 900).then(function (outcome) {
       if (outcome && outcome.lost) {
         // Another tab settled this hand; the machine is cleared to match.
@@ -599,16 +733,16 @@
     }, lockFailed);
   }
 
-  async function finishRound(round) {
+  async function finishRound(round, judged) {
     setPhase("drawing");
     renderHolds();
     var settled = settleRound(round);
     await showDraw(round, settled.final);
     var settlement = settled.settlement;
-    commitSettlement(settlement);
+    commitSettlement(settlement, judged);
     state.result = settlement;
     state.round = null;
-    var line = resultLine(settlement);
+    var line = resultLine(settlement, round.payTable);
     setBanner(line.key, line.params, null, settlement.returned ? "win" : "");
     el.winMeter.textContent = fmt(settlement.returned);
     if (settlement.returned) {
@@ -624,6 +758,9 @@
     selectChip(state.settings.denomination);
     setPhase("betting");
     renderHolds();
+    if (state.settings.coach && judged && !judged.best) {
+      toast(t("coachMiss", { yours: coinValue(judged.value), best: coinValue(judged.bestValue) }), "coach");
+    }
     restakeIfBroke();
   }
 
@@ -740,24 +877,46 @@
 
   /* ---------------- Dialogs ---------------- */
   var dialogReturn = null;
+  var openModal = null;
 
   function focusables(modal) {
     return Array.prototype.slice.call(modal.querySelectorAll("a[href], button, input, summary, [tabindex]"))
       .filter(function (node) { return !node.disabled && node.tabIndex >= 0 && !node.closest("[hidden]"); });
   }
 
-  function openSettings() {
+  function openDialog(modal) {
+    if (openModal) closeDialog();
     dialogReturn = document.activeElement;
+    openModal = modal;
+    modal.hidden = false;
+  }
+
+  function closeDialog() {
+    if (!openModal) return;
+    openModal.hidden = true;
+    openModal = null;
+    if (dialogReturn && typeof dialogReturn.focus === "function") dialogReturn.focus();
+    dialogReturn = null;
+  }
+
+  function openSettings() {
+    openDialog(el.settings);
     renderStats();
-    el.settings.hidden = false;
     el.settings.querySelector(".modal-head [data-close]").focus();
   }
 
-  function closeSettings() {
-    if (el.settings.hidden) return;
-    el.settings.hidden = true;
-    if (dialogReturn && typeof dialogReturn.focus === "function") dialogReturn.focus();
-    dialogReturn = null;
+  // Escape closes a dialog, and Tab keeps the focus inside it.
+  function trapDialog(modal) {
+    modal.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", closeDialog); });
+    modal.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); closeDialog(); return; }
+      if (event.key !== "Tab") return;
+      var items = focusables(modal);
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
   }
 
   function radioKeys(container, selector, onPick) {
@@ -807,15 +966,12 @@
     });
 
     el.btn.settings.addEventListener("click", openSettings);
-    el.settings.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", closeSettings); });
-    el.settings.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") { event.preventDefault(); closeSettings(); return; }
-      if (event.key !== "Tab") return;
-      var items = focusables(el.settings);
-      if (!items.length) return;
-      var first = items[0], last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    el.btn.holds.addEventListener("click", openHolds);
+    trapDialog(el.settings);
+    trapDialog(el.holds);
+    el.holdsList.addEventListener("click", function (event) {
+      var choice = event.target.closest(".hold-choice");
+      if (choice) pickHold(Number(choice.getAttribute("data-mask")));
     });
 
     document.querySelectorAll("[data-lang], [data-set-lang]").forEach(function (button) {
@@ -841,7 +997,7 @@
       state.settings.payTable = button.getAttribute("data-profile");
       saveSettings();
       clearWin();
-      toast(t("profileApplied", { profile: t(state.settings.payTable === "eightFive" ? "profileEightFive" : "profileNineSix") }));
+      toast(t("profileApplied", { profile: t(PROFILE_WORDS[state.settings.payTable]) }));
     });
     radioKeys(payTablePicker, ".rule-profile", function (button) { button.click(); });
 
@@ -886,7 +1042,7 @@
 
   function onGlobalKey(event) {
     if (event.defaultPrevented || event.altKey || event.metaKey || event.ctrlKey || event.repeat || event.isComposing) return;
-    if (!el.settings.hidden) return;
+    if (openModal) return;
     var target = event.target;
     var typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
     if (typing) return;
@@ -896,8 +1052,9 @@
     if ((key === " " || key === "Enter") && !onControl) { event.preventDefault(); mainAction(); return; }
     if (lower === "m") { setSound(!soundEnabled); return; }
     if (state.phase === "holding") {
-      // 1 to 5 hold the cards, left to right.
+      // 1 to 5 hold the cards, left to right; H shows every hold.
       if (lower >= "1" && lower <= "5") toggleHold(Number(lower) - 1);
+      else if (lower === "h") openHolds();
       return;
     }
     if (lower >= "1" && lower <= "6") { selectChip(TRAY[Number(lower) - 1]); return; }

@@ -552,3 +552,52 @@ body {
     transition-delay: 0s !important;
   }
 }
+
+/* ----------------------- Your save ----------------------- */
+/* The file field is read by the label beside it, not shown. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.backup-setting { display: grid; gap: 8px; }
+.backup-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.backup-file { cursor: pointer; }
+.backup-file:focus-within, #restoreFile:focus-visible + .backup-file { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+.backup-confirm {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--gold-bright);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .25);
+  color: var(--cream);
+  font-size: 13px;
+}
+.backup-confirm[hidden] { display: none; }
+
+/* ----------------------- Your play ----------------------- */
+.play-table-wrap { overflow-x: auto; }
+.play-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.play-table th, .play-table td { padding: 5px 6px; text-align: right; white-space: nowrap; }
+.play-table thead th { color: rgba(232, 202, 125, .62); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.play-table th[scope="row"], .play-table thead th:first-child { text-align: left; }
+.play-table tbody tr + tr { border-top: 1px solid rgba(217, 182, 95, .1); }
+.play-table tbody th { color: var(--cream); font-weight: 600; }
+.play-table td { color: rgba(244, 239, 226, .82); }
+.play-table tfoot tr { border-top: 1.5px solid rgba(217, 182, 95, .45); }
+.play-table tfoot th, .play-table tfoot td { color: var(--gold-bright); font-weight: 700; }
+.play-table .positive { color: #8fe0b0; }
+.play-table .negative { color: #ffb4ad; }
+@media (max-width: 420px) {
+  .play-table { font-size: 11px; }
+  .play-table th, .play-table td { padding: 4px 3px; }
+}

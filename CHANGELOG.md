@@ -8,6 +8,9 @@ The first version of the pit: seven tables, a money wheel, a slot machine, a vid
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
+- The lobby's *Your play*: every table's rounds, wagered, returned, net and return per dollar, with the pit's total. Table 21 now counts what it takes and pays back too, side bets and insurance included.
+- A save on file: the whole pit downloaded to one JSON backup and restored from it after a confirmation, under the account lock.
+- Table 21 pays a side bet won on the opening cards when the hand is then surrendered; it was lost before.
 - Statistics at Table 18 and Wheel 54: the last 500 results charted against their exact chances, with the rounds since each last came.
 - Keno 80 multi-race: one ticket for 1, 5, 10 or 20 draws in a row, every draw paid for, drawn and saved before the first ball, and the lot paid together.
 - Slot 5 autoplay: 10 to 100 spins with stops at a loss limit, on a big win, when free spins start or at a press of Stop, never saved across a reload.

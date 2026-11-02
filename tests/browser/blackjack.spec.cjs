@@ -973,6 +973,38 @@ test("a reload mid-hand keeps the side bets already settled", async () => {
   });
 });
 
+test("a surrender returns half the bet, and a lost side bet stays lost", async () => {
+  const draw = [{ rank: "10", suit: "♥" }, { rank: "10", suit: "♣" }, { rank: "6", suit: "♦" }, "9"];
+  await scene({ draw }, async page => {
+    await page.click('.chip[data-value="100"]');
+    await sideBet(page, "trio");
+    await page.click("#btnDeal");
+    await phase(page, "player");
+    // 10, 6 and the dealer's 10 make nothing at 21+3: lost.
+    await page.click("#btnSurrender");
+    await phase(page, "betting");
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("pit.bankroll"))), 10000 - 200 + 50);
+    const saved = await stats(page);
+    assert.deepEqual([saved.sideWagered, saved.sideReturned, saved.wagered, saved.returned], [100, 0, 200, 50]);
+  });
+});
+
+test("a surrender pays the side bet won on the opening cards", async () => {
+  const draw = [{ rank: "9", suit: "♠" }, { rank: "10", suit: "♠" }, { rank: "7", suit: "♠" }, "9"];
+  await scene({ draw }, async page => {
+    await page.click('.chip[data-value="100"]');
+    await sideBet(page, "trio");
+    await page.click("#btnDeal");
+    await phase(page, "player");
+    assert.match(await page.$eval("#toast", node => node.textContent), /21\+3: flush pays \$600/);
+    await page.click("#btnSurrender");
+    await phase(page, "betting");
+    assert.equal(JSON.parse(await page.evaluate(() => localStorage.getItem("pit.bankroll"))), 10000 - 200 + 50 + 600);
+    const saved = await stats(page);
+    assert.deepEqual([saved.sideWagered, saved.sideReturned, saved.wagered, saved.returned], [100, 600, 200, 650]);
+  });
+});
+
 test("side bets are not offered with one or two decks", async () => {
   await scene({ settings: { ruleProfile: null, decks: 2 } }, async page => {
     assert.equal(await page.$eval("body", node => node.dataset.sideBets), "false");

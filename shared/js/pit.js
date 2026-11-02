@@ -87,6 +87,61 @@
     });
   }
 
+  /* ---------------- A save on file ---------------- */
+  // Everything the pit keeps in this browser, written to a file and read
+  // back: the balance, every table's settings, statistics, last bets and
+  // any unfinished round, the cloth and the language. A tab's own copy of
+  // the account (pit.session.*) belongs to that tab and is never saved.
+  var SAVE_FORMAT = "thepit-save";
+  var SAVE_VERSION = 1;
+  var SAVE_KEY = /^pit\.[a-z0-9]+(\.[A-Za-z0-9]+)*$/;
+
+  function isSaveKey(key) {
+    return SAVE_KEY.test(key) && key.indexOf(KEY_PREFIX + "session.") !== 0;
+  }
+
+  function saveKeys(storage) {
+    var keys = [];
+    try {
+      for (var i = 0; i < storage.length; i++) {
+        var key = storage.key(i);
+        if (isSaveKey(key)) keys.push(key);
+      }
+    } catch (e) { return []; }
+    return keys.sort();
+  }
+
+  // The save as an object, ready for JSON.stringify. `at` is when it was made.
+  function exportSave(storage, at) {
+    var data = {};
+    saveKeys(storage).forEach(function (key) {
+      var value = readJSON(storage, key, undefined);
+      if (value !== undefined) data[key] = value;
+    });
+    return { format: SAVE_FORMAT, version: SAVE_VERSION, saved: new Date(at).toISOString(), data: data };
+  }
+
+  // A save read back from text, or null when it is not one: the format and
+  // version must match, and every key must be one the pit writes. The
+  // values are checked by each page as it reads them, as always.
+  function readSave(text) {
+    var save;
+    try { save = JSON.parse(String(text)); } catch (e) { return null; }
+    if (!save || typeof save !== "object" || save.format !== SAVE_FORMAT || save.version !== SAVE_VERSION) return null;
+    if (!save.data || typeof save.data !== "object" || Array.isArray(save.data)) return null;
+    var keys = Object.keys(save.data);
+    if (!keys.length || !keys.every(isSaveKey)) return null;
+    var saved = Date.parse(save.saved);
+    return { saved: isFinite(saved) ? saved : null, data: save.data };
+  }
+
+  // Replaces everything the pit keeps with a save: what the save does not
+  // hold is removed, so the pit is exactly as it was when the save was made.
+  function restoreSave(storage, save) {
+    saveKeys(storage).forEach(function (key) { removeKey(storage, key); });
+    Object.keys(save.data).forEach(function (key) { writeJSON(storage, key, save.data[key]); });
+  }
+
   /* ---------------- Browser storage & account ---------------- */
   function readJSON(storage, key, fallback) {
     try {
@@ -185,6 +240,11 @@
     isPitKey: isPitKey,
     readJSON: readJSON,
     writeJSON: writeJSON,
-    createAccount: createAccount
+    createAccount: createAccount,
+    SAVE_FORMAT: SAVE_FORMAT,
+    isSaveKey: isSaveKey,
+    exportSave: exportSave,
+    readSave: readSave,
+    restoreSave: restoreSave
   };
 });

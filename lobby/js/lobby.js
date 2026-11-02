@@ -3,8 +3,9 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* =========================================================
    ThePit — the lobby
-   Shows the shared play-money balance and the tables of the pit, and
-   holds the settings every page shares: the language and the cloth.
+   Shows the shared play-money balance and the tables of the pit, what
+   each table has taken and paid back, and holds the settings every page
+   shares: the language, the cloth and the save on file.
    Play money added here goes through the same account lock the tables
    use, so it can never collide with a round in play.
    ========================================================= */
@@ -40,7 +41,16 @@
     themePicker: document.querySelector(".theme-picker"),
     depositInput: $("depositAmount"),
     depositBtn: $("btnDeposit"),
+    stats: $("statsModal"),
+    restoreFile: $("restoreFile"),
+    restoreConfirm: $("restoreConfirm"),
     toast: $("toast")
+  };
+
+  // How each table counts its rounds in its statistics.
+  var ROUNDS = {
+    blackjack: "hands", roulette: "spins", baccarat: "coups", threecard: "hands", slot: "spins", craps: "rolls",
+    holdem: "hands", videopoker: "hands", sicbo: "rolls", keno: "games", bigsix: "spins"
   };
 
   /* ---------------- Balance ---------------- */
@@ -96,6 +106,117 @@
     }).then(function (outcome) {
       if (outcome && outcome.busy) toast(t("accountBusy"), "lose");
       return outcome === true;
+    });
+  }
+
+  /* ---------------- Your play ---------------- */
+  function count(value) {
+    value = Math.floor(Number(value));
+    return isFinite(value) && value > 0 ? value : 0;
+  }
+
+  // Each table's rounds, what it took and what it paid back, read from its
+  // own statistics; and the pit's total.
+  function playLines() {
+    var lines = Object.keys(Pit.TABLES).map(function (game) {
+      var stats = Pit.readJSON(local, Pit.gameKey(game, "stats"), null) || {};
+      return { game: game, rounds: count(stats[ROUNDS[game]]), wagered: count(stats.wagered), returned: count(stats.returned) };
+    });
+    var total = lines.reduce(function (sum, line) {
+      return { game: null, rounds: sum.rounds + line.rounds, wagered: sum.wagered + line.wagered, returned: sum.returned + line.returned };
+    }, { game: null, rounds: 0, wagered: 0, returned: 0 });
+    return { lines: lines, total: total };
+  }
+
+  function signedMoney(n) {
+    return (n < 0 ? "−" : n > 0 ? "+" : "") + money(Math.abs(n));
+  }
+
+  function returnText(line) {
+    if (!line.wagered) return "–";
+    return (line.returned / line.wagered * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+  }
+
+  function playRow(line, header) {
+    var tr = document.createElement("tr");
+    if (line.game) tr.setAttribute("data-game", line.game);
+    var name = document.createElement("th");
+    name.scope = "row";
+    name.textContent = header;
+    tr.appendChild(name);
+    var net = line.returned - line.wagered;
+    [fmt(line.rounds), money(line.wagered), money(line.returned), signedMoney(net), returnText(line)].forEach(function (text, index) {
+      var cell = document.createElement("td");
+      cell.textContent = text;
+      if (index === 3) cell.className = net > 0 ? "positive" : net < 0 ? "negative" : "";
+      tr.appendChild(cell);
+    });
+    return tr;
+  }
+
+  function renderPlay() {
+    var play = playLines();
+    var rows = $("playRows"), total = $("playTotal");
+    rows.textContent = "";
+    total.textContent = "";
+    play.lines.forEach(function (line) { rows.appendChild(playRow(line, Pit.TABLES[line.game])); });
+    total.appendChild(playRow(play.total, t("statsAll")));
+  }
+
+  /* ---------------- The save on file ---------------- */
+  function downloadBackup() {
+    var now = Date.now();
+    var save = Pit.exportSave(local, now);
+    var blob = new Blob([JSON.stringify(save, null, 1)], { type: "application/json" });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "thepit-save-" + new Date(now).toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+    toast(t("backupSaved"), "win");
+  }
+
+  // The save chosen from a file, waiting for the player to confirm.
+  var pendingSave = null;
+
+  function chooseRestore(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var save = Pit.readSave(reader.result);
+      el.restoreFile.value = "";
+      if (!save) { toast(t("backupInvalid"), "lose"); return; }
+      pendingSave = save;
+      var when = save.saved ? new Date(save.saved).toLocaleString(I18n.locale(), { dateStyle: "medium", timeStyle: "short" }) : "?";
+      var balance = Pit.normalizeBankroll(save.data[Pit.KEYS.bankroll]);
+      $("restoreQuestion").textContent = t("backupQuestion", { date: when, amount: money(balance) });
+      el.restoreConfirm.hidden = false;
+      $("btnRestore").focus();
+    };
+    reader.onerror = function () { toast(t("backupInvalid"), "lose"); };
+    reader.readAsText(file);
+  }
+
+  function cancelRestore() {
+    pendingSave = null;
+    el.restoreConfirm.hidden = true;
+  }
+
+  // The save replaces everything under the account lock, so no table can be
+  // in the middle of a round while it does; the page then starts afresh.
+  function restore() {
+    var save = pendingSave;
+    if (!save) return;
+    if (!account.shared) { toast(t("backupNeedsLocks"), "lose"); return; }
+    account.run(function () {
+      Pit.restoreSave(local, save);
+      return true;
+    }).then(function (outcome) {
+      if (outcome && outcome.busy) { toast(t("accountBusy"), "lose"); return; }
+      cancelRestore();
+      global.location.reload();
     });
   }
 
@@ -158,8 +279,38 @@
   function closeSettings() {
     if (el.settings.hidden) return;
     el.settings.hidden = true;
+    cancelRestore();
     if (dialogReturn && typeof dialogReturn.focus === "function") dialogReturn.focus();
     dialogReturn = null;
+  }
+
+  function openStats() {
+    dialogReturn = document.activeElement;
+    renderPlay();
+    el.stats.hidden = false;
+    el.stats.querySelector(".modal-head [data-close]").focus();
+  }
+
+  function closeStats() {
+    if (el.stats.hidden) return;
+    el.stats.hidden = true;
+    if (dialogReturn && typeof dialogReturn.focus === "function") dialogReturn.focus();
+    dialogReturn = null;
+  }
+
+  // Escape closes a dialog and Tab stays inside it.
+  function trapDialog(modal, close) {
+    modal.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", close); });
+    modal.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); close(); return; }
+      if (event.key !== "Tab") return;
+      var items = focusables(modal);
+      if (!items.length) return;
+      var first = items[0];
+      var last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
   }
 
   function radioKeys(container, selector, onPick) {
@@ -188,6 +339,7 @@
     I18n.onChange(function () {
       syncLanguageButtons();
       renderBankroll();
+      if (!el.stats.hidden) renderPlay();
     });
 
     el.themePicker.addEventListener("click", function (event) {
@@ -199,23 +351,14 @@
     });
 
     el.settingsBtn.addEventListener("click", openSettings);
-    el.settings.querySelectorAll("[data-close]").forEach(function (node) {
-      node.addEventListener("click", closeSettings);
-    });
-    el.settings.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeSettings();
-        return;
-      }
-      if (event.key !== "Tab") return;
-      var items = focusables(el.settings);
-      if (!items.length) return;
-      var first = items[0];
-      var last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-    });
+    trapDialog(el.settings, closeSettings);
+    $("statsBtn").addEventListener("click", openStats);
+    trapDialog(el.stats, closeStats);
+
+    $("btnBackup").addEventListener("click", downloadBackup);
+    el.restoreFile.addEventListener("change", function () { chooseRestore(el.restoreFile.files && el.restoreFile.files[0]); });
+    $("btnRestore").addEventListener("click", restore);
+    $("btnRestoreCancel").addEventListener("click", cancelRestore);
 
     function commitDeposit() {
       deposit(el.depositInput.value).then(function (added) {

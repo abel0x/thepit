@@ -180,3 +180,48 @@ test("a round left open at one table is visible to every other table", function 
   // Callers with their own storage access pass a reader of the same shape.
   assert.deepEqual(Pit.roundsElsewhere(function (key) { return key === "pit.roulette.round" ? {} : null; }, "blackjack"), ["roulette"]);
 });
+
+/* ---------------- The save on file ---------------- */
+test("a save holds the pit's own keys, read back as values, and never a tab's own copy", function () {
+  var storage = helpers.memoryStorage();
+  storage.setItem("pit.bankroll", "4321");
+  storage.setItem("pit.keno.stats", JSON.stringify({ games: 3 }));
+  storage.setItem("pit.session.bankroll", "5");
+  storage.setItem("other.app", "1");
+  storage.setItem("pit.broken", "{not json");
+  var save = Pit.exportSave(storage, Date.UTC(2026, 10, 2));
+  assert.deepEqual(save, {
+    format: "thepit-save", version: 1, saved: "2026-11-02T00:00:00.000Z",
+    data: { "pit.bankroll": 4321, "pit.keno.stats": { games: 3 } }
+  });
+  assert.equal(Pit.isSaveKey("pit.session.bankroll"), false);
+  assert.equal(Pit.isSaveKey("pit.blackjack.round"), true);
+  assert.equal(Pit.isSaveKey("pit."), false);
+});
+
+test("only a ThePit save is read back, and restoring it replaces everything the pit keeps", function () {
+  var text = JSON.stringify({ format: "thepit-save", version: 1, saved: "2026-11-02T09:30:00.000Z", data: { "pit.bankroll": 777, "pit.lang": "tr" } });
+  var save = Pit.readSave(text);
+  assert.equal(save.saved, Date.UTC(2026, 10, 2, 9, 30));
+  [
+    "not json", "null", "[]",
+    JSON.stringify({ format: "thepit-save", version: 2, data: { "pit.bankroll": 1 } }),
+    JSON.stringify({ format: "other", version: 1, data: { "pit.bankroll": 1 } }),
+    JSON.stringify({ format: "thepit-save", version: 1, data: {} }),
+    JSON.stringify({ format: "thepit-save", version: 1, data: [1] }),
+    JSON.stringify({ format: "thepit-save", version: 1, data: { "pit.bankroll": 1, "evil.key": 2 } }),
+    JSON.stringify({ format: "thepit-save", version: 1, data: { "pit.session.bankroll": 1 } })
+  ].forEach(function (bad, index) { assert.equal(Pit.readSave(bad), null, "case " + index); });
+
+  var storage = helpers.memoryStorage();
+  storage.setItem("pit.bankroll", "10");
+  storage.setItem("pit.slot.stats", JSON.stringify({ spins: 9 }));
+  storage.setItem("pit.session.bankroll", "5");
+  storage.setItem("other.app", "1");
+  Pit.restoreSave(storage, save);
+  assert.equal(storage.getItem("pit.bankroll"), "777");
+  assert.equal(storage.getItem("pit.lang"), JSON.stringify("tr"));
+  assert.equal(storage.getItem("pit.slot.stats"), null, "what the save does not hold is gone");
+  assert.equal(storage.getItem("pit.session.bankroll"), "5", "a tab's own copy stays");
+  assert.equal(storage.getItem("other.app"), "1", "another app's data stays");
+});

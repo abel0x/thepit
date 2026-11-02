@@ -77,6 +77,13 @@
         <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
       </div>
 
+      <button id="statsBtn" class="icon-btn" type="button" aria-label="Your play" title="Your play"
+              data-i18n-title="statsTitle" data-i18n-aria-label="statsTitle" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 20h16M7 17v-5M12 17V7M17 17v-8" />
+        </svg>
+      </button>
+
       <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
               data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -125,7 +132,7 @@
               <span class="table-game" data-i18n="blackjackGame">Blackjack</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="blackjackSummary">Blackjack pays 3:2. Las Vegas, Atlantic City and European rules, with an optional basic-strategy coach.</p>
+          <p class="table-card-summary" data-i18n="blackjackSummary">Blackjack pays 3:2. Las Vegas, Atlantic City and European rules, Perfect Pairs and 21+3, a basic-strategy coach and a card counting trainer.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$100</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -209,7 +216,7 @@
               <span class="table-game" data-i18n="baccaratGame">Baccarat</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="baccaratSummary">Punto Banco from an eight-deck shoe: Player, Banker, Tie and both pairs, with the bead plate and the big road.</p>
+          <p class="table-card-summary" data-i18n="baccaratSummary">Punto Banco from an eight-deck shoe: Player, Banker, Tie, both pairs and the Dragon Bonus, with the bead plate and the big road.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$5</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -251,7 +258,7 @@
               <span class="table-game" data-i18n="threecardGame">Three Card Poker</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="threecardSummary">Ante and Play against the dealer, with the Ante Bonus and the Pair Plus, from a deck shuffled for every hand.</p>
+          <p class="table-card-summary" data-i18n="threecardSummary">Ante and Play against the dealer, with the Ante Bonus, the Pair Plus and the 6-Card Bonus, from a deck shuffled for every hand.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$10</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -284,7 +291,7 @@
               <span class="table-game" data-i18n="slotGame">Slot machine</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="slotSummary">Five reels and 20 lines, a wild, scattered stars and ten free spins at triple pay. Returns 95.82%.</p>
+          <p class="table-card-summary" data-i18n="slotSummary">Five reels and 20 lines, a wild, scattered stars, ten free spins at triple pay and autoplay with stops. Returns 95.82%.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$20</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -319,7 +326,7 @@
               <span class="table-game" data-i18n="crapsGame">Craps</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="crapsSummary">Pass and Don't pass with odds, Come, Place, the Field, the Hardways and the bets in the middle, with real dice rules.</p>
+          <p class="table-card-summary" data-i18n="crapsSummary">Pass and Don't pass with odds, Come and Put, Place, the Field, the Hardways, hop bets and the Fire Bet, with real dice rules.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$5</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -420,7 +427,7 @@
               <span class="table-game" data-i18n="videopokerGame">Video poker</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="videopokerSummary">Jacks or Better: five cards, hold and draw once, 9/6 or 8/5 pays and an exact strategy hint. Returns up to 99.54%.</p>
+          <p class="table-card-summary" data-i18n="videopokerSummary">Jacks or Better, Double Bonus and Deuces Wild: five cards, hold and draw once, with an exact strategy hint and the value of every hold. Returns up to 99.73%.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$1</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -495,7 +502,7 @@
               <span class="table-game" data-i18n="kenoGame">Keno</span>
             </a>
           </h3>
-          <p class="table-card-summary" data-i18n="kenoSummary">Mark up to 10 of 80 numbers and watch 20 balls drawn, with a pay table for every count of marks. Returns up to 92.96%.</p>
+          <p class="table-card-summary" data-i18n="kenoSummary">Mark up to 10 of 80 numbers and watch 20 balls drawn, for one draw or up to 20 in a row, with a pay table for every count of marks. Returns up to 92.96%.</p>
           <div class="table-card-foot">
             <span class="table-limit"><small data-i18n="tableMinLabel">MIN</small> <strong>$1</strong></span>
             <span class="table-card-status" data-i18n="roundOpen">Unfinished round</span>
@@ -588,6 +595,37 @@
   </main>
 
   <!-- Settings -->
+  <!-- Your play, table by table -->
+  <div id="statsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card stats-card" role="dialog" aria-modal="true" aria-labelledby="statsHeading">
+      <div class="modal-head">
+        <h2 id="statsHeading" data-i18n="statsTitle">Your play</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-hint" data-i18n="statsLead">What every table has taken and paid back, from its own statistics.</p>
+        <div class="play-table-wrap">
+          <table class="play-table">
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="statsTable">Table</th>
+                <th scope="col" data-i18n="statsRounds">Rounds</th>
+                <th scope="col" data-i18n="statsWagered">Wagered</th>
+                <th scope="col" data-i18n="statsReturned">Returned</th>
+                <th scope="col" data-i18n="statsNet">Net</th>
+                <th scope="col" data-i18n="statsReturn">Return</th>
+              </tr>
+            </thead>
+            <tbody id="playRows"></tbody>
+            <tfoot id="playTotal"></tfoot>
+          </table>
+        </div>
+        <p class="settings-hint" data-i18n="statsHint">Return is what came back for every dollar staked. Over a short run it can sit far from a table's long-run return either way; only a very long run comes close to it. Resetting a table's statistics clears its line here.</p>
+      </div>
+    </div>
+  </div>
+
   <div id="settingsModal" class="modal" hidden>
     <div class="modal-backdrop" data-close></div>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -646,6 +684,23 @@
           <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
           <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
           <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="backup-setting">
+          <div class="setting-section-label" data-i18n="backupTitle">Your save</div>
+          <p class="settings-hint" data-i18n="backupHint">The balance, every table's statistics and settings and any unfinished round live in this browser only. Download them to a file to keep them safe or to move them to another browser.</p>
+          <div class="backup-actions">
+            <button id="btnBackup" class="btn btn-ghost" type="button" data-i18n="backupDownload">Download a backup</button>
+            <label class="btn btn-ghost backup-file" for="restoreFile" data-i18n="backupRestore">Restore from a file</label>
+            <input id="restoreFile" class="sr-only" type="file" accept=".json,application/json" />
+          </div>
+          <div class="backup-confirm" id="restoreConfirm" role="group" aria-labelledby="restoreQuestion" hidden>
+            <p id="restoreQuestion"></p>
+            <div class="backup-actions">
+              <button id="btnRestore" class="btn btn-primary" type="button" data-i18n="backupReplace">Replace everything</button>
+              <button id="btnRestoreCancel" class="btn btn-ghost" type="button" data-i18n="cancel">Cancel</button>
+            </div>
+          </div>
         </div>
 
         <section class="about" aria-labelledby="disclaimerTitle">

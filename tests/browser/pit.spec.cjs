@@ -313,6 +313,62 @@ test("the cloth and the language chosen anywhere dress the whole pit", async () 
   });
 });
 
+test("your play sums every table's statistics, and the total", async () => {
+  await scene({}, async page => {
+    await page.evaluate(() => {
+      localStorage.setItem("pit.slot.stats", JSON.stringify({ spins: 40, wagered: 4000, returned: 3500 }));
+      localStorage.setItem("pit.craps.stats", JSON.stringify({ rolls: 12, wagered: 600, returned: 900 }));
+    });
+    await page.click("#statsBtn");
+    await page.waitForFunction(() => !document.getElementById("statsModal").hidden);
+    const row = selector => page.$eval(selector, tr => [...tr.children].map(cell => cell.textContent));
+    assert.deepEqual(await row('#playRows tr[data-game="slot"]'), ["Slot 5", "40", "$4,000", "$3,500", "−$500", "87.5%"]);
+    assert.deepEqual(await row('#playRows tr[data-game="craps"]'), ["Table 7", "12", "$600", "$900", "+$300", "150.0%"]);
+    assert.deepEqual(await row('#playRows tr[data-game="keno"]'), ["Keno 80", "0", "$0", "$0", "$0", "–"]);
+    assert.deepEqual(await row("#playTotal tr"), ["All tables", "52", "$4,600", "$4,400", "−$200", "95.7%"]);
+    assert.equal(await page.$$eval("#playRows tr", rows => rows.length), 11, "a line for every table");
+    await page.keyboard.press("Escape");
+    assert.equal(await page.$eval("#statsModal", node => node.hidden), true);
+  });
+});
+
+test("a backup downloads the whole pit, and a backup restores it after a confirmation", async () => {
+  await scene({ bankroll: 4321 }, async page => {
+    await page.evaluate(() => localStorage.setItem("pit.keno.stats", JSON.stringify({ games: 3, wagered: 15, returned: 0 })));
+    await page.click("#settingsBtn");
+    // The backup the page would download, read back the way it is written.
+    const save = await page.evaluate(() => Pit.exportSave(localStorage, Date.UTC(2026, 10, 2, 9, 30)));
+    assert.equal(save.format, "thepit-save");
+    assert.equal(save.data["pit.bankroll"], 4321);
+    assert.deepEqual(save.data["pit.keno.stats"], { games: 3, wagered: 15, returned: 0 });
+    assert.ok(!Object.keys(save.data).some(key => /^spec\.|^pit\.session\./.test(key)), "only the pit's own keys");
+
+    const file = path.join(artifacts, "thepit-save.json");
+    save.data["pit.bankroll"] = 777;
+    fs.writeFileSync(file, JSON.stringify(save));
+    await page.evaluate(() => localStorage.setItem("pit.slot.stats", JSON.stringify({ spins: 9 })));
+    const input = await page.$("#restoreFile");
+    await input.uploadFile(file);
+    await page.waitForFunction(() => !document.getElementById("restoreConfirm").hidden);
+    assert.match(await page.$eval("#restoreQuestion", node => node.textContent), /backup from .*2026.*\? Its balance is \$777\.$/);
+    await page.click("#btnRestoreCancel");
+    assert.equal(await stored(page, "pit.bankroll"), 4321, "nothing changes until the player confirms");
+    await input.uploadFile(file);
+    await page.waitForFunction(() => !document.getElementById("restoreConfirm").hidden);
+    await Promise.all([page.waitForNavigation({ waitUntil: "load" }), page.click("#btnRestore")]);
+    assert.equal(await stored(page, "pit.bankroll"), 777);
+    assert.equal(await balance(page), "777");
+    assert.equal(await stored(page, "pit.slot.stats"), null, "what the backup does not hold is gone");
+    assert.deepEqual(await stored(page, "pit.keno.stats"), { games: 3, wagered: 15, returned: 0 });
+
+    fs.writeFileSync(file, JSON.stringify({ format: "something-else", data: { "pit.bankroll": 1 } }));
+    await page.click("#settingsBtn");
+    await (await page.$("#restoreFile")).uploadFile(file);
+    await toast(page, /not a ThePit backup/);
+    assert.equal(await stored(page, "pit.bankroll"), 777);
+  });
+});
+
 test("the lobby's settings keep focus inside and give it back on Escape", async () => {
   await scene({}, async page => {
     await page.focus("#settingsBtn");

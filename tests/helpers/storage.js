@@ -8,6 +8,8 @@
 function memoryStorage() {
   var data = {};
   return {
+    get length() { return Object.keys(data).length; },
+    key: function (index) { var keys = Object.keys(data); return index >= 0 && index < keys.length ? keys[index] : null; },
     getItem: function (key) { return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null; },
     setItem: function (key, value) { data[key] = String(value); },
     removeItem: function (key) { delete data[key]; },

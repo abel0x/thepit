@@ -67,7 +67,7 @@
   }, "atlanticCity");
   var DEFAULT_STATS = {
     hands: 0, wins: 0, losses: 0, pushes: 0, blackjacks: 0, strategyDecisions: 0, strategyCorrect: 0,
-    sideWagered: 0, sideReturned: 0, countChecks: 0, countCorrect: 0
+    sideWagered: 0, sideReturned: 0, countChecks: 0, countCorrect: 0, wagered: 0, returned: 0
   };
   var START_BANKROLL = Pit.START_BANKROLL;
   var MIN_BET = 100;            // smallest chip on this table
@@ -126,7 +126,11 @@
       sideWagered: safeCount(value.sideWagered),
       sideReturned: safeCount(value.sideReturned),
       countChecks: safeCount(value.countChecks),
-      countCorrect: Math.min(safeCount(value.countCorrect), safeCount(value.countChecks))
+      countCorrect: Math.min(safeCount(value.countCorrect), safeCount(value.countChecks)),
+      // Every dollar staked on a round, side bets and insurance included,
+      // and every dollar it paid back.
+      wagered: safeCount(value.wagered),
+      returned: safeCount(value.returned)
     };
   }
 
@@ -757,6 +761,24 @@
       Sound.win();
       toastKey("sideWins", "win", { wins: function () { return sideWinText(settled.lines); } });
     }
+  }
+
+  // The side bets of the round end with it: what they won is paid, and
+  // both are counted. Returns what they pay and what they staked.
+  function closeSideBets() {
+    var side = state.side;
+    if (!side) return { stake: 0, returned: 0 };
+    var stake = SideBets.totalStake(side.stakes);
+    var paid = side.returned || 0;
+    state.stats.sideWagered += stake;
+    state.stats.sideReturned += paid;
+    return { stake: stake, returned: paid };
+  }
+
+  // Counts the money of a finished round in the statistics.
+  function countRound(stake, returned) {
+    state.stats.wagered = Math.min(Number.MAX_SAFE_INTEGER, state.stats.wagered + stake);
+    state.stats.returned = Math.min(Number.MAX_SAFE_INTEGER, state.stats.returned + returned);
   }
 
   // A side bet return saved with a round is trusted only when the stakes
@@ -1621,10 +1643,13 @@
     var refund = Math.floor(hand.bet / 2);
     var loss = hand.bet - refund;
     hand.payoutAmount = refund;
-    state.bankroll += refund;
-    state.pendingPayoutVisual = refund > 0;
+    // Side bets settled on the opening cards are paid however the hand ends.
+    var side = closeSideBets();
+    state.bankroll = Math.min(MAX_BANKROLL, state.bankroll + refund + side.returned);
+    state.pendingPayoutVisual = refund + side.returned > 0;
     state.stats.hands++;
     state.stats.losses++;
+    countRound(hand.bet + side.stake, refund + side.returned);
     persistAll();
     clearRound();
     renderStats();
@@ -1633,7 +1658,7 @@
     setBannerKey("surrendered", "flash-lose");
     Sound.lose();
     showResult("lose", "surrenderShort", -loss);
-    finishRound(-loss, refund, { sidePaymentAmount: 0 });
+    finishRound(-loss, refund + side.returned, { sidePaymentAmount: side.returned });
   }
 
   // Move to next hand needing action, dealing the first card to freshly-split hands.
@@ -1795,13 +1820,10 @@
 
     // The side bets were settled on the opening cards; what they won is paid
     // now, with the round.
-    var side = state.side;
-    var sideReturn = side ? side.returned || 0 : 0;
-    if (side) {
-      state.stats.sideWagered += SideBets.totalStake(side.stakes);
-      state.stats.sideReturned += sideReturn;
-    }
+    var side = closeSideBets();
+    var sideReturn = side.returned;
     var totalReturn = round.totalReturn + sideReturn;
+    countRound(round.totalStake + side.stake, totalReturn);
     state.bankroll = Math.min(MAX_BANKROLL, state.bankroll + totalReturn);
     state.pendingPayoutVisual = totalReturn > 0;
     state.insurance = 0;

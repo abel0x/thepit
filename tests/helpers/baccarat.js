@@ -12,7 +12,9 @@ function c(rank) { return Engine.card(rank, "♠"); }
 function enumerateShoe() {
   var counts = [128, 32, 32, 32, 32, 32, 32, 32, 32, 32];   // tens and court cards count nothing
   var left = 416;
-  var odds = { player: 0, banker: 0, tie: 0, bankerSix: 0 };
+  // outcomes: the chance of every way a coup can end, keyed
+  // "natural|player total|banker total", for bets that pay by the totals.
+  var odds = { player: 0, banker: 0, tie: 0, bankerSix: 0, outcomes: {} };
   var card = function (v) { return c(v === 0 ? "K" : v === 1 ? "A" : String(v)); };
   function draw(weight, next) {
     for (var v = 0; v <= 9; v++) {
@@ -30,6 +32,9 @@ function enumerateShoe() {
           var player = [p1, p2], banker = [b1, b2];
           function finish(w) {
             var pt = Engine.total(player), bt = Engine.total(banker);
+            var natural = player.length === 2 && banker.length === 2 && (Engine.isNatural(player) || Engine.isNatural(banker));
+            var key = (natural ? 1 : 0) + "|" + pt + "|" + bt;
+            odds.outcomes[key] = (odds.outcomes[key] || 0) + w;
             if (pt > bt) odds.player += w;
             else if (bt > pt) { odds.banker += w; if (bt === 6) odds.bankerSix += w; }
             else odds.tie += w;
@@ -54,4 +59,18 @@ function enumerateShoe() {
   return odds;
 }
 
-module.exports = { enumerateShoe: enumerateShoe };
+// The return of one unit on a bet that pays by the totals, over the whole shoe.
+function expectedReturn(odds, key, rules) {
+  var sum = 0;
+  Object.keys(odds.outcomes).forEach(function (outcome) {
+    var parts = outcome.split("|").map(Number);
+    var coup = {
+      natural: parts[0] === 1, playerTotal: parts[1], bankerTotal: parts[2],
+      winner: parts[1] > parts[2] ? "player" : parts[2] > parts[1] ? "banker" : "tie"
+    };
+    sum += odds.outcomes[outcome] * Engine.returnFor(key, 1, coup, rules || "classic");
+  });
+  return sum;
+}
+
+module.exports = { enumerateShoe: enumerateShoe, expectedReturn: expectedReturn };

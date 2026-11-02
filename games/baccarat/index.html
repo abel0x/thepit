@@ -156,6 +156,11 @@
         </div>
 
         <div class="spots" id="spots" role="group" aria-label="Betting areas" data-i18n-aria-label="bettingAreas">
+          <button class="spot spot-pair spot-dragon spot-player-dragon" data-bet="playerDragon" type="button">
+            <span class="spot-name" data-i18n="playerDragonName">Player dragon</span>
+            <span class="spot-pay" data-i18n="payDragon">UP TO 30 TO 1</span>
+            <span class="spot-stack" aria-hidden="true"></span>
+          </button>
           <button class="spot spot-pair spot-player-pair" data-bet="playerPair" type="button">
             <span class="spot-name" data-i18n="playerPairName">Player pair</span>
             <span class="spot-pay" data-i18n="payPair">11 TO 1</span>
@@ -179,6 +184,11 @@
           <button class="spot spot-pair spot-banker-pair" data-bet="bankerPair" type="button">
             <span class="spot-name" data-i18n="bankerPairName">Banker pair</span>
             <span class="spot-pay" data-i18n="payPair">11 TO 1</span>
+            <span class="spot-stack" aria-hidden="true"></span>
+          </button>
+          <button class="spot spot-pair spot-dragon spot-banker-dragon" data-bet="bankerDragon" type="button">
+            <span class="spot-name" data-i18n="bankerDragonName">Banker dragon</span>
+            <span class="spot-pay" data-i18n="payDragon">UP TO 30 TO 1</span>
             <span class="spot-stack" aria-hidden="true"></span>
           </button>
         </div>
@@ -345,8 +355,13 @@
               <tr><th scope="row" data-i18n="tieName">Tie</th><td data-i18n="betTieCovers">Both hands total the same</td><td data-i18n="payTie">8 TO 1</td></tr>
               <tr><th scope="row" data-i18n="playerPairName">Player pair</th><td data-i18n="betPairCovers">The first two cards share a rank</td><td data-i18n="payPair">11 TO 1</td></tr>
               <tr><th scope="row" data-i18n="bankerPairName">Banker pair</th><td data-i18n="betPairCovers">The first two cards share a rank</td><td data-i18n="payPair">11 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="playerDragonName">Player dragon</th><td data-i18n="betDragonCovers">The hand wins: with a natural, or by 4 points or more</td><td data-i18n="payDragon">UP TO 30 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="bankerDragonName">Banker dragon</th><td data-i18n="betDragonCovers">The hand wins: with a natural, or by 4 points or more</td><td data-i18n="payDragon">UP TO 30 TO 1</td></tr>
             </tbody>
           </table>
+          <h3 class="rules-title" data-i18n="dragonTitle">The Dragon Bonus</h3>
+          <p class="settings-hint" data-i18n="dragonPays">A natural that wins pays 1 to 1, and a tie of naturals is returned. A hand that wins without a natural pays by its margin: 9 points 30 to 1, 8 points 10 to 1, 7 points 6 to 1, 6 points 4 to 1, 5 points 2 to 1, 4 points 1 to 1. A smaller win loses.</p>
+          <p class="settings-hint" data-i18n="dragonEdge">Counted over the whole eight-deck shoe, the house keeps 2.65% of the Player dragon and 9.37% of the Banker dragon.</p>
           <h3 class="rules-title" data-i18n="drawingRulesTitle">Who draws a third card</h3>
           <p class="settings-hint" data-i18n="drawingRulesPlayer">With 8 or 9 on either side nobody draws (a natural). Otherwise the Player draws on 0 to 5 and stands on 6 or 7.</p>
           <p class="settings-hint" data-i18n="drawingRulesBanker">If the Player stood, the Banker draws on 0 to 5. If the Player drew, the Banker's third card depends on its total and the Player's third card, as at every Punto Banco table.</p>

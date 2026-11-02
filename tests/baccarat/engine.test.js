@@ -7,6 +7,8 @@ var test = require("node:test");
 var assert = require("node:assert/strict");
 var Engine = require("../../games/baccarat/js/engine.js");
 var enumerateShoe = require("../helpers/baccarat.js").enumerateShoe;
+var expectedReturn = require("../helpers/baccarat.js").expectedReturn;
+var loadI18n = require("../helpers/i18n.js").loadI18n;
 
 function c(rank, suit) { return Engine.card(rank, suit || "♠"); }
 function hand(ranks) { return ranks.map(function (rank) { return c(rank); }); }
@@ -136,6 +138,43 @@ test("every bet settles in whole dollars, stake included", function () {
   assert.equal(Engine.returnFor("playerPair", 10, pairs, "classic"), 120);
   assert.equal(Engine.returnFor("bankerPair", 10, pairs, "classic"), 120);
   assert.throws(function () { Engine.returnFor("dragon", 10, pairs, "classic"); }, /Not a baccarat bet/);
+});
+
+test("the Dragon Bonus pays a natural even money, pushes a tie of naturals and pays other wins by their margin", function () {
+  var natural = coup(["2", "8", "3", "K"]);   // Banker natural 8 against Player 5
+  assert.equal(Engine.returnFor("bankerDragon", 10, natural, "classic"), 20);
+  assert.equal(Engine.returnFor("playerDragon", 10, natural, "classic"), 0);
+  var naturalTie = coup(["4", "9", "4", "9"]);   // two naturals of eight
+  assert.equal(Engine.returnFor("playerDragon", 10, naturalTie, "classic"), 10);
+  assert.equal(Engine.returnFor("bankerDragon", 10, naturalTie, "classic"), 10);
+  var tie = coup(["2", "4", "K", "3", "5"]);   // a tie of seven without a natural loses
+  assert.equal(Engine.returnFor("playerDragon", 10, tie, "classic"), 0);
+  // Without a natural, by margin.
+  function totals(player, banker) {
+    return { natural: false, playerTotal: player, bankerTotal: banker, winner: player > banker ? "player" : banker > player ? "banker" : "tie" };
+  }
+  var paid = [];
+  for (var margin = 1; margin <= 9; margin++) paid.push(Engine.returnFor("playerDragon", 1, totals(margin, 0), "classic"));
+  assert.deepEqual(paid, [0, 0, 0, 2, 3, 5, 7, 11, 31]);
+  assert.equal(Engine.returnFor("bankerDragon", 1, totals(0, 9), "classic"), 31);
+  assert.equal(Engine.returnFor("bankerDragon", 1, totals(9, 1), "classic"), 0);
+});
+
+test("the Dragon Bonus keeps 2.65% on the Player and 9.37% on the Banker over the whole shoe", function () {
+  var odds = enumerateShoe();
+  var player = 1 - expectedReturn(odds, "playerDragon");
+  var banker = 1 - expectedReturn(odds, "bankerDragon");
+  assert.equal((player * 100).toFixed(4), "2.6517");
+  assert.equal((banker * 100).toFixed(4), "9.3731");
+  // The same count gives the main bets their known edges.
+  assert.equal(((1 - expectedReturn(odds, "player")) * 100).toFixed(2), "1.24");
+  assert.equal(((1 - expectedReturn(odds, "tie")) * 100).toFixed(2), "14.36");
+  var words = loadI18n("games/baccarat/js/strings.js").I18n._dict;
+  assert.match(words.en.dragonEdge, /2\.65% of the Player dragon and 9\.37% of the Banker dragon/);
+  assert.match(words.tr.dragonEdge, /%2,65.*%9,37/);
+  Object.keys(Engine.DRAGON_PAYS).forEach(function (margin) {
+    assert.match(words.en.dragonPays, new RegExp(margin + " points " + Engine.DRAGON_PAYS[margin] + " to 1"));
+  });
 });
 
 test("the commission box takes exactly 5% of every Banker win, to the cent, over any run of coups", function () {

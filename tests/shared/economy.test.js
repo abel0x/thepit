@@ -130,7 +130,7 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     if (!Object.keys(bets).length) bets.banker = 5;
     var rules = pick(random, Baccarat.RULES);
     var coupSettled = Baccarat.settle(bets, coup, rules, box);
-    checkSettlement("Table 9", coupSettled, Baccarat.totalStake(bets), 12);
+    checkSettlement("Table 9", coupSettled, Baccarat.totalStake(bets), 31);
     assert.equal(coupSettled.box + coupSettled.collected * 100, box + coupSettled.commission, "Table 9: no cent leaves the box unaccounted");
     box = coupSettled.box;
     assert.ok(box > -100 && box < 100);

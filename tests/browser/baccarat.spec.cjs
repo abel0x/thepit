@@ -175,6 +175,17 @@ test("a tie pays 8 to 1, returns Player and Banker bets and pays both pairs", as
   });
 });
 
+test("the Dragon Bonus pays a nine-point win 30 to 1 and is named in the language shown", async () => {
+  // Player 2+2 = 4 draws a 5 to make 9; Banker 0 draws a queen and stays 0.
+  await scene({ cards: ["2S", "KH", "2D", "KC", "5S", "QD"], lang: "tr" }, async page => {
+    assert.equal(await page.$eval('.spot[data-bet="playerDragon"] .spot-name', node => node.textContent), "Oyuncu ejderi");
+    assert.equal(await page.$eval('.spot[data-bet="bankerDragon"] .spot-pay', node => node.textContent), "1'E 30'A KADAR");
+    await chip(page, 5); await bet(page, "playerDragon"); await bet(page, "bankerDragon");
+    await dealAndSettle(page);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 10 + 5 * 31);
+  });
+});
+
 test("third cards follow the tableau and lie sideways on the felt", async () => {
   // Player 2+K = 2 draws a 5; Banker 4+3 = 7 stands: Player 7, Banker 7.
   await scene({ cards: ["2S", "4H", "KC", "3D", "5S"], motion: true, settings: { animationSpeed: "fast" } }, async page => {

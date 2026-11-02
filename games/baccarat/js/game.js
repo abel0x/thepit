@@ -26,7 +26,10 @@
   var TRAY = Chips.trayValues(document.getElementById("chipTray"));
   var MIN_CHIP = TRAY[0];
   var PACE = { fast: 0.55, normal: 1, cinematic: 1.45 };
-  var BET_NAMES = { player: "playerName", banker: "bankerName", tie: "tieName", playerPair: "playerPairName", bankerPair: "bankerPairName" };
+  var BET_NAMES = {
+    player: "playerName", banker: "bankerName", tie: "tieName", playerPair: "playerPairName", bankerPair: "bankerPairName",
+    playerDragon: "playerDragonName", bankerDragon: "bankerDragonName"
+  };
   var reducedMotion = global.matchMedia ? global.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
 
   var t = function (key, params) { return I18n.t(key, params); };

@@ -303,9 +303,12 @@ body[data-theme="bordeaux"] {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: .8fr 1.35fr 1fr 1.35fr .8fr;
+  /* Dragon, pair, Player, Tie, Banker, pair, dragon. */
+  grid-template-columns: .72fr .8fr 1.35fr 1fr 1.35fr .8fr .72fr;
   gap: clamp(6px, 1vw, 12px);
 }
+.spot.spot-dragon { border-style: dashed; }
+.spot-dragon .spot-name { font-size: clamp(9px, 1.5vh, 14px); }
 .spot {
   --spot-ink: var(--print);
   position: relative;
@@ -584,11 +587,16 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .banner { justify-self: center; max-width: 100%; }
   .table-felt { --w: clamp(30px, 9.4vw, 62px); }
   .spots {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(10, minmax(0, 1fr));
     grid-template-areas:
-      "pp pp tie tie bp bp"
-      "player player player banker banker banker";
+      "pd pd pp pp tie tie bp bp bd bd"
+      "player player player player player banker banker banker banker banker";
   }
+  .spot-player-dragon { grid-area: pd; }
+  .spot-banker-dragon { grid-area: bd; }
+  .spot-dragon .spot-name, .spot-pair .spot-name, .spot-tie .spot-name { font-size: 9px; letter-spacing: .5px; }
+  .spot-pair .spot-pay, .spot-tie .spot-pay { font-size: 8px; letter-spacing: 0; }
+  .spot-pair, .spot-tie { padding-inline: 2px; }
   .spot-player-pair { grid-area: pp; }
   .spot-tie { grid-area: tie; }
   .spot-banker-pair { grid-area: bp; }
@@ -605,6 +613,10 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .chips-tray .chip { --size: clamp(36px, 12vw, 50px); }
   .action-row { width: 100%; justify-content: space-between; }
   .btn-tool { min-width: 0; padding-inline: 7px; }
+}
+
+@media (max-width: 360px) {
+  .spot-tie .spot-name { font-size: 8px; letter-spacing: 0; }
 }
 
 @media (max-width: 420px) {
@@ -645,8 +657,8 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .table-specs .table-spec:not(.table-box-spec) { display: block; }
   .bay-head { font-size: 11px; letter-spacing: 2px; }
   .roads { display: none; }
-  .spots { grid-template-columns: .8fr 1.35fr 1fr 1.35fr .8fr; grid-template-areas: none; }
-  .spot-player-pair, .spot-tie, .spot-banker-pair, .spot-player, .spot-banker { grid-area: auto; }
+  .spots { grid-template-columns: .72fr .8fr 1.35fr 1fr 1.35fr .8fr .72fr; grid-template-areas: none; }
+  .spot-player-dragon, .spot-banker-dragon, .spot-player-pair, .spot-tie, .spot-banker-pair, .spot-player, .spot-banker { grid-area: auto; }
   .spot, .spot-main { min-height: 58px; padding: 4px 4px 36px; }
   .spot-name, .spot-main .spot-name { font-size: 11px; letter-spacing: 1px; }
   .spot-stack { bottom: 12px; }

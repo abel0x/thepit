@@ -3,8 +3,8 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* =========================================================
    Table 9 — pure Punto Banco engine
-   The shoe, the drawing rules, every bet's settlement and the two
-   scoreboards. No DOM, storage, network, or third-party dependencies.
+   The shoe, the drawing rules, every bet's settlement, the Dragon
+   Bonus and the two scoreboards. No DOM, storage, network, or third-party dependencies.
    Exposed as window.BaccaratEngine and CommonJS for tests.
    ========================================================= */
 (function (root, factory) {
@@ -24,10 +24,13 @@
   var CUT_CARD = 14;
   var UINT32_RANGE = 0x100000000;
 
-  var BETS = ["playerPair", "player", "tie", "banker", "bankerPair"];
+  var BETS = ["playerDragon", "playerPair", "player", "tie", "banker", "bankerPair", "bankerDragon"];
   var RULES = ["classic", "noCommission"];
   // Table maximum for each bet; the minimum is the smallest chip.
-  var LIMITS = { player: 5000, banker: 5000, tie: 1000, playerPair: 500, bankerPair: 500 };
+  var LIMITS = { player: 5000, banker: 5000, tie: 1000, playerPair: 500, bankerPair: 500, playerDragon: 500, bankerDragon: 500 };
+  // The Dragon Bonus on a hand that wins without a natural pays by how many
+  // points it wins by; by three or fewer it loses.
+  var DRAGON_PAYS = { 4: 1, 5: 2, 6: 4, 7: 6, 8: 10, 9: 30 };
 
   /* ---------------- Cards ---------------- */
   function colorOf(suit) {
@@ -193,6 +196,19 @@
   }
 
   /* ---------------- Settlement ---------------- */
+  // The Dragon Bonus on one side: a natural that wins pays even money and a
+  // tie of naturals is a push; a win without a natural pays by its margin.
+  function dragonReturn(side, amount, coup) {
+    if (coup.natural) {
+      if (coup.winner === side) return amount * 2;
+      return coup.winner === "tie" ? amount : 0;
+    }
+    if (coup.winner !== side) return 0;
+    var margin = side === "player" ? coup.playerTotal - coup.bankerTotal : coup.bankerTotal - coup.playerTotal;
+    var pays = DRAGON_PAYS[margin];
+    return pays ? amount * (pays + 1) : 0;
+  }
+
   // Whole play-money dollars returned on one bet, stake included. A Banker
   // win is paid at even money; what it owes or is owed in cents goes in the
   // commission box (see boxCents).
@@ -211,6 +227,10 @@
         return coup.playerPair ? amount * 12 : 0;
       case "bankerPair":
         return coup.bankerPair ? amount * 12 : 0;
+      case "playerDragon":
+        return dragonReturn("player", amount, coup);
+      case "bankerDragon":
+        return dragonReturn("banker", amount, coup);
       default:
         throw new RangeError("Not a baccarat bet: " + key);
     }
@@ -358,6 +378,7 @@
     BETS: BETS,
     RULES: RULES,
     LIMITS: LIMITS,
+    DRAGON_PAYS: DRAGON_PAYS,
     card: card,
     code: code,
     fromCode: fromCode,
@@ -376,6 +397,7 @@
     describe: describe,
     isLegalCoup: isLegalCoup,
     returnFor: returnFor,
+    dragonReturn: dragonReturn,
     boxCents: boxCents,
     normalizeBox: normalizeBox,
     wholeAmount: wholeAmount,

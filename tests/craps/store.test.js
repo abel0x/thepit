@@ -10,7 +10,7 @@ var Store = require("../../games/craps/js/store.js");
 var helpers = require("../helpers/storage.js");
 
 var standing = { id: "r1", point: 6, bets: { pass: 10, passOdds: 50, come4: 10, place8: 12 }, roll: null, wager: 0, at: 3 };
-var rolling = { id: "r2", point: null, bets: { pass: 25, field: 5 }, roll: { dice: [3, 4] }, wager: 30, at: 3 };
+var rolling = { id: "r2", point: null, made: [], bets: { pass: 25, field: 5 }, roll: { dice: [3, 4] }, wager: 30, at: 3 };
 
 test("the table keeps its own data, the balance is the pit's", function () {
   assert.equal(Store.KEYS.bankroll, "pit.bankroll");
@@ -23,7 +23,8 @@ test("settings, statistics and the puck fall back field by field", function () {
   assert.deepEqual(Store.normalizeSettings({ animationSpeed: 3 }), Store.DEFAULT_SETTINGS);
   var stats = Store.normalizeStats({ rolls: 2, pointsMade: 5, sevenOuts: 9, wagered: 1.5 });
   assert.deepEqual([stats.pointsMade, stats.sevenOuts, stats.wagered], [2, 2, 1]);
-  assert.deepEqual(Store.normalizeTable({ point: 7, history: [[1, 2], [0, 3], "x", [6, 6]] }), { point: null, history: [[1, 2], [6, 6]] });
+  assert.deepEqual(Store.normalizeTable({ point: 7, history: [[1, 2], [0, 3], "x", [6, 6]] }), { point: null, history: [[1, 2], [6, 6]], made: [] });
+  assert.deepEqual(Store.normalizeTable({ point: 6, history: [], made: [4, 4, 7, 10, "9"] }).made, [4, 10], "only real points, each once");
   var long = [];
   for (var i = 0; i < 40; i++) long.push([1, 1]);
   assert.equal(Store.normalizeTable({ point: 8, history: long }).history.length, Store.HISTORY_LIMIT);
@@ -53,6 +54,9 @@ test("a layout comes back only when the rules could have made it", function () {
     Object.assign({}, standing, { bets: {} }),
     Object.assign({}, rolling, { roll: { dice: [0, 4] } }),
     Object.assign({}, rolling, { roll: { dice: [3] } }),
+    Object.assign({}, rolling, { made: [4, 4] }),
+    Object.assign({}, rolling, { made: [7] }),
+    Object.assign({}, rolling, { made: "4" }),
     null, "x"
   ].forEach(function (value, index) {
     assert.equal(Store.normalizeRound(value), null, "case " + index);

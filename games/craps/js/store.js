@@ -62,11 +62,11 @@
     return stats;
   }
 
-  // The puck and the last rolls.
+  // The puck, the last rolls and the points the shooter has made.
   function normalizeTable(value) {
     value = value && typeof value === "object" ? value : {};
     var history = Array.isArray(value.history) ? value.history.filter(Engine.isDice).slice(-HISTORY_LIMIT) : [];
-    return { point: Engine.isPoint(value.point) ? value.point : null, history: history };
+    return { point: Engine.isPoint(value.point) ? value.point : null, history: history, made: Engine.normalizeMade(value.made) };
   }
 
   // Bets a layout can hold with this point: nothing the rules would refuse,
@@ -84,7 +84,7 @@
   // What is saved while bets stand on the layout: the point they were made
   // against, the bets, and a roll on its way once the dice are thrown.
   function roundSnapshot(round) {
-    return { id: round.id, point: round.point, bets: round.bets, roll: round.roll || null, wager: round.wager || 0, at: round.at };
+    return { id: round.id, point: round.point, made: round.made || [], bets: round.bets, roll: round.roll || null, wager: round.wager || 0, at: round.at };
   }
 
   // A round is trusted only when every part of it agrees: real bets the
@@ -100,7 +100,10 @@
     var roll = value.roll == null ? null : value.roll;
     if (roll !== null && (!roll || !Engine.isDice(roll.dice))) return null;
     if (!roll && !Object.keys(bets).length) return null;
-    return { id: value.id, point: point, bets: bets, roll: roll ? { dice: roll.dice.slice() } : null, wager: safeCount(value.wager), at: safeCount(value.at) };
+    // The points made by the shooter, when saved, must be real and different.
+    var made = value.made == null ? [] : value.made;
+    if (!Array.isArray(made) || Engine.normalizeMade(made).length !== made.length) return null;
+    return { id: value.id, point: point, made: made.slice(), bets: bets, roll: roll ? { dice: roll.dice.slice() } : null, wager: safeCount(value.wager), at: safeCount(value.at) };
   }
 
   // Applies a settled roll to the statistics. wager is the new money the

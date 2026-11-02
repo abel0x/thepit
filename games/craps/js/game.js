@@ -49,6 +49,8 @@
     settings: Store.normalizeSettings(Store.readJSON(safeStorage("localStorage"), Store.KEYS.settings, null)),
     point: null,
     history: [],
+    // The different points the shooter has made since the last seven-out.
+    made: [],
     // Bets standing on the layout, already out of the balance.
     standing: {},
     // Chips put down since the last roll; they leave the balance with the roll.
@@ -68,6 +70,7 @@
     state.stats = snap.stats;
     state.point = snap.table.point;
     state.history = snap.table.history;
+    state.made = snap.table.made;
     state.lastBets = snap.lastBets;
     state.standing = snap.round && !snap.round.roll ? snap.round.bets : {};
   }
@@ -96,9 +99,12 @@
     lastWin: $("lastWin"),
     toast: $("toast"),
     settings: $("settingsModal"),
+    hopPanel: $("hopPanel"),
+    hopTotal: $("hopTotal"),
     btn: {
       undo: $("btnUndo"), clear: $("btnClear"), rebet: $("btnRebet"), roll: $("btnRoll"),
-      sound: $("soundToggle"), settings: $("settingsBtn"), resetStats: $("btnResetStats")
+      sound: $("soundToggle"), settings: $("settingsBtn"), resetStats: $("btnResetStats"),
+      hops: $("btnHops"), hopsClose: $("btnHopsClose")
     }
   };
 
@@ -121,6 +127,7 @@
     if (/^come\d/.test(key)) return t("comeOnName", { number: n });
     if (/^dontCome\d/.test(key)) return t("dontComeOnName", { number: n });
     if (/^hard/.test(key)) return t("hardName", { number: n });
+    if (/^hop/.test(key)) return t("hopBetName", { dice: Engine.hopDice(key).join("-") });
     return t(key + "Name");
   }
 
@@ -202,12 +209,12 @@
     updateControls();
   }
 
-  var REFUSALS = { comeOutOnly: "comeOutOnly", pointOnly: "pointOnly", oddsNeedBet: "oddsNeedBet", travels: "travels" };
+  var REFUSALS = { comeOutOnly: "comeOutOnly", pointOnly: "pointOnly", oddsNeedBet: "oddsNeedBet", travels: "travels", fireNewShooter: "fireNewShooter" };
 
   function addChip(key) {
     if (!canBet()) return;
     var all = combined();
-    var refusal = Engine.canAdd(key, state.point, all);
+    var refusal = Engine.canAdd(key, state.point, all, state.made);
     if (refusal === "limit") { toast(t("tableLimit", { amount: money(Engine.maxBet(key, state.point, all)) }), "lose"); return; }
     if (refusal) { if (REFUSALS[refusal]) toast(t(REFUSALS[refusal]), "lose"); return; }
     var room = Engine.maxBet(key, state.point, all) - (all[key] || 0);
@@ -231,7 +238,7 @@
       return;
     }
     if (!state.standing[key]) return;
-    if (!Engine.canRemove(key, state.point)) { toast(t("contractBet"), "lose"); return; }
+    if (!Engine.canRemove(key, state.point, state.made)) { toast(t("contractBet"), "lose"); return; }
     takeDown(key);
   }
 
@@ -299,7 +306,7 @@
     var changes = [];
     var all = combined();
     Object.keys(bets).forEach(function (key) {
-      if (Engine.canAdd(key, state.point, all)) return;
+      if (Engine.canAdd(key, state.point, all, state.made)) return;
       var amount = Math.min(bets[key], Engine.maxBet(key, state.point, all) - (all[key] || 0));
       if (amount > 0) {
         changes.push({ key: key, before: 0, after: amount });
@@ -354,18 +361,45 @@
         holder.appendChild(Chips.stack(document, all[key], "bet-chip" + (placed ? " placed" : "") + (state.pending[key] && !state.standing[key] ? " pending" : "")));
       }
     });
-    // Odds spots on a number open once a come bet stands there.
+    // Odds spots on a number open once a come bet stands there; with a
+    // point on, an empty number takes a put bet.
     Engine.POINTS.forEach(function (n) {
       [["comeOdds", "come"], ["dontComeOdds", "dontCome"]].forEach(function (pair) {
-        var odds = spotFor(pair[0] + n);
+        var odds = el.layout.querySelector('.mini-spot[data-bet="' + pair[0] + n + '"]');
         odds.hidden = !all[pair[1] + n] && !all[pair[0] + n];
       });
+      el.layout.querySelector('.put-spot[data-bet="come' + n + '"]').hidden = !state.point || !!all["come" + n];
     });
     el.layout.querySelectorAll("[data-bet]").forEach(function (spot) {
       var key = spot.getAttribute("data-bet");
-      spot.setAttribute("aria-label", t("spotLabel", { name: betName(key), pays: payText(spot), amount: money(all[key] || 0) }));
+      var put = spot.classList.contains("put-spot");
+      var name = put ? t("putName", { number: Engine.numberOf(key) }) : betName(key);
+      var pays = put ? t("payEven").toLowerCase() : payText(spot);
+      spot.setAttribute("aria-label", t("spotLabel", { name: name, pays: pays, amount: money(all[key] || 0) }));
     });
+    // The hop button carries what the hop bets hold while their panel is shut.
+    var hops = Engine.HOPS.reduce(function (sum, key) { return sum + (all[key] || 0); }, 0);
+    el.hopTotal.setAttribute("data-i18n", hops ? "hopsOn" : "payHop");
+    el.hopTotal.textContent = hops ? t("hopsOn", { amount: money(hops) }) : t("payHop");
+    el.btn.hops.classList.toggle("has-bets", hops > 0);
     renderBankroll();
+  }
+
+  // The Fire Bet lights every point the shooter has made.
+  function renderFire() {
+    el.layout.querySelectorAll(".fire-points [data-made]").forEach(function (node) {
+      node.classList.toggle("lit", state.made.indexOf(Number(node.getAttribute("data-made"))) !== -1);
+    });
+  }
+
+  function toggleHops(open) {
+    var show = open == null ? el.hopPanel.hidden : open;
+    el.hopPanel.hidden = !show;
+    el.btn.hops.setAttribute("aria-expanded", String(show));
+    if (show) {
+      var first = el.hopPanel.querySelector(".spot-hop");
+      if (first) first.focus();
+    }
   }
 
   function renderNames() {
@@ -376,6 +410,7 @@
 
   function renderPuck() {
     body.setAttribute("data-point", state.point ? String(state.point) : "off");
+    renderFire();
     el.layout.querySelectorAll(".number-box").forEach(function (box) {
       box.classList.toggle("is-point", Number(box.getAttribute("data-number")) === state.point);
     });
@@ -459,15 +494,16 @@
     var history = table.history.concat([result.dice]).slice(-Store.HISTORY_LIMIT);
     account.write("bankroll", bankroll);
     account.write("stats", stats);
-    account.write("table", { point: result.point, history: history });
+    account.write("table", { point: result.point, history: history, made: result.made });
     if (Object.keys(result.bets).length) {
-      account.write("round", Store.roundSnapshot({ id: round.id, point: result.point, bets: result.bets, roll: null, at: round.at }));
+      account.write("round", Store.roundSnapshot({ id: round.id, point: result.point, made: result.made, bets: result.bets, roll: null, at: round.at }));
     } else {
       account.remove("round");
     }
     state.bankroll = bankroll;
     state.stats = stats;
     state.point = result.point;
+    state.made = result.made;
     state.history = history;
     state.standing = result.bets;
     state.lastWin = result.returned;
@@ -501,7 +537,7 @@
       state.standing = round.bets;
       return null;
     }
-    var result = Engine.resolve({ point: round.point, bets: round.bets }, round.roll.dice);
+    var result = Engine.resolve({ point: round.point, bets: round.bets, made: round.made }, round.roll.dice);
     commitRoll(round, result);
     showDice(round.roll.dice);
     toast(t("roundRestored", { result: resultText(result) }), result.returned ? "win" : "");
@@ -533,9 +569,12 @@
       if (Object.keys(pending).some(function (key) { return bets[key] > Engine.maxBet(key, table.point, bets) && Engine.kindOf(key) !== "comePoint"; })) {
         return { stale: true };
       }
+      // So may a shooter who has made a point since the Fire Bet went down.
+      if (pending.fire && (table.point || table.made.length)) return { stale: true };
       var round = {
         id: saved ? saved.id : Store.newRoundId(),
         point: table.point,
+        made: table.made,
         bets: Engine.normalizeBets(bets),
         roll: { dice: Engine.rollDice() },
         wager: wager,
@@ -597,7 +636,7 @@
     setBanner("diceRolling");
     await throwDice(round.roll.dice);
 
-    var result = Engine.resolve({ point: round.point, bets: round.bets }, round.roll.dice);
+    var result = Engine.resolve({ point: round.point, bets: round.bets, made: round.made }, round.roll.dice);
     var call = rollCall(result);
     var sub = result.returned ? { key: "winLine", params: { amount: result.returned } }
       : result.lost ? { key: "lostLine", params: { amount: result.lost } }
@@ -805,6 +844,11 @@
       var spot = event.target.closest("[data-bet]");
       if (spot) addChip(spot.getAttribute("data-bet"));
     });
+    el.btn.hops.addEventListener("click", function () { toggleHops(); });
+    el.btn.hopsClose.addEventListener("click", function () { toggleHops(false); el.btn.hops.focus(); });
+    el.hopPanel.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); toggleHops(false); el.btn.hops.focus(); }
+    });
     el.layout.addEventListener("contextmenu", function (event) {
       var key = betAt(event.target);
       if (!key) return;
@@ -921,6 +965,7 @@
     switch (lower) {
       case "p": addChip("pass"); break;
       case "f": addChip("field"); break;
+      case "h": toggleHops(); break;
       case "z": undo(); break;
       case "c": clearBets(); break;
       case "r": rebet(); break;

@@ -225,6 +225,61 @@ test("undo, clear and rebet work on new chips, from the keyboard too", async () 
   });
 });
 
+test("a put bet goes straight on a number once a point is on, and wins there", async () => {
+  await scene({ rolls: [[2, 2], [3, 3]] }, async page => {
+    await chip(page, 5); await bet(page, "pass");
+    assert.equal(await page.$eval('.put-spot[data-bet="come6"]', node => node.hidden), true, "no put before a point");
+    await roll(page);                                  // 4 is the point
+    assert.equal(await page.$eval('.put-spot[data-bet="come6"]', node => node.hidden), false);
+    assert.equal(await page.$eval('.put-spot[data-bet="come4"]', node => node.getAttribute("aria-label")), "Put on 4, pays 1 to 1. Bet: $0");
+    await chip(page, 25); await page.click('.put-spot[data-bet="come6"]');
+    assert.equal(await page.$eval('.put-spot[data-bet="come6"]', node => node.hidden), true, "the put stands in the come lane");
+    assert.equal(await page.$eval('.mini-spot[data-bet="comeOdds6"]', node => node.hidden), false, "and takes odds");
+    await bet(page, "comeOdds6");
+    await roll(page);                                  // a 6
+    // Pass 5 stays; the put pays 25 and its odds 25 at 6 to 5, 30.
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 5 - 25 - 25 + 50 + 55);
+    assert.deepEqual(Object.keys(await stored(page, "pit.craps.round").then(r => r.bets)), ["pass"]);
+  });
+});
+
+test("hop bets open over the middle of the table and win on their pair of dice", async () => {
+  await scene({ rolls: [[4, 2]] }, async page => {
+    assert.equal(await page.$eval("#hopPanel", node => node.hidden), true);
+    await page.keyboard.press("h");
+    assert.equal(await page.$eval("#hopPanel", node => node.hidden), false);
+    assert.equal(await page.$$eval(".spot-hop", nodes => nodes.length), 17);
+    await chip(page, 5); await bet(page, "hop24"); await bet(page, "hop33");
+    await page.keyboard.press("Escape");
+    assert.equal(await page.$eval("#hopPanel", node => node.hidden), true);
+    assert.equal(await text(page, "#hopTotal"), "HOPS $10");
+    await roll(page);
+    // Hop 2-4 wins 75 and stays up; hop 3-3 is lost.
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 10 + 75);
+    assert.deepEqual((await stored(page, "pit.craps.round")).bets, { hop24: 5 });
+  });
+});
+
+test("the Fire Bet lights the points made and pays four of them at the seven out", async () => {
+  // Points 4, 5, 6 and 8 made, a new point of 4, then the seven.
+  const shooter = [[2, 2], [2, 2], [2, 3], [2, 3], [3, 3], [3, 3], [4, 4], [4, 4], [2, 2], [3, 4]];
+  await scene({ rolls: shooter }, async page => {
+    await chip(page, 5); await bet(page, "fire"); await bet(page, "pass");
+    for (let i = 0; i < 9; i++) await roll(page);
+    assert.deepEqual(await page.$$eval(".fire-points b.lit", nodes => nodes.map(n => n.textContent)), ["4", "5", "6", "8"]);
+    assert.deepEqual((await stored(page, "pit.craps.table")).made, [4, 5, 6, 8]);
+    await page.click('[data-bet="fire"]');
+    assert.equal(await text(page, "#toast"), "The Fire Bet goes down for a new shooter, before a point is made");
+    await page.click('[data-bet="fire"]', { button: "right" });
+    assert.equal(await text(page, "#toast"), "A pass or come bet with a point plays until it is decided");
+    await roll(page);                                  // seven out
+    assert.deepEqual(await page.$$eval(".fire-points b.lit", nodes => nodes.length), 0);
+    // Pass won four times (+20) and lost once (-5); the Fire Bet paid 24 to 1.
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 10 + 4 * 5 + 5 * 25);
+    assert.equal(await page.$eval('[data-bet="fire"]', node => node.getAttribute("aria-label")), "Fire Bet, pays up to 999 to 1. Bet: $0");
+  });
+});
+
 test("Turkish calls the roll and names the bets", async () => {
   await scene({ rolls: [[4, 4]], lang: "tr" }, async page => {
     assert.equal(await page.$eval("html", node => node.lang), "tr");

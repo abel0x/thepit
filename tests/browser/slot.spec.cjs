@@ -255,6 +255,59 @@ test("Turkish names the fruits", async () => {
   });
 });
 
+// Autoplay (2026-11-02).
+async function autoplayEnds(page) {
+  await page.waitForFunction(() => document.getElementById("btnAuto").getAttribute("aria-pressed") === "false" &&
+    document.body.dataset.busy === "false" && localStorage.getItem("pit.slot.round") === null, { timeout: 60000 });
+}
+
+test("autoplay spins the count chosen, and stops at its loss limit", async () => {
+  const lose = Array.from({ length: 30 }, () => ({ stops: LOSE }));
+  await scene({ spins: lose, settings: { autoSpins: 25, autoLoss: 10 } }, async page => {
+    await page.click("#btnAuto");
+    await page.waitForFunction(() => !document.getElementById("autoModal").hidden);
+    assert.equal(await page.$eval('[data-auto="autoSpins"] .active', node => node.textContent), "25");
+    assert.equal(await page.$eval('[data-auto="autoLoss"] .active', node => node.textContent), "10×");
+    await page.click("#btnAutoStart");
+    await page.waitForFunction(() => /^Stop · \d+$/.test(document.getElementById("autoLabel").textContent));
+    assert.equal(await page.$eval("#btnSpin", node => node.disabled), true, "the spin button rests while autoplay runs");
+    await autoplayEnds(page);
+    // Ten losing spins of $100 reach the limit of ten total bets.
+    assert.equal((await stored(page, "pit.slot.stats")).spins, 10);
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - 1000);
+    assert.equal(await text(page, "#toast"), "Autoplay stopped at its loss limit");
+    assert.equal(await text(page, "#autoLabel"), "Auto");
+  });
+});
+
+test("autoplay stops for the free spins", async () => {
+  const spins = [{ stops: LOSE }, { stops: STARS, free: FREE }].concat(Array.from({ length: 20 }, () => ({ stops: LOSE })));
+  await scene({ spins, settings: { lineBet: 1, autoSpins: 10, autoLoss: 0 } }, async page => {
+    await page.keyboard.press("a");
+    await page.click('[data-auto="autoWin"] [data-value="0"]');
+    assert.equal((await stored(page, "pit.slot.settings")).autoWin, 0, "the choice is kept");
+    await page.click("#btnAutoStart");
+    await autoplayEnds(page);
+    assert.equal((await stored(page, "pit.slot.stats")).spins, 2);
+    assert.equal(await text(page, "#toast"), "Autoplay stopped for the free spins");
+  });
+});
+
+test("Stop ends autoplay once the spin in the air has landed", async () => {
+  const lose = Array.from({ length: 30 }, () => ({ stops: LOSE }));
+  await scene({ spins: lose, motion: true, settings: { animationSpeed: "normal", autoSpins: 25, autoLoss: 0 } }, async page => {
+    await page.click("#btnAuto");
+    await page.click("#btnAutoStart");
+    await page.waitForFunction(() => (JSON.parse(localStorage.getItem("pit.slot.stats")) || {}).spins >= 1, { timeout: 15000 });
+    await page.click("#btnAuto");                          // Stop
+    await autoplayEnds(page);
+    const spun = (await stored(page, "pit.slot.stats")).spins;
+    assert.ok(spun >= 1 && spun <= 3, String(spun));
+    assert.equal(await stored(page, "pit.bankroll"), 10000 - spun * 100, "every spin made was settled");
+    assert.equal(await text(page, "#toast"), "Autoplay stopped");
+  });
+});
+
 test("a round left open at another table holds the spin back", async () => {
   await scene({ seed: { "pit.blackjack.round": { v: 1, resume: "player" } } }, async page => {
     await page.click("#btnSpin");

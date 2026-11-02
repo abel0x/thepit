@@ -25,11 +25,19 @@ test("the machine keeps its own data, the balance is the pit's", function () {
 test("settings keep a line bet and a symbol set the machine offers", function () {
   assert.deepEqual(Store.normalizeSettings(null), Store.DEFAULT_SETTINGS);
   assert.deepEqual(Store.normalizeSettings({ animationSpeed: "fast", lineBet: 25, symbolSet: "fruit" }),
-    { animationSpeed: "fast", lineBet: 25, symbolSet: "fruit" });
+    { animationSpeed: "fast", lineBet: 25, symbolSet: "fruit", autoSpins: 25, autoLoss: 25, autoWin: 50, autoFeature: true });
   assert.deepEqual(Store.normalizeSettings({ animationSpeed: "warp", lineBet: 3, symbolSet: "veg" }), Store.DEFAULT_SETTINGS);
   assert.equal(Store.DEFAULT_SETTINGS.symbolSet, "classic", "the card letters stay the default");
   assert.deepEqual(Store.SYMBOL_SETS, ["classic", "fruit"]);
   Engine.LINE_BETS.forEach(function (bet) { assert.equal(Store.normalizeSettings({ lineBet: bet }).lineBet, bet); });
+});
+
+test("autoplay keeps the counts and limits it offers", function () {
+  var chosen = Store.normalizeSettings({ autoSpins: 100, autoLoss: 0, autoWin: 20, autoFeature: false });
+  assert.deepEqual([chosen.autoSpins, chosen.autoLoss, chosen.autoWin, chosen.autoFeature], [100, 0, 20, false]);
+  var odd = Store.normalizeSettings({ autoSpins: 1000, autoLoss: -5, autoWin: "50", autoFeature: "no" });
+  assert.deepEqual([odd.autoSpins, odd.autoLoss, odd.autoWin, odd.autoFeature], [25, 25, 50, true], "anything else falls back");
+  assert.deepEqual([Store.AUTO_SPINS, Store.AUTO_LOSS, Store.AUTO_WIN], [[10, 25, 50, 100], [0, 10, 25, 50], [0, 20, 50, 100]]);
 });
 
 test("statistics stay whole and consistent", function () {

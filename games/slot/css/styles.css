@@ -379,6 +379,11 @@ body[data-feature] .reels { box-shadow: 0 0 0 3px #0b0704, 0 0 0 6px var(--gold-
 .win-meter .last-win b { color: rgba(214, 255, 233, .85); font-variant-numeric: tabular-nums; }
 
 /* Spin: a round brass button, the largest on the machine. */
+/* Autoplay sits beside the spin button; while it runs it reads Stop. */
+.auto-btn { flex: 0 0 auto; min-width: 64px; }
+.auto-btn[aria-pressed="true"] { border-color: var(--gold-bright); color: var(--gold-bright); box-shadow: 0 0 14px rgba(244, 226, 166, .3); }
+.auto-card .seg { flex-wrap: wrap; }
+
 .spin-btn {
   flex: 0 0 auto;
   width: clamp(70px, 10.5vh, 92px);

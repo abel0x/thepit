@@ -37,7 +37,19 @@
   var SPEEDS = ["fast", "normal", "cinematic"];
   // The faces the reels wear: the card letters, or fruits in their place.
   var SYMBOL_SETS = ["classic", "fruit"];
-  var DEFAULT_SETTINGS = { animationSpeed: "normal", lineBet: 5, symbolSet: "classic" };
+  // Autoplay: how many spins, and when to stop early. The limits are in
+  // total bets: stop once the balance has fallen by autoLoss bets, or after
+  // one spin returns autoWin bets or more (0 for no limit).
+  var AUTO_SPINS = [10, 25, 50, 100];
+  var AUTO_LOSS = [0, 10, 25, 50];
+  var AUTO_WIN = [0, 20, 50, 100];
+  var DEFAULT_SETTINGS = {
+    animationSpeed: "normal", lineBet: 5, symbolSet: "classic",
+    autoSpins: 25, autoLoss: 25, autoWin: 50, autoFeature: true
+  };
+  function pick(list, value, fallback) {
+    return list.indexOf(value) !== -1 ? value : fallback;
+  }
   var DEFAULT_STATS = { spins: 0, winningSpins: 0, features: 0, freeSpinsWon: 0, wagered: 0, returned: 0, biggestWin: 0 };
 
   function safeCount(value) {
@@ -50,7 +62,11 @@
     return {
       animationSpeed: SPEEDS.indexOf(value.animationSpeed) !== -1 ? value.animationSpeed : DEFAULT_SETTINGS.animationSpeed,
       lineBet: Engine.isLineBet(value.lineBet) ? value.lineBet : DEFAULT_SETTINGS.lineBet,
-      symbolSet: SYMBOL_SETS.indexOf(value.symbolSet) !== -1 ? value.symbolSet : DEFAULT_SETTINGS.symbolSet
+      symbolSet: SYMBOL_SETS.indexOf(value.symbolSet) !== -1 ? value.symbolSet : DEFAULT_SETTINGS.symbolSet,
+      autoSpins: pick(AUTO_SPINS, value.autoSpins, DEFAULT_SETTINGS.autoSpins),
+      autoLoss: pick(AUTO_LOSS, value.autoLoss, DEFAULT_SETTINGS.autoLoss),
+      autoWin: pick(AUTO_WIN, value.autoWin, DEFAULT_SETTINGS.autoWin),
+      autoFeature: value.autoFeature !== false
     };
   }
 
@@ -151,6 +167,9 @@
     SPEEDS: SPEEDS,
     SYMBOL_SETS: SYMBOL_SETS,
     DEFAULT_SETTINGS: DEFAULT_SETTINGS,
+    AUTO_SPINS: AUTO_SPINS,
+    AUTO_LOSS: AUTO_LOSS,
+    AUTO_WIN: AUTO_WIN,
     DEFAULT_STATS: DEFAULT_STATS,
     START_BANKROLL: Pit.START_BANKROLL,
     MAX_BANKROLL: Pit.MAX_BANKROLL,

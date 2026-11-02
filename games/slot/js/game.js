@@ -103,7 +103,12 @@
     lastWin: $("lastWin"),
     toast: $("toast"),
     settings: $("settingsModal"),
-    btn: { spin: $("btnSpin"), sound: $("soundToggle"), settings: $("settingsBtn"), resetStats: $("btnResetStats") }
+    autoModal: $("autoModal"),
+    autoLabel: $("autoLabel"),
+    btn: {
+      spin: $("btnSpin"), auto: $("btnAuto"), autoStart: $("btnAutoStart"),
+      sound: $("soundToggle"), settings: $("settingsBtn"), resetStats: $("btnResetStats")
+    }
   };
 
   /* ---------------- Timing ---------------- */
@@ -350,8 +355,13 @@
   }
 
   function updateControls() {
-    var ready = canSpin();
+    var ready = canSpin() && !auto;
     el.btn.spin.disabled = !ready;
+    // While autoplay runs, its button stops it; otherwise it opens its dialog.
+    el.btn.auto.disabled = !auto && !ready;
+    el.btn.auto.setAttribute("aria-pressed", String(!!auto));
+    el.autoLabel.textContent = auto ? t("autoStop", { left: auto.left }) : t("autoplay");
+    el.autoLabel.setAttribute("data-i18n", auto ? "autoStop" : "autoplay");
     el.btn.spin.classList.toggle("ready", ready && state.bankroll >= stake());
     el.chipTray.querySelectorAll(".chip").forEach(function (chip) {
       chip.disabled = !ready;
@@ -488,14 +498,17 @@
     return { settlement: settlement };
   }
 
+  // Spins once; the promise ends with the settlement, or null when the spin
+  // could not be made.
   function spin() {
-    if (!canSpin()) return;
+    if (!canSpin()) return Promise.resolve(null);
+    state.settled = null;
     var bet = lineBet();
     var cost = Engine.totalBet(bet);
     Sound.unlock();
     state.busy = true;
     updateControls();
-    account.run(function () {
+    return account.run(function () {
       recoverRound();
       var elsewhere = account.roundsElsewhere();
       if (elsewhere.length) return { elsewhere: elsewhere[0] };
@@ -519,13 +532,85 @@
       if (state.phase !== "betting") setPhase("betting");
       renderBankroll();
       updateControls();
+      return state.settled;
     }, function (error) {
       state.busy = false;
       state.feature = null;
       renderFeature();
       setPhase("betting");
       toast(String(error && error.message || error), "lose");
+      return null;
     });
+  }
+
+  /* ---------------- Autoplay ---------------- */
+  // The spins left and the balance autoplay started from, while it runs.
+  // It is never saved: a reload stops it.
+  var auto = null;
+
+  function openAuto() {
+    if (auto) { stopAuto("autoStopped"); return; }
+    if (!canSpin()) return;
+    dialogReturn = document.activeElement;
+    renderAutoChoices();
+    el.autoModal.hidden = false;
+    el.btn.autoStart.focus();
+  }
+
+  function closeAuto() {
+    if (el.autoModal.hidden) return;
+    el.autoModal.hidden = true;
+    if (dialogReturn && typeof dialogReturn.focus === "function") dialogReturn.focus();
+    dialogReturn = null;
+  }
+
+  function renderAutoChoices() {
+    el.autoModal.querySelectorAll("[data-auto]").forEach(function (group) {
+      var name = group.getAttribute("data-auto");
+      group.querySelectorAll("[data-value]").forEach(function (button) {
+        var on = Number(button.getAttribute("data-value")) === state.settings[name];
+        button.classList.toggle("active", on);
+        button.setAttribute("aria-checked", String(on));
+        button.tabIndex = on ? 0 : -1;
+      });
+    });
+    $("autoFeature").checked = state.settings.autoFeature;
+  }
+
+  // Why autoplay should stop after a spin, or null to go on.
+  function autoStopReason(settled) {
+    var cost = stake();
+    if (!settled) return "autoStopped";
+    if (state.settings.autoFeature && settled.free.length) return "autoStopFeature";
+    if (state.settings.autoWin && settled.returned >= state.settings.autoWin * cost) return "autoStopWin";
+    if (state.settings.autoLoss && auto.from - state.bankroll >= state.settings.autoLoss * cost) return "autoStopLoss";
+    if (state.bankroll < cost) return "autoStopBalance";
+    if (auto.left <= 0) return "autoDone";
+    return null;
+  }
+
+  async function startAuto() {
+    closeAuto();
+    if (auto || !canSpin()) return;
+    if (state.bankroll < stake()) { toast(t("insufficientFunds"), "lose"); return; }
+    auto = { left: state.settings.autoSpins, from: state.bankroll, stop: null };
+    updateControls();
+    var reason = null;
+    while (!reason) {
+      auto.left--;
+      updateControls();
+      var settled = await spin();
+      reason = auto.stop || autoStopReason(settled);
+      if (!reason) await pause(450);
+    }
+    auto = null;
+    updateControls();
+    toast(t(reason), reason === "autoStopWin" || reason === "autoStopFeature" ? "win" : "");
+  }
+
+  // Stop asks autoplay to end once the spin in the air has landed.
+  function stopAuto(reason) {
+    if (auto) auto.stop = reason;
   }
 
   async function playRound(round) {
@@ -580,6 +665,7 @@
     }
 
     commitSettlement(settlement);
+    state.settled = settlement;
     if (settlement.returned) {
       setBanner("winLine", { amount: settlement.returned }, settlement.free.length ? { key: "featureWon", params: { amount: settlement.freeWin } } : null, "win");
       Sound.chipsPush();
@@ -770,7 +856,33 @@
     });
     radioKeys(el.chipTray, ".chip", function (chip) { selectChip(Number(chip.getAttribute("data-value"))); });
 
-    el.btn.spin.addEventListener("click", spin);
+    el.btn.spin.addEventListener("click", function () { spin(); });
+    el.btn.auto.addEventListener("click", openAuto);
+    el.btn.autoStart.addEventListener("click", startAuto);
+    el.autoModal.querySelectorAll("[data-close]").forEach(function (node) { node.addEventListener("click", closeAuto); });
+    el.autoModal.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); closeAuto(); return; }
+      if (event.key !== "Tab") return;
+      var items = focusables(el.autoModal);
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    el.autoModal.querySelectorAll("[data-auto]").forEach(function (group) {
+      group.addEventListener("click", function (event) {
+        var button = event.target.closest("[data-value]");
+        if (!button) return;
+        state.settings[group.getAttribute("data-auto")] = Number(button.getAttribute("data-value"));
+        saveSettings();
+        renderAutoChoices();
+      });
+      radioKeys(group, "[data-value]", function (button) { button.click(); });
+    });
+    $("autoFeature").addEventListener("change", function (event) {
+      state.settings.autoFeature = event.target.checked;
+      saveSettings();
+    });
     el.btn.sound.addEventListener("click", function () { setSound(!soundEnabled); });
     $("setSound").addEventListener("change", function (event) { setSound(event.target.checked); });
     document.querySelectorAll("[data-sound-level]").forEach(function (slider) {
@@ -861,14 +973,17 @@
 
   function onGlobalKey(event) {
     if (event.defaultPrevented || event.altKey || event.metaKey || event.ctrlKey || event.repeat || event.isComposing) return;
-    if (!el.settings.hidden) return;
+    if (!el.settings.hidden || !el.autoModal.hidden) return;
     var target = event.target;
     var typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
     if (typing) return;
     var onControl = target && target.closest && target.closest("button, a, summary, [role='button']");
     var key = event.key;
-    if ((key === " " || key === "Enter") && !onControl) { event.preventDefault(); spin(); return; }
     var lower = key.length === 1 ? key.toLowerCase() : key;
+    // While autoplay runs, Space, Enter and A all stop it.
+    if (auto && (key === " " || key === "Enter" || lower === "a")) { event.preventDefault(); stopAuto("autoStopped"); return; }
+    if ((key === " " || key === "Enter") && !onControl) { event.preventDefault(); spin(); return; }
+    if (lower === "a") { openAuto(); return; }
     if (lower >= "1" && lower <= "6" && canSpin()) { selectChip(TRAY[Number(lower) - 1]); return; }
     if (lower === "m") setSound(!soundEnabled);
   }

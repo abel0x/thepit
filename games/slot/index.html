@@ -267,6 +267,7 @@
           <strong>$<span id="winMeter">0</span></strong>
           <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
         </div>
+        <button id="btnAuto" class="btn btn-tool auto-btn" type="button" aria-keyshortcuts="A" aria-haspopup="dialog"><span id="autoLabel" data-i18n="autoplay">Auto</span></button>
         <button id="btnSpin" class="spin-btn" type="button" aria-keyshortcuts="Space Enter">
           <svg class="spin-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M19.8 4.5v4.3h-4.3" /></svg>
           <span class="spin-label" data-i18n="spin">Spin</span>
@@ -276,6 +277,57 @@
   </main>
 
   <!-- Settings -->
+  <!-- Autoplay -->
+  <div id="autoModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card auto-card" role="dialog" aria-modal="true" aria-labelledby="autoTitle">
+      <div class="modal-head">
+        <h2 id="autoTitle" data-i18n="autoplayTitle">Autoplay</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="autoSpinsLabel" data-i18n="autoSpins">Spins</span>
+          <div class="seg" role="radiogroup" aria-labelledby="autoSpinsLabel" data-auto="autoSpins">
+            <button class="seg-btn" data-value="10" type="button" role="radio">10</button>
+            <button class="seg-btn" data-value="25" type="button" role="radio">25</button>
+            <button class="seg-btn" data-value="50" type="button" role="radio">50</button>
+            <button class="seg-btn" data-value="100" type="button" role="radio">100</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" id="autoLossLabel" data-i18n="autoLoss">Stop after losing</span>
+          <div class="seg" role="radiogroup" aria-labelledby="autoLossLabel" data-auto="autoLoss">
+            <button class="seg-btn" data-value="0" type="button" role="radio" data-i18n="autoNoLimit">No limit</button>
+            <button class="seg-btn" data-value="10" type="button" role="radio">10×</button>
+            <button class="seg-btn" data-value="25" type="button" role="radio">25×</button>
+            <button class="seg-btn" data-value="50" type="button" role="radio">50×</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label" id="autoWinLabel" data-i18n="autoWin">Stop on a win of</span>
+          <div class="seg" role="radiogroup" aria-labelledby="autoWinLabel" data-auto="autoWin">
+            <button class="seg-btn" data-value="0" type="button" role="radio" data-i18n="autoNoLimit">No limit</button>
+            <button class="seg-btn" data-value="20" type="button" role="radio">20×</button>
+            <button class="seg-btn" data-value="50" type="button" role="radio">50×</button>
+            <button class="seg-btn" data-value="100" type="button" role="radio">100×</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <label for="autoFeature" data-i18n="autoFeature">Stop when free spins start</label>
+          <label class="switch">
+            <input type="checkbox" id="autoFeature" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <p class="settings-hint" id="autoHint" data-i18n="autoHint">Limits count in total bets: 25× is 25 times what one spin costs. Autoplay also stops when the balance cannot pay the next spin, and whenever you press Stop.</p>
+        <div class="modal-foot">
+          <button id="btnAutoStart" class="btn btn-primary" type="button" data-i18n="autoStart">Start autoplay</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="settingsModal" class="modal" hidden>
     <div class="modal-backdrop" data-close></div>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">

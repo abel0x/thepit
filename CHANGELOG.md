@@ -8,6 +8,7 @@ The first version of the pit: seven tables, a money wheel, a slot machine, a vid
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
+- Table 21's settings button shows the same gear as every other table.
 - The lobby's *Your play*: every table's rounds, wagered, returned, net and return per dollar, with the pit's total. Table 21 now counts what it takes and pays back too, side bets and insurance included.
 - A save on file: the whole pit downloaded to one JSON backup and restored from it after a confirmation, under the account lock.
 - Table 21 pays a side bet won on the opening cards when the hand is then surrendered; it was lost before.

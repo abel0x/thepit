@@ -78,6 +78,17 @@ html { height: 100%; }
 .lang-btn:disabled,
 .icon-btn:disabled { opacity: .38; cursor: not-allowed; }
 
+/* The settings gear, drawn as at the other tables (shared/css/chip-tables.css). */
+.icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 #soundToggle.sound-control:not(:disabled):hover {
   color: #fff4c9;
   border-color: rgba(244,226,166,.58);

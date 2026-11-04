@@ -134,6 +134,15 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Statistics**: the last 500 spins charted by symbol, each bar marked with its share of the wheel and the spins since it last came.
 - **Keyboard shortcuts**: `Space`/`Enter` spin · `1`–`6` chips · `I` statistics · `Z` or `Backspace` undo · `C` clear · `R` rebet · `M` sound.
 
+### Table 13 · Red Dog
+
+- **Two cards set the spread**: an eight-deck shoe shuffled with `crypto.getRandomValues` for every hand deals two cards face up, and the spread is the number of ranks between them, the ace always high. The ladder of the thirteen ranks lights the ones between.
+- **Raise or call**: raise to double the Ante, or call, and the third card is dealt. Between the first two, both bets are paid by the spread: 5 to 1 for a spread of 1, 4 to 1 for 2, 2 to 1 for 3 and even money from 4 to 11. A card of either rank is out.
+- **Pushes and three of a kind**: two ranks in a row are a push without a third card; a pair always draws one, cannot be raised, and pays 11 to 1 when it makes three of a kind, a push otherwise.
+- **A return worked out exactly**: counting every deal of three cards from the 416-card shoe gives a house edge of 2.75% of the Ante when raising every spread of 7 or more, the best strategy, and 7.88% when never raising. The optional strategy hint says which.
+- **Saved at every step**: all three cards and the stake before the first card, the decision and the Raise before the third; a reload brings the same cards back to the decision, or settles a decided hand.
+- **Keyboard shortcuts**: `Space`/`Enter` deal or call · `1`–`6` chips · `A` Ante · `R` raise or rebet · `C` call or clear · `Z` or `Backspace` undo · `D` double · `M` sound.
+
 ## One pit
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
@@ -202,6 +211,7 @@ games/videopoker/          Poker 11: page, look, engine, saved state
 games/sicbo/               Table 18: page, look, engine, saved state
 games/keno/                Keno 80: page, look, engine, saved state
 games/bigsix/              Wheel 54: page, look, engine, saved state
+games/reddog/              Table 13: page, look, engine, saved state
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)

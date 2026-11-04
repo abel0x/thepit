@@ -62,6 +62,8 @@
       kenoSummary: "Mark up to 10 of 80 numbers and watch 20 balls drawn, for one draw or up to 20 in a row, with a pay table for every count of marks. Returns up to 92.96%.",
       bigsixGame: "Big Six",
       bigsixSummary: "A money wheel of 54 segments: bet on $1 to $20, the Joker or the logo, and win the number to one when the wheel stops there.",
+      reddogGame: "Red Dog",
+      reddogSummary: "Two cards set the spread. Raise or call, and win up to 5 to 1 when the third card falls between them, or 11 to 1 on three of a kind.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -123,6 +125,8 @@
       kenoSummary: "80 sayıdan 10'a kadarını işaretleyin, 20 topun çekilişini tek seferde ya da art arda 20 çekilişe kadar izleyin; her işaret sayısının kendi ödeme tablosu var. Geri dönüş %92,96'ya kadar.",
       bigsixGame: "Big Six",
       bigsixSummary: "54 dilimli bir para çarkı: $1'den $20'ye, Joker'e ya da logoya bahis yapın; çark orada durursa sayının 1'e katını kazanın.",
+      reddogGame: "Red Dog",
+      reddogSummary: "İki kart aralığı belirler. Artırın ya da devam edin; üçüncü kart arada düşerse 1'e 5'e kadar, üçlü gelirse 1'e 11 kazanın.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

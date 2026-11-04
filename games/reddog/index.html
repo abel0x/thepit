@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money Red Dog simulation that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>Table 13 · ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="Table 13 · ThePit" />
+  <meta property="og:description" content="A free, play-money Red Dog simulation that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/games/reddog/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Red Dog table of Table 13 with two cards and the third between them on green felt" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="../../shared/css/pit.css" />
+  <link rel="stylesheet" href="../../shared/css/table.css" />
+  <link rel="stylesheet" href="../../shared/css/cards.css" />
+  <link rel="stylesheet" href="../../shared/css/chip-tables.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-phase="betting" data-theme="emerald" data-animation-speed="normal" data-coach="false">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="icon-btn lobby-link" href="../../index.html" aria-label="Back to the lobby" title="Back to the lobby"
+         data-i18n-aria-label="backToLobby" data-i18n-title="backToLobby">
+        <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+      </a>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="rRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#rRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#rRing)" stroke-width="1" opacity=".7"/>
+          <rect x="11" y="22" width="13" height="19" rx="2" fill="#f6f1e4" stroke="#8c6a1c" stroke-width=".8"/>
+          <text x="17.5" y="35.5" font-size="9" font-weight="700" fill="#17171a" text-anchor="middle">4</text>
+          <rect x="40" y="22" width="13" height="19" rx="2" fill="#f6f1e4" stroke="#8c6a1c" stroke-width=".8"/>
+          <text x="46.5" y="35.5" font-size="9" font-weight="700" fill="#17171a" text-anchor="middle">J</text>
+          <rect x="24.5" y="18" width="15" height="22" rx="2.2" fill="#fbf8ef" stroke="#c9a24b" stroke-width=".9"/>
+          <text x="32" y="33.5" font-size="11" font-weight="700" fill="#b7151e" text-anchor="middle">8</text>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="Table 13" data-i18n-aria-label="brandName">
+          <span class="brand-word">TABLE</span><span class="brand-number" aria-hidden="true">13</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">Red Dog</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="soundToggle" class="icon-btn sound-control" type="button" aria-pressed="true" aria-label="Mute sound"
+              title="Mute sound" data-i18n-title="muteSound" data-i18n-aria-label="muteSound" aria-keyshortcuts="M">
+        <svg class="sound-glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path class="sound-cone" d="M4.8 11h3.5l4.7-3.9v13.8L8.3 17H4.8Z" />
+          <path class="sound-wave sound-wave-near" d="M16.1 10.2c1 1 1.5 2.3 1.5 3.8s-.5 2.8-1.5 3.8" />
+          <path class="sound-wave sound-wave-far" d="M19.2 7.6c1.8 1.8 2.8 4 2.8 6.4s-1 4.6-2.8 6.4" />
+          <path class="sound-slash" d="M6.5 6.5l15 15" />
+        </svg>
+        <span class="sound-led" aria-hidden="true"></span>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <section class="table" aria-label="Red Dog table" data-i18n-aria-label="redDogTable">
+      <div class="table-felt" id="tableFelt">
+        <div class="table-rim" aria-hidden="true"></div>
+
+        <div class="felt-head">
+          <div class="deck" id="deck" role="img" aria-label="Eight decks, shuffled for every hand" data-i18n-aria-label="deckShuffled">
+            <span class="deck-card" aria-hidden="true"></span>
+            <span class="deck-card" aria-hidden="true"></span>
+            <span class="deck-card" aria-hidden="true"></span>
+          </div>
+          <div class="banner" id="banner" role="status" aria-live="polite" aria-atomic="true">
+            <span id="bannerText" data-i18n="placeBets">Place your Ante</span>
+            <small id="bannerSub"></small>
+          </div>
+          <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
+            <span class="table-spec">
+              <small data-i18n="tableMinLabel">MIN</small>
+              <strong id="tableMin">$10</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableMaxLabel">MAX</small>
+              <strong id="tableMax">$2,500</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="lane" role="group" aria-label="The cards" data-i18n-aria-label="cardsLabel">
+          <div class="slot slot-first" id="slotFirst" data-slot="first"></div>
+          <div class="slot slot-third" id="slotThird" data-slot="third">
+            <span class="slot-print" data-i18n="thirdPrint" aria-hidden="true">THIRD CARD</span>
+          </div>
+          <div class="slot slot-second" id="slotSecond" data-slot="second"></div>
+        </div>
+
+        <div class="reading">
+          <p class="spread-call" id="spreadCall" aria-live="polite"></p>
+          <ol class="rank-ladder" id="rankLadder" aria-hidden="true">
+            <li data-value="2">2</li><li data-value="3">3</li><li data-value="4">4</li><li data-value="5">5</li>
+            <li data-value="6">6</li><li data-value="7">7</li><li data-value="8">8</li><li data-value="9">9</li>
+            <li data-value="10">10</li><li data-value="11">J</li><li data-value="12">Q</li><li data-value="13">K</li>
+            <li data-value="14">A</li>
+          </ol>
+        </div>
+
+        <div class="spots" id="spots" role="group" aria-label="Betting areas" data-i18n-aria-label="bettingAreas">
+          <button class="spot spot-main spot-ante" data-bet="ante" type="button" aria-keyshortcuts="A">
+            <span class="spot-name" data-i18n="anteName">Ante</span>
+            <span class="spot-pay" data-i18n="payAnte">PAYS BY THE SPREAD</span>
+            <span class="spot-stack" aria-hidden="true"></span>
+          </button>
+          <button class="spot spot-main spot-raise" data-bet="raise" type="button" aria-keyshortcuts="R">
+            <span class="spot-name" data-i18n="raiseName">Raise</span>
+            <span class="spot-pay" data-i18n="payRaise">EQUALS ANTE</span>
+            <span class="spot-stack" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <table class="paytable" id="paytable" aria-hidden="true">
+          <caption data-i18n="paysCaption">Pays</caption>
+          <tbody>
+            <tr data-pay="1"><th scope="row" data-i18n="spreadOneLabel">Spread 1</th><td data-i18n="paySpreadOne">5 TO 1</td></tr>
+            <tr data-pay="2"><th scope="row" data-i18n="spreadTwoLabel">Spread 2</th><td data-i18n="paySpreadTwo">4 TO 1</td></tr>
+            <tr data-pay="3"><th scope="row" data-i18n="spreadThreeLabel">Spread 3</th><td data-i18n="paySpreadThree">2 TO 1</td></tr>
+            <tr data-pay="wide"><th scope="row" data-i18n="spreadWideLabel">Spread 4 to 11</th><td data-i18n="paySpreadWide">1 TO 1</td></tr>
+            <tr data-pay="consecutive"><th scope="row" data-i18n="consecutiveLabel">In a row</th><td data-i18n="payPush">PUSH</td></tr>
+            <tr data-pay="trips"><th scope="row" data-i18n="tripsLabel">Three of a kind</th><td data-i18n="payTrips">11 TO 1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls" data-i18n-aria-label="controlsLabel">
+      <div class="chips-tray" id="chipTray" role="radiogroup" aria-label="Chip value" data-i18n-aria-label="chipsLabel" aria-keyshortcuts="1 2 3 4 5 6">
+        <button class="chip chip-10" data-value="10" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$10"><span class="denom">10</span></button>
+        <button class="chip chip-25" data-value="25" type="button" role="radio" aria-checked="true" aria-label="$25"><span class="denom">25</span></button>
+        <button class="chip chip-100" data-value="100" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$100"><span class="denom">100</span></button>
+        <button class="chip chip-500" data-value="500" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$500"><span class="denom">500</span></button>
+        <button class="chip chip-1k" data-value="1000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$1,000"><span class="denom">1K</span></button>
+        <button class="chip chip-5k" data-value="5000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5,000"><span class="denom">5K</span></button>
+      </div>
+
+      <div class="action-row">
+        <div class="bet-actions">
+          <button id="btnUndo" class="btn btn-tool" type="button" aria-keyshortcuts="Z Backspace">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 7 4.5 11.5 9 16" /><path d="M5 11.5h9.5a5 5 0 0 1 0 10H11" /></svg>
+            <span data-i18n="undo">Undo</span>
+          </button>
+          <button id="btnClear" class="btn btn-tool" type="button" aria-keyshortcuts="C">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" /></svg>
+            <span data-i18n="clear">Clear</span>
+          </button>
+          <button id="btnDouble" class="btn btn-tool" type="button" aria-keyshortcuts="D">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 8l6 8M10.5 8l-6 8" /><path d="M13.5 9.2a3 3 0 1 1 5.2 2.1L13.5 16h6" /></svg>
+            <span data-i18n="double">Double</span>
+          </button>
+          <button id="btnRebet" class="btn btn-tool" type="button" aria-keyshortcuts="R">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M19.8 4.5v4.3h-4.3" /></svg>
+            <span data-i18n="rebet">Rebet</span>
+          </button>
+        </div>
+
+        <div class="bet-total" aria-live="off">
+          <small data-i18n="totalBet">Total bet</small>
+          <strong>$<span id="totalBet">0</span></strong>
+          <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
+        </div>
+
+        <button id="btnDeal" class="deal-btn" type="button" aria-keyshortcuts="Space Enter">
+          <span class="deal-label" data-i18n="deal">Deal</span>
+        </button>
+
+        <div class="decision" id="decision" role="group" aria-label="Raise or call" data-i18n-aria-label="decisionLabel">
+          <button id="btnCall" class="fold-btn" type="button" aria-keyshortcuts="C Space Enter">
+            <span data-i18n="call">Call</span>
+          </button>
+          <button id="btnRaise" class="deal-btn raise-btn" type="button" aria-keyshortcuts="R">
+            <span class="deal-label" data-i18n="raise">Raise</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+            <button class="theme-option" data-set-theme="onyx" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeOnyx">Onyx</span>
+            </button>
+            <button class="theme-option" data-set-theme="amethyst" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeAmethyst">Amethyst</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="coach-setting">
+          <div class="setting-row">
+            <label for="setCoach" data-i18n="coachLabel">Strategy hint</label>
+            <label class="switch">
+              <input type="checkbox" id="setCoach" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <p class="settings-hint" data-i18n="coachHint">Shows whether the best strategy raises your hand: raise a spread of 7 or more, call anything less.</p>
+        </div>
+
+        <div class="setting-row animation-setting">
+          <span class="setting-label" id="animationSpeedLabel" data-i18n="animationSpeed">Dealing speed</span>
+          <div class="seg animation-seg" role="radiogroup" aria-labelledby="animationSpeedLabel">
+            <button class="seg-btn" data-set-animation="fast" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedFast">Fast</button>
+            <button class="seg-btn active" data-set-animation="normal" type="button" role="radio" aria-checked="true" data-i18n="speedNormal">Normal</button>
+            <button class="seg-btn" data-set-animation="cinematic" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedCinematic">Cinematic</button>
+          </div>
+        </div>
+
+        <div class="sound-settings">
+          <div class="setting-row">
+            <label for="setSound" data-i18n="soundLabel">Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="setSound" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="audio-mixer" id="soundMixer" role="group" aria-label="Sound levels" data-i18n-aria-label="soundMixer">
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundMasterLabel" data-i18n="masterVolume">Master</span><output id="soundMasterValue" for="soundMaster">100%</output></span>
+              <input class="volume-slider" id="soundMaster" data-sound-level="master" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundMasterLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundCardsLabel" data-i18n="cardVolume">Cards</span><output id="soundCardsValue" for="soundCards">100%</output></span>
+              <input class="volume-slider" id="soundCards" data-sound-level="cards" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundCardsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundChipsLabel" data-i18n="chipVolume">Chips</span><output id="soundChipsValue" for="soundChips">100%</output></span>
+              <input class="volume-slider" id="soundChips" data-sound-level="chips" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundChipsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundTableLabel" data-i18n="tableVolume">Table cues</span><output id="soundTableValue" for="soundTable">100%</output></span>
+              <input class="volume-slider" id="soundTable" data-sound-level="table" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundTableLabel" aria-valuetext="100%" />
+            </label>
+          </div>
+        </div>
+
+        <details class="payout-table">
+          <summary data-i18n="payoutsTitle">Bets and payouts</summary>
+          <p class="settings-hint" data-i18n="howToPlay">Bet an Ante and two cards are dealt face up. The spread is the number of ranks between them. Raise to double your bet, or call, and the third card is dealt: if it falls between the first two, the Ante and the Raise are both paid by the spread.</p>
+          <table>
+            <tbody>
+              <tr><th scope="row" data-i18n="spreadOneLabel">Spread 1</th><td data-i18n="paySpreadOne">5 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="spreadTwoLabel">Spread 2</th><td data-i18n="paySpreadTwo">4 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="spreadThreeLabel">Spread 3</th><td data-i18n="paySpreadThree">2 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="spreadWideLabel">Spread 4 to 11</th><td data-i18n="paySpreadWide">1 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="consecutiveLabel">In a row</th><td data-i18n="payPush">PUSH</td></tr>
+              <tr><th scope="row" data-i18n="tripsLabel">Three of a kind</th><td data-i18n="payTrips">11 TO 1</td></tr>
+            </tbody>
+          </table>
+          <p class="settings-hint" data-i18n="pushRules">Two cards in a row are a push without a third card. A pair always draws the third card, and you cannot raise it: three of a kind pays 11 to 1, anything else is a push.</p>
+          <p class="settings-hint" data-i18n="houseEdge">House edge with the best strategy: 2.75% of the Ante. Calling every hand: 7.88%.</p>
+          <p class="settings-hint" data-i18n="rulesHint">Eight decks, shuffled for every hand. The ace is always high, and a card of either rank is out. Amounts use whole dollars.</p>
+        </details>
+
+        <div class="stats-grid">
+          <h3 data-i18n="sessionStats">Statistics</h3>
+          <div class="stat"><span data-i18n="statHands">Hands</span><b id="stHands">0</b></div>
+          <div class="stat"><span data-i18n="winningHands">Winning hands</span><b id="stWinRate">0%</b></div>
+          <div class="stat"><span data-i18n="statRaised">Raised</span><b id="stRaised">0</b></div>
+          <div class="stat"><span data-i18n="statPushes">Pushes</span><b id="stPushes">0</b></div>
+          <div class="stat"><span data-i18n="statTrips">Three of a kind</span><b id="stTrips">0</b></div>
+          <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+          <div class="stat"><span data-i18n="totalWagered">Wagered</span><b id="stWagered">$0</b></div>
+          <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
+          <div class="stat stat-wide"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
+        </div>
+        <p class="settings-hint" data-i18n="statsHint">For entertainment: every hand is dealt from a freshly shuffled shoe, so past hands never make the next one more or less likely.</p>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="modal-foot">
+          <button id="btnResetStats" class="btn btn-ghost" type="button" data-i18n="resetStats">Reset statistics</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">Table 13 is a Red Dog simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every card is drawn at random on your device from a shoe shuffled for each hand. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../../shared/js/pit.js"></script>
+  <script src="../../shared/js/i18n.js"></script>
+  <script src="js/strings.js"></script>
+  <script src="../../shared/js/card-sound.js"></script>
+  <script src="../../shared/js/cards.js"></script>
+  <script src="../../shared/js/chips.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/game.js"></script>
+  <script src="../../shared/js/pwa.js"></script>
+</body>
+</html>

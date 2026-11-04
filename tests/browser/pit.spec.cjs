@@ -12,6 +12,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
+const Pit = require("../../shared/js/pit.js");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
@@ -190,6 +191,11 @@ test("from file:// the lobby leads to every table and each back to the lobby", a
     await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false");
     assert.equal(await balance(page), "10,000");
     await backToLobby(page);
+    await enterTable(page, "reddog");
+    assert.equal(await page.title(), "Table 13 · ThePit");
+    await page.waitForFunction(() => document.body.dataset.phase === "betting" && document.body.dataset.busy === "false");
+    assert.equal(await balance(page), "10,000");
+    await backToLobby(page);
     assert.match(page.url(), /\/index\.html$/);
   });
 });
@@ -326,7 +332,7 @@ test("your play sums every table's statistics, and the total", async () => {
     assert.deepEqual(await row('#playRows tr[data-game="craps"]'), ["Table 7", "12", "$600", "$900", "+$300", "150.0%"]);
     assert.deepEqual(await row('#playRows tr[data-game="keno"]'), ["Keno 80", "0", "$0", "$0", "$0", "–"]);
     assert.deepEqual(await row("#playTotal tr"), ["All tables", "52", "$4,600", "$4,400", "−$200", "95.7%"]);
-    assert.equal(await page.$$eval("#playRows tr", rows => rows.length), 11, "a line for every table");
+    assert.equal(await page.$$eval("#playRows tr", rows => rows.length), Object.keys(Pit.TABLES).length, "a line for every table");
     await page.keyboard.press("Escape");
     assert.equal(await page.$eval("#statsModal", node => node.hidden), true);
   });

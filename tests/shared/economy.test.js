@@ -23,6 +23,7 @@ var VideoPoker = require("../../games/videopoker/js/engine.js");
 var SicBo = require("../../games/sicbo/js/engine.js");
 var Keno = require("../../games/keno/js/engine.js");
 var BigSix = require("../../games/bigsix/js/engine.js");
+var RedDog = require("../../games/reddog/js/engine.js");
 
 // A small seeded generator (mulberry32), so every run plays the same rounds.
 function seeded(seed) {
@@ -224,7 +225,17 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     count("sicbo"); count("keno"); count("bigsix");
   }
 
-  assert.deepEqual(Object.keys(played).sort(), ["baccarat", "bigsix", "blackjack", "craps", "holdem", "keno", "roulette", "sicbo", "slot", "threecard", "videopoker"]);
+  // Table 13: any three cards from the shoe, raised or called.
+  for (round = 0; round < ROUNDS; round++) {
+    var shoe = RedDog.newShoe(random);
+    var rdCards = RedDog.deal(function () { return shoe.pop(); });
+    var rdAnte = Math.min(chipStake(random, [10, 25, 100, 500]), RedDog.LIMITS.ante);
+    var rd = RedDog.settle({ ante: rdAnte }, rdCards, random() < 0.5 ? "raise" : "call");
+    checkSettlement("Table 13", rd, rdAnte * (rd.raised ? 2 : 1), RedDog.TRIPS_PAY + 1);
+    count("reddog");
+  }
+
+  assert.deepEqual(Object.keys(played).sort(), ["baccarat", "bigsix", "blackjack", "craps", "holdem", "keno", "reddog", "roulette", "sicbo", "slot", "threecard", "videopoker"]);
 });
 
 /* ---------------- Long runs return what the odds say ---------------- */
@@ -261,6 +272,14 @@ test("long seeded runs of every one-round game return what the exact odds say", 
   });
   converges("Wheel 54 $5", 1 - BigSix.houseEdge("five"), 200000, function () {
     return BigSix.resolve({ five: 10 }, BigSix.spin(random)).returned / 10;
+  });
+  // Red Dog's edge is a share of the Ante: the best strategy raises a
+  // spread of 7 or more, from a shoe shuffled for every hand.
+  converges("Table 13 best strategy", 1 - RedDog.houseEdge(), 100000, function () {
+    var shoe = RedDog.newShoe(random);
+    var cards = RedDog.deal(function () { return shoe.pop(); });
+    var hand = RedDog.settle({ ante: 10 }, cards, RedDog.shouldRaise(cards) ? "raise" : "call");
+    return (hand.net + 10) / 10;
   });
   var picks = [7, 18, 29, 40];
   converges("Keno 80 four marks", Keno.returnFor(4), 60000, function () {

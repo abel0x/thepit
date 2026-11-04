@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v28";
+var CACHE_VERSION = "pit-v29";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -151,6 +151,16 @@ var ASSETS = [
   "./games/bigsix/js/engine.js",
   "./games/bigsix/js/store.js",
   "./games/bigsix/js/game.js",
+
+  // Table 13 · Red Dog
+  "./games/reddog/",
+  "./games/reddog/index.html",
+  "./games/reddog/icon.svg",
+  "./games/reddog/css/styles.css",
+  "./games/reddog/js/strings.js",
+  "./games/reddog/js/engine.js",
+  "./games/reddog/js/store.js",
+  "./games/reddog/js/game.js",
 
   // Table 37 · Roulette
   "./games/roulette/",

@@ -25,6 +25,7 @@ var Keno = require("../../games/keno/js/engine.js");
 var BigSix = require("../../games/bigsix/js/engine.js");
 var RedDog = require("../../games/reddog/js/engine.js");
 var Pegboard = require("../../games/pegboard/js/engine.js");
+var FanTan = require("../../games/fantan/js/engine.js");
 
 // A small seeded generator (mulberry32), so every run plays the same rounds.
 function seeded(seed) {
@@ -247,7 +248,23 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     count("pegboard");
   }
 
-  assert.deepEqual(Object.keys(played).sort(), ["baccarat", "bigsix", "blackjack", "craps", "holdem", "keno", "pegboard", "reddog", "roulette", "sicbo", "slot", "threecard", "videopoker"]);
+  // Table 4: any bets of the layout on any pile, against a box carried from
+  // round to round; what is paid is the stake and the odds less 5%, in
+  // whole dollars, with the change kept in the box.
+  var fanBox = 0;
+  for (round = 0; round < ROUNDS; round++) {
+    bets = {};
+    for (var f = 0; f < 1 + Math.floor(random() * 6); f++) {
+      var fanKey = pick(random, FanTan.BETS);
+      bets[fanKey] = Math.min((bets[fanKey] || 0) + chipStake(random, [5, 25, 100, 500]), FanTan.maxBet(fanKey));
+    }
+    var fanRound = FanTan.settle(bets, FanTan.remainderOf(FanTan.drawBeads(random)), fanBox);
+    checkSettlement("Table 4", { stake: fanRound.stake, returned: fanRound.paid, net: fanRound.net }, FanTan.totalStake(bets), 4);
+    fanBox = fanRound.box;
+    count("fantan");
+  }
+
+  assert.deepEqual(Object.keys(played).sort(), ["baccarat", "bigsix", "blackjack", "craps", "fantan", "holdem", "keno", "pegboard", "reddog", "roulette", "sicbo", "slot", "threecard", "videopoker"]);
 });
 
 /* ---------------- Long runs return what the odds say ---------------- */
@@ -298,6 +315,14 @@ test("long seeded runs of every one-round game return what the exact odds say", 
       converges("Drop 16 " + rows + " " + risk, Pegboard.returnFor(rows, risk), 60000, function () {
         return Pegboard.payout(10, rows, risk, Pegboard.drop(rows, random)) / 10;
       });
+    });
+  });
+  ["fan1", "nim23", "odd", "tan124", "ssh341"].forEach(function (key) {
+    var box = 0;
+    converges("Table 4 " + key, 1 - FanTan.houseEdge(key), 100000, function () {
+      var settled = FanTan.settle({ [key]: 10 }, FanTan.remainderOf(FanTan.drawBeads(random)), box);
+      box = settled.box;
+      return settled.paid / 10;
     });
   });
   var picks = [7, 18, 29, 40];

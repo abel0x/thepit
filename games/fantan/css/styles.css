@@ -1,0 +1,586 @@
+/* ThePit · Copyright (C) 2026 abel0x
+   SPDX-License-Identifier: AGPL-3.0-or-later
+   Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
+
+/* =========================================================
+   Table 4 — offline Fan-Tan
+   The croupier's bowl of beads, the betting layout of thirty-eight
+   bets, the last results and the box of change. The frame and the
+   chips come from shared/css.
+   ========================================================= */
+:root {
+  --print: rgba(240, 222, 168, .78);
+  --print-soft: rgba(240, 222, 168, .3);
+  --rail: clamp(8px, 1.3vh, 13px);
+  /* Each number keeps one colour wherever it appears. */
+  --one: #b3243a;
+  --two: #2d7a55;
+  --three: #2f5d73;
+  --four: #b08a2e;
+}
+
+/* ----------------------- Top bar on phones ----------------------- */
+/* The language stays one tap away in the settings, and the way back to the
+   lobby stands in for the table's mark. */
+@media (max-width: 600px) {
+  .topbar { gap: 8px; padding-inline: 10px; }
+  .subtitle,
+  .topbar .lang-switch,
+  .brand-mark { display: none; }
+  .topbar-actions { gap: 6px; }
+  .brand { gap: 8px; }
+  .brand-text h1 { font-size: 14px; letter-spacing: 2.2px; gap: 6px; }
+  .brand-number { min-width: 28px; padding: 2px 5px; }
+  .balance-pill { min-width: 0; padding: 4px 10px; }
+  .balance-value { font-size: 17px; }
+  .icon-btn { width: 36px; height: 36px; }
+  .toast { top: 64px; }
+}
+
+/* ----------------------- The table ----------------------- */
+.table-wrap {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.3vh, 14px);
+  padding: clamp(6px, 1.4vh, 20px) clamp(8px, 2vw, 26px);
+  padding-bottom: max(clamp(6px, 1.4vh, 16px), env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.table {
+  position: relative;
+  width: min(1180px, 100%);
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* One felt with a walnut rail, as at the other tables of the pit. */
+.table-felt {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(6px, 1.4vh, 16px);
+  padding: clamp(10px, 1.8vh, 22px) clamp(10px, 2vw, 30px);
+  border: var(--rail) solid transparent;
+  border-radius: clamp(22px, 4vh, 44px);
+  background:
+    radial-gradient(ellipse 70% 60% at 30% -10%, rgba(255, 247, 218, .1), transparent 66%) padding-box,
+    repeating-linear-gradient(4deg, rgba(255,255,255,.016) 0 1px, transparent 1px 4px) padding-box,
+    repeating-linear-gradient(94deg, rgba(0,0,0,.024) 0 1px, transparent 1px 5px) padding-box,
+    radial-gradient(130% 110% at 50% 10%, var(--felt-highlight) 0%, var(--felt-1) 26%, var(--felt-2) 64%, var(--felt-edge) 100%) padding-box,
+    linear-gradient(142deg, rgba(255,232,164,.3), transparent 24%, rgba(0,0,0,.42) 72%, rgba(255,214,117,.2)) border-box,
+    repeating-linear-gradient(102deg, #25160b 0 10px, #52371a 10px 18px, #30200f 18px 29px, #694821 29px 34px) border-box;
+  box-shadow:
+    inset 0 0 0 1px rgba(241, 211, 130, .18),
+    inset 0 0 110px rgba(0, 0, 0, .55),
+    inset 0 9px 34px rgba(255, 255, 255, .05),
+    0 0 0 1px #0b0704,
+    0 0 0 4px rgba(105, 72, 31, .58),
+    0 30px 60px rgba(0, 0, 0, .6);
+}
+.table-rim {
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 2px solid rgba(225, 190, 99, .5);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.5), 0 1px 0 rgba(255,244,205,.16);
+  z-index: 0;
+}
+
+/* ----------------------- Results, banner and plaque ----------------------- */
+.felt-head {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+/* The last results, newest first, each number in its colour. */
+.results {
+  justify-self: start;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+}
+.result {
+  flex: 0 0 auto;
+  width: clamp(18px, 2.6vh, 24px);
+  height: clamp(18px, 2.6vh, 24px);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: clamp(10px, 1.5vh, 13px);
+  font-weight: 800;
+  color: #fff8e6;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25), 0 1px 2px rgba(0, 0, 0, .4);
+}
+.result:first-child { outline: 2px solid var(--gold-bright); outline-offset: 1px; }
+.result-1 { background: var(--one); }
+.result-2 { background: var(--two); }
+.result-3 { background: var(--three); }
+.result-4 { background: var(--four); }
+
+.banner {
+  min-width: 0;
+  max-width: min(460px, 46vw);
+  pointer-events: none;
+  padding: 7px 18px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .42);
+  border: 1px solid rgba(217, 182, 95, .35);
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: clamp(10.5px, 1.6vh, 14px);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--gold-bright);
+  line-height: 1.3;
+  text-wrap: balance;
+  transition: background .25s, border-color .25s, color .25s;
+}
+.banner small {
+  display: block;
+  margin-top: 1px;
+  font-size: .8em;
+  letter-spacing: .9px;
+  opacity: .78;
+}
+.banner small:empty { display: none; }
+.banner.flash-lose { background: rgba(0, 0, 0, .5); border-color: rgba(226, 104, 95, .55); color: #ffd9d6; }
+
+.table-specs {
+  justify-self: end;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid rgba(205,169,82,.46);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(18,24,20,.78), rgba(5,10,8,.78));
+  box-shadow: 0 5px 12px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.05);
+}
+.table-spec { min-width: 50px; padding: 5px 10px 6px; text-align: left; }
+.table-spec[hidden] { display: none; }
+.table-spec small {
+  display: block;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  color: rgba(232, 202, 125, .62);
+}
+.table-spec strong {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--cream);
+}
+.table-box-spec strong { color: #d6ffe6; }
+
+/* ----------------------- The bowl ----------------------- */
+.fantan-body {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(180px, 30%) minmax(0, 1fr);
+  gap: clamp(10px, 2vw, 26px);
+}
+.bowl-area {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+  align-items: center;
+  gap: 8px;
+}
+/* A brass plate of beads; the bowl that covers them is lifted to count. */
+.bowl {
+  position: relative;
+  width: min(100%, 100cqh, 320px);
+  max-height: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  /* A dark dish inside a brass rim: the radii count from the centre to the edge. */
+  background:
+    radial-gradient(circle closest-side, #4a2f13 0 76%, #2a1a0a 85%, transparent 86%),
+    conic-gradient(from 20deg, #f0dd9a, #b8902f, #f7ecc0, #8c6a1c, #e6c869, #b8902f, #f0dd9a);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .5), inset 0 0 0 2px rgba(20, 13, 4, .6);
+}
+.bowl-area { container-type: size; }
+.beads {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+}
+.bead {
+  position: absolute;
+  width: 8%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 35% 30%, #ffffff, #efe8d6 55%, #b9ad8c);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .45);
+  transition: opacity .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+.bead.taken { opacity: 0; transform: translate(-50%, -50%) translate(160%, -40%) scale(.6); }
+.bead.left { box-shadow: 0 0 0 2px var(--gold-bright), 0 0 12px rgba(244, 226, 166, .8); }
+.bowl-cover {
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255, 255, 255, .55), transparent 32%),
+    radial-gradient(circle at 50% 50%, #f4efe3 0 52%, #d9cfb4 70%, #a8997a 100%);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .45), inset 0 -6px 14px rgba(0, 0, 0, .25);
+  transition: opacity .35s ease, transform .35s ease;
+}
+.bowl.open .bowl-cover { opacity: 0; transform: translateY(-40%) scale(.9); pointer-events: none; }
+.bowl-result {
+  position: absolute;
+  right: 2%;
+  top: 2%;
+  width: 26%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 4vh, 34px);
+  font-weight: 800;
+  color: #fff8e6;
+  box-shadow: 0 0 0 3px var(--gold-bright), 0 6px 14px rgba(0, 0, 0, .5);
+}
+.bowl-result:empty { display: none; }
+.bowl-result.result-1 { background: var(--one); }
+.bowl-result.result-2 { background: var(--two); }
+.bowl-result.result-3 { background: var(--three); }
+.bowl-result.result-4 { background: var(--four); }
+.bowl-count {
+  min-height: 1.5em;
+  font-size: clamp(10px, 1.5vh, 13px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--print);
+  text-align: center;
+}
+
+/* ----------------------- The layout ----------------------- */
+.layout {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-content: center;
+  gap: clamp(6px, 1.2vh, 12px) clamp(10px, 1.6vw, 18px);
+  overflow: hidden;
+}
+.section-fan,
+.section-pair,
+.section-ssh { grid-column: 1 / -1; }
+.bet-section { min-width: 0; display: grid; align-content: start; gap: 4px; }
+.section-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: clamp(9px, 1.3vh, 11px);
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+}
+.section-pay { color: var(--print); letter-spacing: 1px; }
+.section-note { font-size: .9em; font-weight: 600; letter-spacing: .8px; color: rgba(240, 222, 168, .55); }
+.section-spots { display: grid; gap: clamp(4px, .6vw, 7px); }
+.section-fan .section-spots { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.section-pair .section-spots { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.section-ssh .section-spots { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.section-nim .section-spots { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(3, auto); }
+/* Nga Tan by the number it returns: each column holds the three pairs of the other numbers. */
+.section-tan .section-spots { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(3, auto); }
+
+.spot {
+  position: relative;
+  min-width: 0;
+  min-height: clamp(34px, 5.2vh, 46px);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 3px 4px;
+  border: 1.4px solid var(--print);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, .1);
+  color: var(--print);
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.spot-fan { min-height: clamp(48px, 8vh, 70px); border-width: 2px; }
+.spot-name {
+  font-size: clamp(13px, 2vh, 17px);
+  font-weight: 800;
+  letter-spacing: .5px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.spot-fan .spot-name { font-size: clamp(22px, 4vh, 34px); }
+.spot-sub {
+  font-family: var(--font-ui);
+  font-size: clamp(8px, 1.1vh, 10px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: .8;
+  white-space: nowrap;
+}
+.spot-fan[data-bet="fan1"], .spot-nim[data-bet^="nim1"] { --tone: var(--one); }
+.spot-fan[data-bet="fan2"], .spot-nim[data-bet^="nim2"] { --tone: var(--two); }
+.spot-fan[data-bet="fan3"], .spot-nim[data-bet^="nim3"] { --tone: var(--three); }
+.spot-fan[data-bet="fan4"], .spot-nim[data-bet^="nim4"] { --tone: var(--four); }
+.spot-fan, .spot-nim { background: linear-gradient(180deg, color-mix(in srgb, var(--tone) 34%, transparent), rgba(0, 0, 0, .12)); }
+.spot:not(:disabled):hover { background-color: rgba(255, 238, 190, .1); border-color: var(--gold-bright); }
+.spot:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+.spot:disabled { cursor: default; }
+.spot.lit { border-color: var(--gold-bright); box-shadow: 0 0 0 1px rgba(244, 226, 166, .6), 0 0 18px rgba(244, 226, 166, .35); color: #fff; }
+.spot.returned { border-style: dashed; border-color: #d6ffe6; color: #e6fff0; }
+/* A bet's chips stand in the lower right corner of its spot, and the words
+   of a spot with chips move aside for them. A winning stack grows to all it
+   returns. The stacks come from shared/js/chips.js. */
+.spot { --stack: clamp(16px, 2.4vh, 22px); }
+.spot-fan { --stack: clamp(20px, 3vh, 28px); }
+.spot-stack {
+  position: absolute;
+  right: calc(var(--stack) * .62);
+  /* A stack sits about half a chip below its anchor. */
+  bottom: calc(var(--stack) * .58);
+  width: 0;
+  height: 0;
+}
+.spot-stack .bet-chip { --chip: var(--stack); left: 0; top: 0; }
+.spot.staked { padding-right: calc(var(--stack) + 6px); }
+
+/* ----------------------- Controls ----------------------- */
+.controls {
+  position: relative;
+  z-index: 3;
+  width: min(1180px, 100%);
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 1.2vh, 14px) clamp(8px, 1.6vw, 22px);
+}
+.chips-tray {
+  flex: 0 0 auto;
+  display: flex;
+  gap: clamp(6px, 1.1vw, 14px);
+  justify-content: center;
+  padding: clamp(8px, 1.3vh, 13px) clamp(10px, 1.6vw, 18px);
+  padding-top: clamp(12px, 1.8vh, 18px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent 36%),
+    linear-gradient(180deg, var(--tray-top), var(--tray-bottom));
+  border: 1px solid rgba(217,182,95,.25);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), inset 0 -8px 16px rgba(0,0,0,.24), 0 12px 25px rgba(0,0,0,.24);
+}
+.action-row {
+  flex: 1 0 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(8px, 1.4vw, 18px);
+}
+.bet-actions { display: flex; gap: clamp(5px, .7vw, 9px); }
+.bet-total {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  min-width: 92px;
+  text-align: right;
+}
+.bet-total small {
+  color: rgba(244, 239, 226, .55);
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bet-total strong {
+  font-family: var(--font-display);
+  font-size: clamp(17px, 2.3vh, 22px);
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bet-total .last-win { letter-spacing: .6px; text-transform: none; font-size: 10px; }
+.bet-total .last-win b { color: rgba(214, 255, 233, .85); font-variant-numeric: tabular-nums; }
+
+/* Open: a brass plaque beside the tray. */
+.deal-btn {
+  flex: 0 0 auto;
+  min-width: clamp(96px, 13vh, 132px);
+  height: clamp(48px, 7.4vh, 64px);
+  padding: 0 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(80, 56, 12, .9);
+  background:
+    radial-gradient(120% 90% at 40% 20%, rgba(255,255,255,.45), transparent 45%),
+    linear-gradient(180deg, #f3d985, #c9a24b 62%, #8c6a1c);
+  box-shadow:
+    0 0 0 3px rgba(20, 13, 4, .55),
+    0 0 0 4px rgba(240, 215, 143, .45),
+    0 10px 22px rgba(0,0,0,.45),
+    inset 0 -5px 8px rgba(110, 76, 14, .5);
+  color: #2a1d05;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 2.2vh, 19px);
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .14s ease, filter .2s ease;
+}
+.deal-btn:not(:disabled):hover { transform: translateY(-2px); filter: brightness(1.05); }
+.deal-btn:not(:disabled):active { transform: translateY(1px) scale(.98); }
+.deal-btn:disabled { cursor: not-allowed; filter: grayscale(.55) brightness(.62); }
+.deal-btn.ready { animation: dealReady 2.4s ease-in-out infinite; }
+@keyframes dealReady {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(20,13,4,.55), 0 0 0 4px rgba(240,215,143,.45), 0 10px 22px rgba(0,0,0,.45), inset 0 -5px 8px rgba(110,76,14,.5); }
+  50% { box-shadow: 0 0 0 3px rgba(20,13,4,.55), 0 0 0 4px rgba(244,226,166,.9), 0 0 24px rgba(244,226,166,.4), inset 0 -5px 8px rgba(110,76,14,.5); }
+}
+
+/* ----------------------- Dialogs ----------------------- */
+/* A miniature of this table on each cloth: the plate and its beads. */
+.theme-preview::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #fbf8ef 2px, transparent 2.6px) 0 0 / 7px 7px,
+    radial-gradient(circle, #4a2f13 0 60%, #c9a24b 62%);
+  box-shadow: 0 3px 6px rgba(0,0,0,.45);
+}
+.theme-option[data-set-theme="midnight"] { --preview-felt-top: #2b6288; --preview-felt-bottom: #0b2b47; }
+.theme-option[data-set-theme="bordeaux"] { --preview-felt-top: #8e3a49; --preview-felt-bottom: #3e111c; }
+.theme-option[data-set-theme="onyx"] { --preview-felt-top: #5d6268; --preview-felt-bottom: #2a2d31; }
+.theme-option[data-set-theme="amethyst"] { --preview-felt-top: #7a54a8; --preview-felt-bottom: #36215a; }
+.payout-table .settings-hint + .settings-hint { margin-top: 0; }
+.payout-table table { margin-top: 4px; }
+.stat-wide { grid-column: 1 / -1; }
+
+/* ----------------------- Pace ----------------------- */
+body[data-animation-speed="fast"] .bead { transition-duration: .14s; }
+body[data-animation-speed="cinematic"] .bead { transition-duration: .4s; }
+
+/* ----------------------- Phones and short screens ----------------------- */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .section-nim, .section-tan { grid-column: auto; }
+}
+
+@media (max-width: 760px) {
+  .felt-head { grid-template-columns: minmax(0, 1fr) auto; }
+  .table-specs { display: none; }
+  .table-specs:has(.table-box-spec:not([hidden])) { display: flex; }
+  .table-specs:has(.table-box-spec:not([hidden])) .table-spec:not(.table-box-spec) { display: none; }
+  .results { display: none; }
+  .banner { justify-self: start; max-width: 100%; }
+}
+
+/* Phones held upright: the bowl above a layout that scrolls, and the tray
+   on a row of its own. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .fantan-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .bowl-area { container-type: normal; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: none; justify-items: start; }
+  .bowl { width: clamp(84px, 26vw, 140px); }
+  .bowl-count { text-align: left; }
+  .layout { overflow-y: auto; align-content: start; padding-right: 2px; }
+  .controls { justify-content: center; }
+  .chips-tray { width: 100%; gap: 4px; padding-inline: 6px; }
+  .chips-tray .chip { --size: clamp(34px, 12vw, 50px); }
+  .action-row { width: 100%; justify-content: space-between; }
+  .btn-tool { min-width: 0; padding-inline: 7px; }
+}
+
+@media (max-width: 420px) {
+  .bet-total { min-width: 0; }
+  .bet-total .last-win { display: none; }
+  .bet-actions { gap: 4px; }
+  .btn-tool span { display: none; }
+  .deal-btn { min-width: 84px; padding: 0 14px; }
+  .section-pair .section-spots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Phones on their side: the bowl beside a layout that scrolls. */
+@media (max-height: 560px) {
+  .topbar { padding-block: 4px; }
+  .table-wrap { padding-block: 4px; gap: 4px; }
+  .table-felt { padding: 6px 12px; gap: 4px; border-radius: 20px; }
+  .banner { padding: 3px 12px; font-size: 10px; }
+  .banner small { display: inline; margin-left: 6px; }
+  .fantan-body { grid-template-columns: minmax(110px, 24%) minmax(0, 1fr); }
+  .layout { overflow-y: auto; align-content: start; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .section-nim, .section-tan { grid-column: auto; }
+  .spot { min-height: 30px; }
+  .spot-fan { min-height: 40px; }
+  .controls { flex-wrap: nowrap; gap: 8px; }
+  .chips-tray { width: auto; gap: 4px; padding: 6px 8px; }
+  .chips-tray .chip { --size: 30px; }
+  .action-row { width: auto; gap: 8px; }
+  .bet-actions { gap: 4px; }
+  .btn-tool { min-width: 0; padding: 6px 7px; }
+  .btn-tool span { display: none; }
+  .bet-total { min-width: 0; }
+  .bet-total small { display: none; }
+  .deal-btn { height: 42px; min-width: 76px; padding-inline: 12px; }
+}
+
+/* The smallest phones on their side: Nim and Nga Tan one above the other. */
+@media (max-height: 560px) and (max-width: 700px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The narrowest phones: slimmer tools and button, so that a large total
+   still fits beside them. */
+@media (max-width: 360px) {
+  .btn-tool { padding-inline: 5px; }
+  .deal-btn, .fold-btn { min-width: 72px; padding: 0 10px; }
+  .bet-total strong { font-size: 16px; }
+}
+
+/* No transitions at all for reduced motion: each step appears in place. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

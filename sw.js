@@ -3,7 +3,7 @@
    Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. */
 /* Service worker — caches the lobby and every table for full offline play.
    Only used when the pit is served over http(s); on file:// it is skipped. */
-var CACHE_VERSION = "pit-v30";
+var CACHE_VERSION = "pit-v31";
 var APP_ROOT = new URL("./", self.location.href || self.location.origin + "/");
 var CACHE_PREFIX = "pit-" + encodeURIComponent(APP_ROOT.pathname) + "-";
 var CACHE = CACHE_PREFIX + CACHE_VERSION.slice(4);
@@ -171,6 +171,16 @@ var ASSETS = [
   "./games/pegboard/js/engine.js",
   "./games/pegboard/js/store.js",
   "./games/pegboard/js/game.js",
+
+  // Table 4 · Fan-Tan
+  "./games/fantan/",
+  "./games/fantan/index.html",
+  "./games/fantan/icon.svg",
+  "./games/fantan/css/styles.css",
+  "./games/fantan/js/strings.js",
+  "./games/fantan/js/engine.js",
+  "./games/fantan/js/store.js",
+  "./games/fantan/js/game.js",
 
   // Table 37 · Roulette
   "./games/roulette/",

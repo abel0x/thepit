@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money Fan-Tan simulation that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>Table 4 · ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="Table 4 · ThePit" />
+  <meta property="og:description" content="A free, play-money Fan-Tan simulation that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/games/fantan/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Fan-Tan table of Table 4, the croupier's beads counted off in fours beside the betting layout" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="../../shared/css/pit.css" />
+  <link rel="stylesheet" href="../../shared/css/table.css" />
+  <link rel="stylesheet" href="../../shared/css/chip-tables.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-phase="betting" data-theme="emerald" data-animation-speed="normal">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="icon-btn lobby-link" href="../../index.html" aria-label="Back to the lobby" title="Back to the lobby"
+         data-i18n-aria-label="backToLobby" data-i18n-title="backToLobby">
+        <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+      </a>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="fRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#fRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#fRing)" stroke-width="1" opacity=".7"/>
+          <circle cx="32" cy="32" r="15" fill="#3a240f" stroke="#c9a24b" stroke-width="1.6"/>
+          <g fill="#f6f1e4">
+            <circle cx="27" cy="28" r="2.6"/><circle cx="33" cy="26" r="2.6"/><circle cx="37" cy="31" r="2.6"/>
+            <circle cx="30" cy="34" r="2.6"/><circle cx="36" cy="37" r="2.6"/><circle cx="26" cy="36" r="2.6"/>
+          </g>
+          <path d="M16 46 L46 18" stroke="#e6c869" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="Table 4" data-i18n-aria-label="brandName">
+          <span class="brand-word">TABLE</span><span class="brand-number" aria-hidden="true">4</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">Fan-Tan</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="soundToggle" class="icon-btn sound-control" type="button" aria-pressed="true" aria-label="Mute sound"
+              title="Mute sound" data-i18n-title="muteSound" data-i18n-aria-label="muteSound" aria-keyshortcuts="M">
+        <svg class="sound-glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path class="sound-cone" d="M4.8 11h3.5l4.7-3.9v13.8L8.3 17H4.8Z" />
+          <path class="sound-wave sound-wave-near" d="M16.1 10.2c1 1 1.5 2.3 1.5 3.8s-.5 2.8-1.5 3.8" />
+          <path class="sound-wave sound-wave-far" d="M19.2 7.6c1.8 1.8 2.8 4 2.8 6.4s-1 4.6-2.8 6.4" />
+          <path class="sound-slash" d="M6.5 6.5l15 15" />
+        </svg>
+        <span class="sound-led" aria-hidden="true"></span>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <section class="table" aria-label="Fan-Tan table" data-i18n-aria-label="fantanTable">
+      <div class="table-felt" id="tableFelt">
+        <div class="table-rim" aria-hidden="true"></div>
+
+        <div class="felt-head">
+          <ol class="results" id="results" aria-label="Last results" data-i18n-aria-label="resultsLabel"></ol>
+          <div class="banner" id="banner" role="status" aria-live="polite" aria-atomic="true">
+            <span id="bannerText" data-i18n="placeBets">Place your bets</span>
+            <small id="bannerSub"></small>
+          </div>
+          <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
+            <span class="table-spec">
+              <small data-i18n="tableMinLabel">MIN</small>
+              <strong id="tableMin">$5</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableMaxLabel">MAX</small>
+              <strong id="tableMax">$5,000</strong>
+            </span>
+            <span class="table-spec table-box-spec" id="boxSpec" hidden>
+              <small data-i18n="tableBoxLabel">CREDIT</small>
+              <strong id="boxAmount">$0.00</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="fantan-body">
+          <div class="bowl-area">
+            <div class="bowl" id="bowl" role="img" aria-label="The croupier's beads" data-i18n-aria-label="bowlLabel">
+              <div class="beads" id="beads"></div>
+              <div class="bowl-cover" aria-hidden="true"></div>
+              <div class="bowl-result" id="bowlResult" aria-hidden="true"></div>
+            </div>
+            <p class="bowl-count" id="bowlCount" aria-live="polite"></p>
+          </div>
+
+          <div class="layout" id="layout" role="group" aria-label="Betting areas" data-i18n-aria-label="bettingAreas">
+        <div class="bet-section section-fan">
+          <h3 class="section-head"><span data-i18n="fanSection">Fan</span><span class="section-pay" data-i18n="payFan">3 TO 1</span></h3>
+          <div class="section-spots">
+            <button class="spot spot-fan" data-bet="fan1" type="button"><span class="spot-name">1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-fan" data-bet="fan2" type="button"><span class="spot-name">2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-fan" data-bet="fan3" type="button"><span class="spot-name">3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-fan" data-bet="fan4" type="button"><span class="spot-name">4</span><span class="spot-stack" aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <div class="bet-section section-pair">
+          <h3 class="section-head"><span data-i18n="pairSection">Kwok, Odd and Even</span><span class="section-pay" data-i18n="payPair">1 TO 1</span></h3>
+          <div class="section-spots">
+            <button class="spot spot-pair" data-bet="kwok12" type="button"><span class="spot-name">1·2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-pair" data-bet="kwok23" type="button"><span class="spot-name">2·3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-pair" data-bet="kwok34" type="button"><span class="spot-name">3·4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-pair" data-bet="kwok41" type="button"><span class="spot-name">4·1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-pair" data-bet="odd" type="button"><span class="spot-name" data-i18n="oddName">Odd</span><span class="spot-sub">1 · 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-pair" data-bet="even" type="button"><span class="spot-name" data-i18n="evenName">Even</span><span class="spot-sub">2 · 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <div class="bet-section section-ssh">
+          <h3 class="section-head"><span data-i18n="sshSection">Sheh Sam Hong</span><span class="section-pay" data-i18n="paySsh">1 TO 3</span></h3>
+          <div class="section-spots">
+            <button class="spot spot-ssh" data-bet="ssh123" type="button"><span class="spot-name">1·2·3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-ssh" data-bet="ssh234" type="button"><span class="spot-name">2·3·4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-ssh" data-bet="ssh341" type="button"><span class="spot-name">3·4·1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-ssh" data-bet="ssh412" type="button"><span class="spot-name">4·1·2</span><span class="spot-stack" aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <div class="bet-section section-nim">
+          <h3 class="section-head"><span data-i18n="nimSection">Nim</span><span class="section-pay" data-i18n="payNim">2 TO 1</span><span class="section-note" data-i18n="nimNote">RETURNED ON THE SECOND NUMBER</span></h3>
+          <div class="section-spots">
+            <button class="spot spot-nim" data-bet="nim12" type="button"><span class="spot-name">1</span><span class="spot-sub">NIM 2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim13" type="button"><span class="spot-name">1</span><span class="spot-sub">NIM 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim14" type="button"><span class="spot-name">1</span><span class="spot-sub">NIM 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim21" type="button"><span class="spot-name">2</span><span class="spot-sub">NIM 1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim23" type="button"><span class="spot-name">2</span><span class="spot-sub">NIM 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim24" type="button"><span class="spot-name">2</span><span class="spot-sub">NIM 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim31" type="button"><span class="spot-name">3</span><span class="spot-sub">NIM 1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim32" type="button"><span class="spot-name">3</span><span class="spot-sub">NIM 2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim34" type="button"><span class="spot-name">3</span><span class="spot-sub">NIM 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim41" type="button"><span class="spot-name">4</span><span class="spot-sub">NIM 1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim42" type="button"><span class="spot-name">4</span><span class="spot-sub">NIM 2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-nim" data-bet="nim43" type="button"><span class="spot-name">4</span><span class="spot-sub">NIM 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+          </div>
+        </div>
+        <div class="bet-section section-tan">
+          <h3 class="section-head"><span data-i18n="tanSection">Nga Tan</span><span class="section-pay" data-i18n="payTan">1 TO 2</span><span class="section-note" data-i18n="tanNote">RETURNED ON THE THIRD NUMBER</span></h3>
+          <div class="section-spots">
+            <button class="spot spot-tan" data-bet="tan231" type="button"><span class="spot-name">2·3</span><span class="spot-sub">TAN 1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan241" type="button"><span class="spot-name">2·4</span><span class="spot-sub">TAN 1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan341" type="button"><span class="spot-name">3·4</span><span class="spot-sub">TAN 1</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan132" type="button"><span class="spot-name">1·3</span><span class="spot-sub">TAN 2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan142" type="button"><span class="spot-name">1·4</span><span class="spot-sub">TAN 2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan342" type="button"><span class="spot-name">3·4</span><span class="spot-sub">TAN 2</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan123" type="button"><span class="spot-name">1·2</span><span class="spot-sub">TAN 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan143" type="button"><span class="spot-name">1·4</span><span class="spot-sub">TAN 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan243" type="button"><span class="spot-name">2·4</span><span class="spot-sub">TAN 3</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan124" type="button"><span class="spot-name">1·2</span><span class="spot-sub">TAN 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan134" type="button"><span class="spot-name">1·3</span><span class="spot-sub">TAN 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+            <button class="spot spot-tan" data-bet="tan234" type="button"><span class="spot-name">2·3</span><span class="spot-sub">TAN 4</span><span class="spot-stack" aria-hidden="true"></span></button>
+          </div>
+        </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls" data-i18n-aria-label="controlsLabel">
+      <div class="chips-tray" id="chipTray" role="radiogroup" aria-label="Chip value" data-i18n-aria-label="chipsLabel" aria-keyshortcuts="1 2 3 4 5 6">
+        <button class="chip chip-5" data-value="5" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5"><span class="denom">5</span></button>
+        <button class="chip chip-25" data-value="25" type="button" role="radio" aria-checked="true" aria-label="$25"><span class="denom">25</span></button>
+        <button class="chip chip-100" data-value="100" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$100"><span class="denom">100</span></button>
+        <button class="chip chip-500" data-value="500" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$500"><span class="denom">500</span></button>
+        <button class="chip chip-1k" data-value="1000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$1,000"><span class="denom">1K</span></button>
+        <button class="chip chip-5k" data-value="5000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5,000"><span class="denom">5K</span></button>
+      </div>
+
+      <div class="action-row">
+        <div class="bet-actions">
+          <button id="btnUndo" class="btn btn-tool" type="button" aria-keyshortcuts="Z Backspace">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 7 4.5 11.5 9 16" /><path d="M5 11.5h9.5a5 5 0 0 1 0 10H11" /></svg>
+            <span data-i18n="undo">Undo</span>
+          </button>
+          <button id="btnClear" class="btn btn-tool" type="button" aria-keyshortcuts="C">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18" /></svg>
+            <span data-i18n="clear">Clear</span>
+          </button>
+          <button id="btnDouble" class="btn btn-tool" type="button" aria-keyshortcuts="D">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 8l6 8M10.5 8l-6 8" /><path d="M13.5 9.2a3 3 0 1 1 5.2 2.1L13.5 16h6" /></svg>
+            <span data-i18n="double">Double</span>
+          </button>
+          <button id="btnRebet" class="btn btn-tool" type="button" aria-keyshortcuts="R">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3" /><path d="M19.8 4.5v4.3h-4.3" /></svg>
+            <span data-i18n="rebet">Rebet</span>
+          </button>
+        </div>
+
+        <div class="bet-total" aria-live="off">
+          <small data-i18n="totalBet">Total bet</small>
+          <strong>$<span id="totalBet">0</span></strong>
+          <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
+        </div>
+
+        <button id="btnOpen" class="deal-btn" type="button" aria-keyshortcuts="Space Enter">
+          <span class="deal-label" data-i18n="open">Open</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+            <button class="theme-option" data-set-theme="onyx" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeOnyx">Onyx</span>
+            </button>
+            <button class="theme-option" data-set-theme="amethyst" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeAmethyst">Amethyst</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row animation-setting">
+          <span class="setting-label" id="animationSpeedLabel" data-i18n="animationSpeed">Counting speed</span>
+          <div class="seg animation-seg" role="radiogroup" aria-labelledby="animationSpeedLabel">
+            <button class="seg-btn" data-set-animation="fast" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedFast">Fast</button>
+            <button class="seg-btn active" data-set-animation="normal" type="button" role="radio" aria-checked="true" data-i18n="speedNormal">Normal</button>
+            <button class="seg-btn" data-set-animation="cinematic" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedCinematic">Cinematic</button>
+          </div>
+        </div>
+
+        <div class="sound-settings">
+          <div class="setting-row">
+            <label for="setSound" data-i18n="soundLabel">Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="setSound" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="audio-mixer" id="soundMixer" role="group" aria-label="Sound levels" data-i18n-aria-label="soundMixer">
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundMasterLabel" data-i18n="masterVolume">Master</span><output id="soundMasterValue" for="soundMaster">100%</output></span>
+              <input class="volume-slider" id="soundMaster" data-sound-level="master" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundMasterLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundChipsLabel" data-i18n="chipVolume">Chips</span><output id="soundChipsValue" for="soundChips">100%</output></span>
+              <input class="volume-slider" id="soundChips" data-sound-level="chips" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundChipsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundTableLabel" data-i18n="tableVolume">Table cues</span><output id="soundTableValue" for="soundTable">100%</output></span>
+              <input class="volume-slider" id="soundTable" data-sound-level="table" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundTableLabel" aria-valuetext="100%" />
+            </label>
+          </div>
+        </div>
+
+        <details class="payout-table">
+          <summary data-i18n="payoutsTitle">Bets and payouts</summary>
+          <p class="settings-hint" data-i18n="howToPlay">Bet on the numbers 1 to 4. The croupier takes a pile of beads and counts them off four at a time; the one to four beads left at the end are the number that wins.</p>
+          <p class="settings-hint" data-i18n="betsRules">Fan wins on its number. Kwok wins on the two numbers at a corner, Odd on 1 and 3, Even on 2 and 4, and Sheh Sam Hong on three numbers. Nim wins on its first number and is returned on its second; Nga Tan wins on its first two and is returned on its third.</p>
+          <table>
+            <tbody>
+              <tr><th scope="row" data-i18n="fanSection">Fan</th><td data-i18n="payFan">3 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="nimSection">Nim</th><td data-i18n="payNim">2 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="pairSection">Kwok, Odd and Even</th><td data-i18n="payPair">1 TO 1</td></tr>
+              <tr><th scope="row" data-i18n="tanSection">Nga Tan</th><td data-i18n="payTan">1 TO 2</td></tr>
+              <tr><th scope="row" data-i18n="sshSection">Sheh Sam Hong</th><td data-i18n="paySsh">1 TO 3</td></tr>
+            </tbody>
+          </table>
+          <p class="settings-hint" data-i18n="commissionRules">Every win is paid its odds less 5% commission. The whole dollars are paid at once and the change waits in the box for a later win, so every bet is paid exactly its odds less 5%.</p>
+          <p class="settings-hint" data-i18n="houseEdges">House edge: Fan 3.75%; Nim, Kwok, Odd and Even 2.50%; Nga Tan and Sheh Sam Hong 1.25%.</p>
+          <p class="settings-hint" data-i18n="beadsHint">The pile holds 41 to 104 beads, drawn on your device: each of the four numbers is left by sixteen of the sixty-four piles.</p>
+        </details>
+
+        <div class="stats-grid">
+          <h3 data-i18n="sessionStats">Statistics</h3>
+          <div class="stat"><span data-i18n="statRounds">Rounds</span><b id="stRounds">0</b></div>
+          <div class="stat"><span data-i18n="winningRounds">Winning rounds</span><b id="stWinRate">0%</b></div>
+          <div class="stat stat-wide"><span data-i18n="statResults">Results 1 · 2 · 3 · 4</span><b id="stResults">0 · 0 · 0 · 0</b></div>
+          <div class="stat"><span data-i18n="totalWagered">Wagered</span><b id="stWagered">$0</b></div>
+          <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
+          <div class="stat"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
+          <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+        </div>
+        <p class="settings-hint" data-i18n="statsHint">For entertainment: every pile is drawn fresh, so past results never make a number more or less likely.</p>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="modal-foot">
+          <button id="btnResetStats" class="btn btn-ghost" type="button" data-i18n="resetStats">Reset statistics</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">Table 4 is a Fan-Tan simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every pile of beads is drawn at random on your device. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../../shared/js/pit.js"></script>
+  <script src="../../shared/js/i18n.js"></script>
+  <script src="js/strings.js"></script>
+  <script src="../../shared/js/card-sound.js"></script>
+  <script src="../../shared/js/chips.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/game.js"></script>
+  <script src="../../shared/js/pwa.js"></script>
+</body>
+</html>

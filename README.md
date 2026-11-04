@@ -152,6 +152,15 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Saved before the first ball**: the board, the bet and every path; a reload settles the very same drop.
 - **Keyboard shortcuts**: `Space`/`Enter` drop · `1`–`6` bet · `B` balls · `W` rows · `K` risk · `M` sound.
 
+### Table 4 · Fan-Tan
+
+- **Beads counted off in fours**: the croupier's pile holds 41 to 104 beads, drawn with `crypto.getRandomValues`; the bowl is lifted, the beads are taken away four at a time, and the one to four left are the number that wins. Each number is left by sixteen of the sixty-four piles.
+- **Thirty-eight bets**: Fan on one number at 3 to 1; Kwok on the two numbers at a corner, Odd and Even at 1 to 1; Sheh Sam Hong on three numbers at 1 to 3; twelve Nim that win on one number at 2 to 1 and are returned on another; and twelve Nga Tan that win on two numbers at 1 to 2 and are returned on a third.
+- **5% commission, paid to the cent**: every win is paid its odds less 5%. The whole dollars are paid at once and the change waits in the box beside the plaque for a later win, so every bet pays exactly its odds less 5%: a house edge of 3.75% on Fan, 2.50% on Nim, Kwok, Odd and Even, 1.25% on Nga Tan and Sheh Sam Hong, checked over every result.
+- **The layout lights up**: the spots the number wins are lit and their stacks grow to what they return, the spots returned are marked, losing chips are swept away, and the last results line up above the layout in the colour of each number.
+- **Saved before the bowl is lifted**: the bets, the stake and the pile; a reload settles the very same round and shows the beads counted.
+- **Keyboard shortcuts**: `Space`/`Enter` open · `1`–`6` chips · `O` Odd · `E` Even · `Z` or `Backspace` undo · `C` clear · `D` double · `R` rebet · `M` sound.
+
 ## One pit
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
@@ -222,6 +231,7 @@ games/keno/                Keno 80: page, look, engine, saved state
 games/bigsix/              Wheel 54: page, look, engine, saved state
 games/reddog/              Table 13: page, look, engine, saved state
 games/pegboard/            Drop 16: page, look, engine, saved state
+games/fantan/              Table 4: page, look, engine, saved state
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)

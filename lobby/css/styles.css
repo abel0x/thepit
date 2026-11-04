@@ -233,6 +233,12 @@ body {
 .art-slot.top { fill: #b3243a; }
 .art-drop { fill: #fbf8ef; stroke: #c9a24b; stroke-width: 1.4; filter: drop-shadow(0 2px 2px rgba(0,0,0,.5)); }
 
+/* Table 4: the croupier's plate of beads and the stick */
+.art-plate { fill: #4a2f13; stroke: var(--gold); stroke-width: 5; filter: drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
+.art-bead { fill: #f4efe3; stroke: rgba(0, 0, 0, .25); stroke-width: .6; }
+.art-bead.taken { opacity: .5; }
+.art-stick { stroke: var(--gold); stroke-width: 4; stroke-linecap: round; filter: drop-shadow(0 2px 2px rgba(0,0,0,.5)); }
+
 /* Table 37: the wheel */
 .art-bowl { fill: #4e2711; }
 .art-brass { fill: none; stroke: var(--gold); stroke-width: 4; }

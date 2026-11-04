@@ -4,10 +4,11 @@ All notable changes to ThePit are documented here. The project follows [Semantic
 
 ## [0.1.0] - Unreleased
 
-The first version of the pit: eight tables, a money wheel, a slot machine, a video poker machine, a keno machine and a peg board, one wallet, one lobby.
+The first version of the pit: nine tables, a money wheel, a slot machine, a video poker machine, a keno machine and a peg board, one wallet, one lobby.
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings.
 - Table 21, the blackjack table, and Table 37, the roulette table, brought in from their own projects at version 1.0.0, each with a way back to the lobby.
+- Table 4, a Fan-Tan table: a pile of 41 to 104 beads counted off in fours, thirty-eight bets from Fan at 3 to 1 to Sheh Sam Hong at 1 to 3, every win paid its odds less 5% with the change kept in a box to the cent, house edges from 1.25% to 3.75% checked over every result, and the last results in the colour of each number.
 - Drop 16, a peg board machine: balls bounce down 8, 12 or 16 rows of pegs into slots that pay up to 1000 times the bet, under three risks with pay tables of its own and returns from 96.88% to 97.25% counted over every way down, with 1, 5, 10 or 20 balls a drop, all saved before the first one falls.
 - Table 13, a Red Dog table: two cards from an eight-deck shoe set the spread, a Raise that doubles the Ante, the third card paid 5, 4, 2 or 1 to 1 by the spread and three of a kind 11 to 1, a ladder of the ranks between, an optional strategy hint, and a house edge of 2.75% counted over every deal of the shoe.
 - Table 21's settings button shows the same gear as every other table.

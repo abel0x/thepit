@@ -50,7 +50,7 @@
   // How each table counts its rounds in its statistics.
   var ROUNDS = {
     blackjack: "hands", roulette: "spins", baccarat: "coups", threecard: "hands", slot: "spins", craps: "rolls",
-    holdem: "hands", videopoker: "hands", sicbo: "rolls", keno: "games", bigsix: "spins", reddog: "hands"
+    holdem: "hands", videopoker: "hands", sicbo: "rolls", keno: "games", bigsix: "spins", reddog: "hands", pegboard: "drops"
   };
 
   /* ---------------- Balance ---------------- */

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<!-- ThePit · Copyright (C) 2026 abel0x
+     SPDX-License-Identifier: AGPL-3.0-or-later
+     Free software with ABSOLUTELY NO WARRANTY; see LICENSE for the terms. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3d2e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ThePit" />
+  <meta name="application-name" content="ThePit" />
+  <meta name="description" content="A free, play-money peg board machine that works completely offline."
+        data-i18n-content="appDescription" />
+  <title>Drop 16 · ThePit</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ThePit" />
+  <meta property="og:title" content="Drop 16 · ThePit" />
+  <meta property="og:description" content="A free, play-money peg board machine that works completely offline." />
+  <meta property="og:url" content="https://abel0x.github.io/thepit/games/pegboard/" />
+  <meta property="og:image" content="https://abel0x.github.io/thepit/assets/social-preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The peg board of Drop 16, a ball bouncing down rows of pegs into the slots that pay" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="../../shared/css/pit.css" />
+  <link rel="stylesheet" href="../../shared/css/table.css" />
+  <link rel="stylesheet" href="../../shared/css/chip-tables.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-phase="betting" data-theme="emerald" data-animation-speed="normal">
+  <div class="ambient"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a class="icon-btn lobby-link" href="../../index.html" aria-label="Back to the lobby" title="Back to the lobby"
+         data-i18n-aria-label="backToLobby" data-i18n-title="backToLobby">
+        <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+      </a>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+          <defs>
+            <linearGradient id="dRing" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
+              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+              <stop offset="100%" stop-color="#8c6a1c"/>
+            </linearGradient>
+          </defs>
+          <circle cx="32" cy="32" r="29" fill="#08231a"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#dRing)" stroke-width="2.6"/>
+          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#dRing)" stroke-width="1" opacity=".7"/>
+          <g fill="#f0dd9a">
+            <circle cx="32" cy="22" r="1.8"/>
+            <circle cx="27" cy="29" r="1.8"/><circle cx="37" cy="29" r="1.8"/>
+            <circle cx="22" cy="36" r="1.8"/><circle cx="32" cy="36" r="1.8"/><circle cx="42" cy="36" r="1.8"/>
+          </g>
+          <rect x="18" y="41" width="7" height="5" rx="1.2" fill="#c9a24b"/><rect x="28.5" y="41" width="7" height="5" rx="1.2" fill="#24704e"/>
+          <rect x="39" y="41" width="7" height="5" rx="1.2" fill="#c9a24b"/>
+          <circle cx="29.5" cy="25.5" r="3" fill="#fbf8ef"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1 aria-label="Drop 16" data-i18n-aria-label="brandName">
+          <span class="brand-word">DROP</span><span class="brand-number" aria-hidden="true">16</span>
+        </h1>
+        <p class="subtitle" data-i18n="subtitle">Peg board</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="balance-pill" id="balancePill">
+        <span class="balance-label" data-i18n="balance">Balance</span>
+        <span class="balance-value"><span class="currency">$</span><span id="bankroll">0</span></span>
+      </div>
+
+      <div class="lang-switch" role="group" aria-label="Language selection" data-i18n-aria-label="languageSelector">
+        <button class="lang-btn" data-lang="en" type="button" lang="en">EN</button>
+        <button class="lang-btn" data-lang="tr" type="button" lang="tr">TR</button>
+      </div>
+
+      <button id="soundToggle" class="icon-btn sound-control" type="button" aria-pressed="true" aria-label="Mute sound"
+              title="Mute sound" data-i18n-title="muteSound" data-i18n-aria-label="muteSound" aria-keyshortcuts="M">
+        <svg class="sound-glyph" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <path class="sound-cone" d="M4.8 11h3.5l4.7-3.9v13.8L8.3 17H4.8Z" />
+          <path class="sound-wave sound-wave-near" d="M16.1 10.2c1 1 1.5 2.3 1.5 3.8s-.5 2.8-1.5 3.8" />
+          <path class="sound-wave sound-wave-far" d="M19.2 7.6c1.8 1.8 2.8 4 2.8 6.4s-1 4.6-2.8 6.4" />
+          <path class="sound-slash" d="M6.5 6.5l15 15" />
+        </svg>
+        <span class="sound-led" aria-hidden="true"></span>
+      </button>
+
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Settings" title="Settings"
+              data-i18n-title="settings" data-i18n-aria-label="settings" aria-haspopup="dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.2" />
+          <path d="M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3 5.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="table-wrap">
+    <section class="table" aria-label="Peg board machine" data-i18n-aria-label="machineLabel">
+      <div class="table-felt" id="tableFelt">
+        <div class="table-rim" aria-hidden="true"></div>
+
+        <div class="felt-head">
+          <div class="drop-meter" aria-live="off">
+            <span class="meter-item"><small data-i18n="ballsLabel">BALLS</small><strong><span id="ballsDown">0</span>/<span id="ballsTotal">1</span></strong></span>
+            <span class="meter-item"><small data-i18n="lastLabel">LAST</small><strong id="lastMultiple">–</strong></span>
+          </div>
+          <div class="banner" id="banner" role="status" aria-live="polite" aria-atomic="true">
+            <span id="bannerText" data-i18n="placeBet">Choose a bet and drop</span>
+            <small id="bannerSub"></small>
+          </div>
+          <div class="table-specs" role="group" aria-label="Table information" data-i18n-aria-label="tableInformation">
+            <span class="table-spec">
+              <small data-i18n="tableMinLabel">MIN</small>
+              <strong id="tableMin">$10</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableMaxLabel">MAX</small>
+              <strong id="tableMax">$5,000</strong>
+            </span>
+            <span class="table-spec">
+              <small data-i18n="tableRtpLabel">RETURN</small>
+              <strong id="tableRtp">0%</strong>
+            </span>
+          </div>
+        </div>
+
+        <div class="peg-body">
+          <div class="board-wrap">
+            <svg class="board" id="board" role="img" aria-label="The board" focusable="false"></svg>
+          </div>
+          <aside class="peg-side">
+            <div class="side-group">
+              <span class="side-label" id="rowsLabel" data-i18n="rowsLabel">Rows</span>
+              <div class="seg rows-picker" id="rowsPicker" role="radiogroup" aria-labelledby="rowsLabel" aria-keyshortcuts="W">
+                <button class="seg-btn" data-rows="8" type="button" role="radio" aria-checked="false" tabindex="-1">8</button>
+                <button class="seg-btn active" data-rows="12" type="button" role="radio" aria-checked="true">12</button>
+                <button class="seg-btn" data-rows="16" type="button" role="radio" aria-checked="false" tabindex="-1">16</button>
+              </div>
+            </div>
+            <div class="side-group">
+              <span class="side-label" id="riskLabel" data-i18n="riskLabel">Risk</span>
+              <div class="seg risk-picker" id="riskPicker" role="radiogroup" aria-labelledby="riskLabel" aria-keyshortcuts="K">
+                <button class="seg-btn" data-risk="low" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="riskLow">Low</button>
+                <button class="seg-btn active" data-risk="medium" type="button" role="radio" aria-checked="true" data-i18n="riskMedium">Medium</button>
+                <button class="seg-btn" data-risk="high" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="riskHigh">High</button>
+              </div>
+            </div>
+            <div class="side-group history-group">
+              <span class="side-label" id="historyLabel" data-i18n="historyLabel">Last drops</span>
+              <ol class="history" id="history" aria-labelledby="historyLabel"></ol>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-label="Game controls" data-i18n-aria-label="controlsLabel">
+      <div class="chips-tray" id="chipTray" role="radiogroup" aria-label="Bet per ball" data-i18n-aria-label="chipsLabel" aria-keyshortcuts="1 2 3 4 5 6">
+        <button class="chip chip-10" data-value="10" type="button" role="radio" aria-checked="true" aria-label="$10"><span class="denom">10</span></button>
+        <button class="chip chip-50" data-value="50" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$50"><span class="denom">50</span></button>
+        <button class="chip chip-100" data-value="100" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$100"><span class="denom">100</span></button>
+        <button class="chip chip-500" data-value="500" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$500"><span class="denom">500</span></button>
+        <button class="chip chip-1k" data-value="1000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$1,000"><span class="denom">1K</span></button>
+        <button class="chip chip-5k" data-value="5000" type="button" role="radio" aria-checked="false" tabindex="-1" aria-label="$5,000"><span class="denom">5K</span></button>
+      </div>
+
+      <div class="action-row">
+        <div class="balls-picker seg" id="ballsPicker" role="radiogroup" aria-label="Balls per drop" data-i18n-aria-label="ballsPicker" aria-keyshortcuts="B">
+          <button class="seg-btn active" data-balls="1" type="button" role="radio" aria-checked="true">×1</button>
+          <button class="seg-btn" data-balls="5" type="button" role="radio" aria-checked="false" tabindex="-1">×5</button>
+          <button class="seg-btn" data-balls="10" type="button" role="radio" aria-checked="false" tabindex="-1">×10</button>
+          <button class="seg-btn" data-balls="20" type="button" role="radio" aria-checked="false" tabindex="-1">×20</button>
+        </div>
+        <div class="bet-total" aria-live="off">
+          <small data-i18n="betLabel">Bet</small>
+          <strong>$<span id="betAmount">10</span></strong>
+          <small class="balls-line" id="ballsLine"></small>
+          <small class="last-win"><span data-i18n="lastWin">Last win</span> <b>$<span id="lastWin">0</span></b></small>
+        </div>
+
+        <button id="btnDrop" class="deal-btn" type="button" aria-keyshortcuts="Space Enter">
+          <span class="deal-label" data-i18n="drop">Drop</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings -->
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button class="icon-btn" data-close type="button" aria-label="Close" data-i18n-aria-label="close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="setting-row">
+          <span class="setting-label" id="settingsLanguageLabel" data-i18n="language">Language</span>
+          <div class="seg" role="group" aria-labelledby="settingsLanguageLabel">
+            <button class="seg-btn" data-set-lang="en" type="button" lang="en">English</button>
+            <button class="seg-btn" data-set-lang="tr" type="button" lang="tr">Türkçe</button>
+          </div>
+        </div>
+
+        <div class="theme-setting">
+          <div class="setting-section-label" id="themeLabel" data-i18n="tableCloth">Table cloth</div>
+          <div class="theme-picker" role="radiogroup" aria-labelledby="themeLabel">
+            <button class="theme-option" data-set-theme="emerald" type="button" role="radio" aria-checked="true">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeEmerald">Emerald</span>
+            </button>
+            <button class="theme-option" data-set-theme="midnight" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeMidnight">Midnight</span>
+            </button>
+            <button class="theme-option" data-set-theme="bordeaux" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeBordeaux">Bordeaux</span>
+            </button>
+            <button class="theme-option" data-set-theme="onyx" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeOnyx">Onyx</span>
+            </button>
+            <button class="theme-option" data-set-theme="amethyst" type="button" role="radio" aria-checked="false" tabindex="-1">
+              <span class="theme-preview" aria-hidden="true"></span>
+              <span class="theme-name" data-i18n="themeAmethyst">Amethyst</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-row animation-setting">
+          <span class="setting-label" id="animationSpeedLabel" data-i18n="animationSpeed">Ball speed</span>
+          <div class="seg animation-seg" role="radiogroup" aria-labelledby="animationSpeedLabel">
+            <button class="seg-btn" data-set-animation="fast" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedFast">Fast</button>
+            <button class="seg-btn active" data-set-animation="normal" type="button" role="radio" aria-checked="true" data-i18n="speedNormal">Normal</button>
+            <button class="seg-btn" data-set-animation="cinematic" type="button" role="radio" aria-checked="false" tabindex="-1" data-i18n="speedCinematic">Cinematic</button>
+          </div>
+        </div>
+
+        <div class="sound-settings">
+          <div class="setting-row">
+            <label for="setSound" data-i18n="soundLabel">Sound</label>
+            <label class="switch">
+              <input type="checkbox" id="setSound" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="audio-mixer" id="soundMixer" role="group" aria-label="Sound levels" data-i18n-aria-label="soundMixer">
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundMasterLabel" data-i18n="masterVolume">Master</span><output id="soundMasterValue" for="soundMaster">100%</output></span>
+              <input class="volume-slider" id="soundMaster" data-sound-level="master" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundMasterLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundChipsLabel" data-i18n="pegVolume">Pegs</span><output id="soundChipsValue" for="soundChips">100%</output></span>
+              <input class="volume-slider" id="soundChips" data-sound-level="chips" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundChipsLabel" aria-valuetext="100%" />
+            </label>
+            <label class="volume-control">
+              <span class="volume-head"><span id="soundTableLabel" data-i18n="tableVolume">Machine cues</span><output id="soundTableValue" for="soundTable">100%</output></span>
+              <input class="volume-slider" id="soundTable" data-sound-level="table" type="range" min="0" max="100" step="5" value="100" aria-labelledby="soundTableLabel" aria-valuetext="100%" />
+            </label>
+          </div>
+        </div>
+
+        <details class="payout-table">
+          <summary data-i18n="payoutsTitle">Boards and payouts</summary>
+          <p class="settings-hint" data-i18n="howToPlay">Choose the rows of pegs, the risk and a bet, then drop. At every row the ball bounces left or right, each with an even chance, and lands in a slot at the bottom that pays its multiple of the bet.</p>
+          <p class="settings-hint" data-i18n="ballsRules">Drop 1, 5, 10 or 20 balls at a time, each with the bet. Every ball's way down is drawn and saved before the first one falls, and they are paid together when the last one lands.</p>
+          <table class="returns-table">
+            <caption data-i18n="returnsCaption">Return of every board</caption>
+            <thead><tr><th scope="col" data-i18n="rowsLabel">Rows</th><th scope="col" data-i18n="riskLow">Low</th><th scope="col" data-i18n="riskMedium">Medium</th><th scope="col" data-i18n="riskHigh">High</th></tr></thead>
+            <tbody id="returnRows"></tbody>
+          </table>
+          <p class="settings-hint" data-i18n="returnsHint">Every return is counted exactly over all the ways down a board: 256 for 8 rows, 4,096 for 12 and 65,536 for 16. A higher risk spreads about the same return over fewer, larger pays.</p>
+          <p class="settings-hint" data-i18n="rulesHint">Bets are whole tens of dollars, so every slot pays whole dollars. The rows and the risk change between drops.</p>
+        </details>
+
+        <div class="stats-grid">
+          <h3 data-i18n="sessionStats">Statistics</h3>
+          <div class="stat"><span data-i18n="statDrops">Balls dropped</span><b id="stDrops">0</b></div>
+          <div class="stat"><span data-i18n="statWinningDrops">Paid more than the bet</span><b id="stWinRate">0%</b></div>
+          <div class="stat"><span data-i18n="statBest">Best multiple</span><b id="stBest">None yet</b></div>
+          <div class="stat"><span data-i18n="biggestWin">Biggest win</span><b id="stBiggest">$0</b></div>
+          <div class="stat"><span data-i18n="totalWagered">Wagered</span><b id="stWagered">$0</b></div>
+          <div class="stat"><span data-i18n="totalReturned">Returned</span><b id="stReturned">$0</b></div>
+          <div class="stat stat-wide"><span data-i18n="netResult">Net result</span><b id="stNet">$0</b></div>
+        </div>
+        <p class="settings-hint" data-i18n="statsHint">For entertainment: every bounce is drawn fresh, so past drops never make the next one more or less likely.</p>
+
+        <div class="setting-row deposit-row">
+          <label for="depositAmount" data-i18n="addFunds">Add play money</label>
+          <div class="deposit-field">
+            <span class="deposit-currency">$</span>
+            <input id="depositAmount" class="deposit-input" type="number" min="1" step="1"
+                   inputmode="numeric" placeholder="0" aria-label="Amount" data-i18n-aria-label="amount" />
+            <button id="btnDeposit" class="btn btn-primary deposit-btn" type="button" data-i18n="deposit">Add</button>
+          </div>
+        </div>
+        <div class="deposit-presets" role="group" aria-label="Quick add" data-i18n-aria-label="quickAdd">
+          <button class="preset-btn" data-deposit="1000" type="button">+$1K</button>
+          <button class="preset-btn" data-deposit="5000" type="button">+$5K</button>
+          <button class="preset-btn" data-deposit="25000" type="button">+$25K</button>
+          <button class="preset-btn" data-deposit="100000" type="button">+$100K</button>
+        </div>
+
+        <div class="modal-foot">
+          <button id="btnResetStats" class="btn btn-ghost" type="button" data-i18n="resetStats">Reset statistics</button>
+        </div>
+
+        <section class="about" aria-labelledby="disclaimerTitle">
+          <h3 id="disclaimerTitle" data-i18n="disclaimerTitle">Disclaimer</h3>
+          <p data-i18n="disclaimerPlayMoney">Drop 16 is a peg board simulation for entertainment only. Chips and balances are play money with no cash value: they cannot be bought, sold or exchanged for money or prizes, and no real-money gambling is offered.</p>
+          <p data-i18n="disclaimerOdds">Every bounce is drawn at random on your device. If gambling is causing problems for you or someone close to you, please seek help.</p>
+          <p data-i18n="disclaimerWarranty">Intended for adults. Not affiliated with any casino. Provided as is, without warranty of any kind.</p>
+          <p class="about-meta">
+            <span><span data-i18n="versionLabel">Version</span> 0.1.0</span>
+            <span data-i18n="licenseNotice">Free software under the GNU AGPL v3</span>
+            <a href="https://github.com/abel0x/thepit" target="_blank" rel="noopener" data-i18n="sourceCode">Source code</a>
+          </p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../../shared/js/pit.js"></script>
+  <script src="../../shared/js/i18n.js"></script>
+  <script src="js/strings.js"></script>
+  <script src="../../shared/js/card-sound.js"></script>
+  <script src="../../shared/js/chips.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/game.js"></script>
+  <script src="../../shared/js/pwa.js"></script>
+</body>
+</html>

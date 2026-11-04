@@ -24,6 +24,7 @@ var SicBo = require("../../games/sicbo/js/engine.js");
 var Keno = require("../../games/keno/js/engine.js");
 var BigSix = require("../../games/bigsix/js/engine.js");
 var RedDog = require("../../games/reddog/js/engine.js");
+var Pegboard = require("../../games/pegboard/js/engine.js");
 
 // A small seeded generator (mulberry32), so every run plays the same rounds.
 function seeded(seed) {
@@ -235,7 +236,18 @@ test("every table settles in whole dollars and accounts for every dollar staked"
     count("reddog");
   }
 
-  assert.deepEqual(Object.keys(played).sort(), ["baccarat", "bigsix", "blackjack", "craps", "holdem", "keno", "reddog", "roulette", "sicbo", "slot", "threecard", "videopoker"]);
+  // Drop 16: any board, any count of balls, any bet the tray makes.
+  for (round = 0; round < ROUNDS; round++) {
+    var pegRows = pick(random, Pegboard.ROWS), pegRisk = pick(random, Pegboard.RISKS);
+    var pegBet = pick(random, [10, 50, 100, 500, 1000, 5000]);
+    var pegPaths = [];
+    for (var ball = 0; ball < pick(random, Pegboard.BALLS); ball++) pegPaths.push(Pegboard.drop(pegRows, random));
+    var top = Math.max.apply(null, Pegboard.pays(pegRows, pegRisk));
+    checkSettlement("Drop 16", Pegboard.settle(pegBet, pegRows, pegRisk, pegPaths), pegBet * pegPaths.length, top);
+    count("pegboard");
+  }
+
+  assert.deepEqual(Object.keys(played).sort(), ["baccarat", "bigsix", "blackjack", "craps", "holdem", "keno", "pegboard", "reddog", "roulette", "sicbo", "slot", "threecard", "videopoker"]);
 });
 
 /* ---------------- Long runs return what the odds say ---------------- */
@@ -280,6 +292,13 @@ test("long seeded runs of every one-round game return what the exact odds say", 
     var cards = RedDog.deal(function () { return shoe.pop(); });
     var hand = RedDog.settle({ ante: 10 }, cards, RedDog.shouldRaise(cards) ? "raise" : "call");
     return (hand.net + 10) / 10;
+  });
+  Pegboard.ROWS.forEach(function (rows) {
+    Pegboard.RISKS.forEach(function (risk) {
+      converges("Drop 16 " + rows + " " + risk, Pegboard.returnFor(rows, risk), 60000, function () {
+        return Pegboard.payout(10, rows, risk, Pegboard.drop(rows, random)) / 10;
+      });
+    });
   });
   var picks = [7, 18, 29, 40];
   converges("Keno 80 four marks", Keno.returnFor(4), 60000, function () {

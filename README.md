@@ -143,6 +143,15 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 - **Saved at every step**: all three cards and the stake before the first card, the decision and the Raise before the third; a reload brings the same cards back to the decision, or settles a decided hand.
 - **Keyboard shortcuts**: `Space`/`Enter` deal or call · `1`–`6` chips · `A` Ante · `R` raise or rebet · `C` call or clear · `Z` or `Backspace` undo · `D` double · `M` sound.
 
+### Drop 16 · Peg board
+
+- **Three boards, three risks**: drop a ball down 8, 12 or 16 rows of pegs; at every row it bounces left or right with an even chance drawn by `crypto.getRandomValues`, and lands in one of the slots at the bottom, which pays its multiple of the bet. Low risk pays back something on most drops; high risk pays little in the middle and up to 1000 times the bet at the edges of the 16-row board.
+- **Returns counted exactly**: every pay table is this machine's own, and every return is counted over all the ways down a board, 256, 4,096 or 65,536 of them, and checked again path by path: from 96.88% to 97.25%.
+- **Bets in tens**: a chip from $10 to $5,000 sets the bet on each ball, so every multiple with one decimal pays whole dollars.
+- **Up to twenty balls**: drop 1, 5, 10 or 20 balls at a time. Every ball's way down is drawn and saved before the first one falls, each lights the pegs it meets and the slot it lands in, and they are paid together.
+- **Saved before the first ball**: the board, the bet and every path; a reload settles the very same drop.
+- **Keyboard shortcuts**: `Space`/`Enter` drop · `1`–`6` bet · `B` balls · `W` rows · `K` risk · `M` sound.
+
 ## One pit
 
 - **One balance for every table**: chips won at Table 37 can be played at Table 21. Supporting browsers guard the balance with a single Web Lock across every page and tab, so a hand at one table and a spin at another can never overwrite each other; without that API, each tab plays a separate session balance and says so.
@@ -212,6 +221,7 @@ games/sicbo/               Table 18: page, look, engine, saved state
 games/keno/                Keno 80: page, look, engine, saved state
 games/bigsix/              Wheel 54: page, look, engine, saved state
 games/reddog/              Table 13: page, look, engine, saved state
+games/pegboard/            Drop 16: page, look, engine, saved state
 manifest.json              installable PWA metadata
 sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)

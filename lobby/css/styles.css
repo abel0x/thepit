@@ -224,6 +224,15 @@ body {
 .art-reel { fill: #fbf8ef; }
 .art-seven { font-family: Georgia, "Times New Roman", serif; font-size: 40px; font-weight: 700; text-anchor: middle; fill: #c8202a; stroke: #e6c35a; stroke-width: 1.2; paint-order: stroke; }
 
+/* Drop 16: a triangle of pegs, the slots and a ball on its way down */
+.art-peg { fill: var(--print); }
+.art-slot { stroke: rgba(0, 0, 0, .35); stroke-width: 1; }
+.art-slot.low { fill: #2f5d73; }
+.art-slot.even { fill: #2d7a55; }
+.art-slot.mid { fill: #b08a2e; }
+.art-slot.top { fill: #b3243a; }
+.art-drop { fill: #fbf8ef; stroke: #c9a24b; stroke-width: 1.4; filter: drop-shadow(0 2px 2px rgba(0,0,0,.5)); }
+
 /* Table 37: the wheel */
 .art-bowl { fill: #4e2711; }
 .art-brass { fill: none; stroke: var(--gold); stroke-width: 4; }

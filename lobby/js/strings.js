@@ -64,6 +64,8 @@
       bigsixSummary: "A money wheel of 54 segments: bet on $1 to $20, the Joker or the logo, and win the number to one when the wheel stops there.",
       reddogGame: "Red Dog",
       reddogSummary: "Two cards set the spread. Raise or call, and win up to 5 to 1 when the third card falls between them, or 11 to 1 on three of a kind.",
+      pegboardGame: "Peg board",
+      pegboardSummary: "Drop balls down 8, 12 or 16 rows of pegs at low, medium or high risk, and win up to 1000 times the bet in the slot they land in. Returns about 97%.",
       footerNote: "Play money only. Chips have no cash value and can never be bought or exchanged for money.",
 
       clothHint: "The cloth you choose dresses every table in the pit.",
@@ -127,6 +129,8 @@
       bigsixSummary: "54 dilimli bir para çarkı: $1'den $20'ye, Joker'e ya da logoya bahis yapın; çark orada durursa sayının 1'e katını kazanın.",
       reddogGame: "Red Dog",
       reddogSummary: "İki kart aralığı belirler. Artırın ya da devam edin; üçüncü kart arada düşerse 1'e 5'e kadar, üçlü gelirse 1'e 11 kazanın.",
+      pegboardGame: "Çivili tahta",
+      pegboardSummary: "Topları düşük, orta ya da yüksek riskle 8, 12 ya da 16 sıra çividen bırakın; düştükleri yuvada bahsin 1000 katına kadar kazanın. Geri ödeme yaklaşık %97.",
       footerNote: "Yalnızca oyun parası. Jetonların nakit değeri yoktur; satın alınamaz, paraya çevrilemez.",
 
       clothHint: "Seçtiğiniz çuha salondaki bütün masalara serilir.",

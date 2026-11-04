@@ -653,25 +653,46 @@ function splitLayoutProblems() {
   return [...new Set(problems)];
 }
 
+// An emulated resize reaches the page in steps. innerWidth, innerHeight and
+// the media queries change by the time setViewport() resolves, but elements
+// already on the page keep the sizes they took from the old viewport units
+// (vw, vh) for one to three more frames, and the felt is sized in vh.
+// Measuring then, or clicking (page.click aims at where the button is drawn at
+// that moment), uses a layout that is about to move: going from 320x568 back
+// to 1280x900 puts the buttons some 300px higher than they end up.
+// A 100vw x 100vh box placed before the resize catches up on the same frame
+// as the table, so wait for it, then until the layout has stopped moving.
+// (A box created after the resize would not do: it starts at the new size.)
+async function resizeTo(page, width, height) {
+  await page.evaluate(() => {
+    if (document.getElementById("viewportProbe")) return;
+    const probe = document.createElement("div");
+    probe.id = "viewportProbe";
+    probe.style.cssText = "position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; visibility: hidden; pointer-events: none";
+    document.documentElement.appendChild(probe);
+    probe.getBoundingClientRect();
+  });
+  await page.setViewport({ width, height });
+  await page.waitForFunction((w, h) => {
+    const box = document.getElementById("viewportProbe").getBoundingClientRect();
+    return innerWidth === w && innerHeight === h && Math.round(box.width) === w && Math.round(box.height) === h;
+  }, { polling: "raf" }, width, height);
+  await page.evaluate(() => { window.layoutKey = ""; window.layoutStill = 0; });
+  await page.waitForFunction(() => {
+    const key = [".table-felt", ".controls", "#playerHands"].map(selector => {
+      const r = document.querySelector(selector).getBoundingClientRect();
+      return [r.left, r.top, r.width, r.height].map(Math.round).join(",");
+    }).join("|") + "|" + document.documentElement.scrollHeight;
+    window.layoutStill = key === window.layoutKey ? window.layoutStill + 1 : 0;
+    window.layoutKey = key;
+    return window.layoutStill >= 3;
+  }, { polling: "raf", timeout: 3000 });
+}
+
 async function sweepLayouts(page, moment) {
   const found = [];
   for (const [width, height] of LAYOUT_VIEWPORTS) {
-    await page.setViewport({ width, height });
-    // The resize reaches the renderer asynchronously and the layout can take a
-    // few frames to settle; measure only once it has stopped moving.
-    await page.waitForFunction((w, h) => innerWidth === w && innerHeight === h, {}, width, height);
-    // Emulated resizes can show one frame of new widths with old viewport units.
-    await new Promise(resolve => setTimeout(resolve, 80));
-    await page.evaluate(() => { window.layoutKey = ""; window.layoutStill = 0; });
-    await page.waitForFunction(() => {
-      const key = [".table-felt", ".controls", "#playerHands"].map(selector => {
-        const r = document.querySelector(selector).getBoundingClientRect();
-        return [r.left, r.top, r.width, r.height].map(Math.round).join(",");
-      }).join("|") + "|" + document.documentElement.scrollHeight;
-      window.layoutStill = key === window.layoutKey ? window.layoutStill + 1 : 0;
-      window.layoutKey = key;
-      return window.layoutStill >= 3;
-    }, { polling: "raf", timeout: 3000 });
+    await resizeTo(page, width, height);
     for (const problem of await page.evaluate(splitLayoutProblems)) found.push(width + "x" + height + " " + moment + ": " + problem);
   }
   return found;
@@ -689,7 +710,7 @@ for (const count of [1, 2, 3, 4]) {
       for (let doubled = 1; doubled < count; doubled++) { await ready(); await page.click("#btnDouble"); }
       await ready();
       const problems = await sweepLayouts(page, "decision");
-      await page.setViewport({ width: 1280, height: 900 });
+      await resizeTo(page, 1280, 900);
       // Freeze the table the instant it settles, so results stay on the felt while measured.
       await page.evaluate(() => new MutationObserver((records, observer) => {
         if (document.body.dataset.phase !== "payout") return;
@@ -1019,9 +1040,7 @@ test("the side circles stay on the felt and clear of the rules plaque at every s
     await sideBet(page, "trio");
     const found = [];
     for (const [width, height] of LAYOUT_VIEWPORTS) {
-      await page.setViewport({ width, height });
-      await page.waitForFunction((w, h) => innerWidth === w && innerHeight === h, {}, width, height);
-      await new Promise(resolve => setTimeout(resolve, 120));
+      await resizeTo(page, width, height);
       const problems = await page.evaluate(() => {
         const felt = document.querySelector(".table-felt").getBoundingClientRect();
         const plaque = document.querySelector(".table-specs");

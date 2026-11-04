@@ -614,6 +614,14 @@ body[data-animation-speed="cinematic"] .lane .card.deal-ready { animation-durati
   .deal-btn, .fold-btn { height: 42px; min-width: 76px; padding-inline: 12px; }
 }
 
+/* The narrowest phones: slimmer tools and button, so that a large total
+   still fits beside them. */
+@media (max-width: 360px) {
+  .btn-tool { padding-inline: 5px; }
+  .deal-btn, .fold-btn { min-width: 72px; padding: 0 10px; }
+  .bet-total strong { font-size: 16px; }
+}
+
 /* No transitions at all for reduced motion: each step appears in place. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

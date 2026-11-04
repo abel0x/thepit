@@ -494,6 +494,15 @@
   .deal-btn { height: 42px; min-width: 76px; padding-inline: 12px; }
 }
 
+/* The narrowest phones: a slimmer picker and button, and the line of the
+   drop's whole stake may wrap, so that a large bet still fits beside them. */
+@media (max-width: 360px) {
+  .balls-picker .seg-btn { padding-inline: 6px; }
+  .deal-btn { min-width: 72px; padding: 0 10px; }
+  .bet-total strong { font-size: 16px; }
+  .bet-total .balls-line { white-space: normal; max-width: 9em; }
+}
+
 /* No transitions at all for reduced motion: each step appears in place. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

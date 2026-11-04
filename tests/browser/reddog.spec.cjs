@@ -404,6 +404,11 @@ function layoutProblems() {
       if (overlap(r, print)) out.push(spot.dataset.bet + " chips cover the print");
     });
   });
+  // A large total must stay beside the main buttons, not run under them.
+  const total = document.querySelector(".bet-total strong");
+  document.querySelectorAll(".action-row .deal-btn, .action-row .fold-btn").forEach(button => {
+    if (shown(total) && shown(button) && overlap(rect(total), rect(button))) out.push("the total runs under #" + button.id);
+  });
   if (overlap(rect(document.querySelector(".controls")), felt)) out.push("the controls overlap the felt");
   if (document.documentElement.scrollWidth > innerWidth + 1) out.push("horizontal scroll");
   if (document.documentElement.scrollHeight > innerHeight + 1) out.push("page " + document.documentElement.scrollHeight + "px tall");

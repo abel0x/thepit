@@ -275,6 +275,11 @@ function layoutProblems() {
   document.querySelectorAll(".peg-side .seg-btn, .balls-picker .seg-btn, #btnDrop").forEach(node => {
     if (shown(node) && node.scrollWidth > node.clientWidth + 1) out.push("\"" + node.textContent.trim() + "\" is cut off");
   });
+  // A large total must stay beside the main buttons, not run under them.
+  const total = document.querySelector(".bet-total strong");
+  document.querySelectorAll(".action-row .deal-btn, .action-row .fold-btn").forEach(button => {
+    if (shown(total) && shown(button) && overlap(rect(total), rect(button))) out.push("the total runs under #" + button.id);
+  });
   if (overlap(rect(document.querySelector(".controls")), felt)) out.push("the controls overlap the felt");
   if (document.documentElement.scrollWidth > innerWidth + 1) out.push("horizontal scroll");
   if (document.documentElement.scrollHeight > innerHeight + 1) out.push("page " + document.documentElement.scrollHeight + "px tall");
@@ -292,7 +297,8 @@ async function sweepLayouts(page, moment) {
 
 for (const lang of ["en", "tr"]) {
   test(lang + ": the machine fits every size, before a drop and after twenty balls", async () => {
-    await scene({ lang, settings: { rows: 16, risk: "high", balls: 20, bet: 10 } }, async page => {
+    // The largest drop, twenty balls of $5,000, makes the longest totals.
+    await scene({ lang, bankroll: 1000000, settings: { rows: 16, risk: "high", balls: 20, bet: 5000 } }, async page => {
       const problems = await sweepLayouts(page, "before");
       await resizeTo(page, 1280, 800);
       await drop(page);

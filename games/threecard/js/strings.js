@@ -44,7 +44,7 @@
       payEven: "1 TO 1",
       payPairPlus: "UP TO 40 TO 1",
       payPlay: "EQUALS ANTE",
-      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+      spotBet: "Bet: {amount}",
       handLabel: "{side}: {hand}",
       qualifierPrint: "Dealer plays with Queen high or better",
 
@@ -187,7 +187,7 @@
       payEven: "1'E 1",
       payPairPlus: "1'E 40'A KADAR",
       payPlay: "ANTE KADAR",
-      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+      spotBet: "Bahis: {amount}",
       handLabel: "{side}: {hand}",
       qualifierPrint: "Krupiye Kız yüksek ya da daha iyisiyle oynar",
 

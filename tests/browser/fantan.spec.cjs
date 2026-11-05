@@ -203,7 +203,7 @@ test("Turkish names the bets, the count and the change", async () => {
     assert.equal(await text(page, '.spot[data-bet="odd"] .spot-name'), "Tek");
     assert.equal(await text(page, ".section-tan .section-pay"), "2'YE 1");
     assert.equal(await page.$eval('.spot[data-bet="nim21"]', node => node.getAttribute("aria-label")),
-      "2 Nim 1: 2 gelirse kazanır, 1 gelirse geri döner, 1'e 2 öder. Bahis: $0");
+      "2 NIM 1. 2 gelirse kazanır, 1 gelirse geri döner, 1'e 2 öder. Bahis: $0");
     await chip(page, 25); await bet(page, "fan2");
     await open(page);
     assert.equal(await text(page, "#bannerText"), "66 boncuk: 2 kaldı");

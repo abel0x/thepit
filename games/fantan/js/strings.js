@@ -42,7 +42,8 @@
       sshName: "{a}·{b}·{c}",
       nimName: "{a} Nim {b}",
       tanName: "{a}·{b} Tan {c}",
-      spotLabel: "{name}: wins on {wins}{push}, pays {pays}. Bet: {amount}",
+      spotWins: "Wins on {wins}{push}, pays {pays}",
+      spotBet: "Bet: {amount}",
       pushPart: ", returned on {push}",
       orWord: " or ",
 
@@ -133,7 +134,8 @@
       sshName: "{a}·{b}·{c}",
       nimName: "{a} Nim {b}",
       tanName: "{a}·{b} Tan {c}",
-      spotLabel: "{name}: {wins} gelirse kazanır{push}, {pays} öder. Bahis: {amount}",
+      spotWins: "{wins} gelirse kazanır{push}, {pays} öder",
+      spotBet: "Bahis: {amount}",
       pushPart: ", {push} gelirse geri döner",
       orWord: " ya da ",
 

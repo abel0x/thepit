@@ -43,7 +43,7 @@
       dragonTitle: "The Dragon Bonus",
       dragonPays: "A natural that wins pays 1 to 1, and a tie of naturals is returned. A hand that wins without a natural pays by its margin: 9 points 30 to 1, 8 points 10 to 1, 7 points 6 to 1, 6 points 4 to 1, 5 points 2 to 1, 4 points 1 to 1. A smaller win loses.",
       dragonEdge: "Counted over the whole eight-deck shoe, the house keeps 2.65% of the Player dragon and 9.37% of the Banker dragon.",
-      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+      spotBet: "Bet: {amount}",
 
       placeBets: "Place your bets",
       noMoreBets: "No more bets",
@@ -157,7 +157,7 @@
       dragonTitle: "Dragon Bonus",
       dragonPays: "Kazanan bir doğal el 1'e 1 öder, iki doğal elin beraberliği iade edilir. Doğal olmadan kazanan el farka göre öder: 9 puan 1'e 30, 8 puan 1'e 10, 7 puan 1'e 6, 6 puan 1'e 4, 5 puan 1'e 2, 4 puan 1'e 1. Daha az farkla kazanç kaybeder.",
       dragonEdge: "Sekiz destelik sabotun tamamı sayıldığında kasa Oyuncu ejderinin %2,65'ini, Banko ejderinin %9,37'sini alır.",
-      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+      spotBet: "Bahis: {amount}",
 
       placeBets: "Bahislerinizi yapın",
       noMoreBets: "Bahisler kapandı",

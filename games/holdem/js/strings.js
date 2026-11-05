@@ -28,7 +28,7 @@
       payAnte: "1 TO 1 AND UP",
       payAa: "UP TO 100 TO 1",
       payCall: "2 × ANTE",
-      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+      spotBet: "Bet: {amount}",
       handLabel: "{side}: {hand}",
       qualifierPrint: "Dealer plays with a pair of fours or better",
 
@@ -146,7 +146,7 @@
       payAnte: "1'E 1 VE ÜSTÜ",
       payAa: "1'E 100'E KADAR",
       payCall: "2 × ANTE",
-      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+      spotBet: "Bahis: {amount}",
       handLabel: "{side}: {hand}",
       qualifierPrint: "Krupiye dörtlü per ya da daha iyisiyle oynar",
 

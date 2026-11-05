@@ -52,7 +52,7 @@
       oddsShort: "ODDS",
       layShort: "LAY",
       fieldPrint: "2 PAYS DOUBLE · 12 PAYS TRIPLE",
-      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+      spotBet: "Bet: {amount}",
 
       payEven: "1 TO 1",
       payTrueOdds: "TRUE ODDS",
@@ -179,7 +179,7 @@
       oddsShort: "ORAN",
       layShort: "LAY",
       fieldPrint: "2 İKİ KAT · 12 ÜÇ KAT ÖDER",
-      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+      spotBet: "Bahis: {amount}",
 
       payEven: "1'E 1",
       payTrueOdds: "GERÇEK ORAN",

@@ -375,7 +375,8 @@
       var put = spot.classList.contains("put-spot");
       var name = put ? t("putName", { number: Engine.numberOf(key) }) : betName(key);
       var pays = put ? t("payEven").toLowerCase() : payText(spot);
-      spot.setAttribute("aria-label", t("spotLabel", { name: name, pays: pays, amount: money(all[key] || 0) }));
+      // The words printed on the spot, then what they leave out, then the bet.
+      spot.setAttribute("aria-label", I18n.labelFor(spot, [name, pays, t("spotBet", { amount: money(all[key] || 0) })]));
     });
     // The hop button carries what the hop bets hold while their panel is shut.
     var hops = Engine.HOPS.reduce(function (sum, key) { return sum + (all[key] || 0); }, 0);

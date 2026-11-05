@@ -232,7 +232,7 @@ test("a put bet goes straight on a number once a point is on, and wins there", a
     assert.equal(await page.$eval('.put-spot[data-bet="come6"]', node => node.hidden), true, "no put before a point");
     await roll(page);                                  // 4 is the point
     assert.equal(await page.$eval('.put-spot[data-bet="come6"]', node => node.hidden), false);
-    assert.equal(await page.$eval('.put-spot[data-bet="come4"]', node => node.getAttribute("aria-label")), "Put on 4, pays 1 to 1. Bet: $0");
+    assert.equal(await page.$eval('.put-spot[data-bet="come4"]', node => node.getAttribute("aria-label")), "PUT. Put on 4. 1 to 1. Bet: $0");
     await chip(page, 25); await page.click('.put-spot[data-bet="come6"]');
     assert.equal(await page.$eval('.put-spot[data-bet="come6"]', node => node.hidden), true, "the put stands in the come lane");
     assert.equal(await page.$eval('.mini-spot[data-bet="comeOdds6"]', node => node.hidden), false, "and takes odds");
@@ -277,7 +277,7 @@ test("the Fire Bet lights the points made and pays four of them at the seven out
     assert.deepEqual(await page.$$eval(".fire-points b.lit", nodes => nodes.length), 0);
     // Pass won four times (+20) and lost once (-5); the Fire Bet paid 24 to 1.
     assert.equal(await stored(page, "pit.bankroll"), 10000 - 10 + 4 * 5 + 5 * 25);
-    assert.equal(await page.$eval('[data-bet="fire"]', node => node.getAttribute("aria-label")), "Fire Bet, pays up to 999 to 1. Bet: $0");
+    assert.equal(await page.$eval('[data-bet="fire"]', node => node.getAttribute("aria-label")), "Fire Bet 4 5 6 8 9 10 UP TO 999 TO 1. Bet: $0");
   });
 });
 

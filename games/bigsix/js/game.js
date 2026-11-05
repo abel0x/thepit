@@ -261,9 +261,9 @@
       }
     });
     el.layout.querySelectorAll("[data-bet]").forEach(function (spot) {
+      // The words printed on the spot, then its name if they leave it out, then the bet.
       var key = spot.getAttribute("data-bet");
-      var pays = payWords(Engine.PAYS[key]).toLowerCase();
-      spot.setAttribute("aria-label", t("spotLabel", { name: betName(key), pays: pays, amount: money(state.bets[key] || 0) }));
+      spot.setAttribute("aria-label", I18n.labelFor(spot, [betName(key), t("spotBet", { amount: money(state.bets[key] || 0) })]));
     });
     renderBankroll();
   }

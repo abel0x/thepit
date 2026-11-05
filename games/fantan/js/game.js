@@ -137,15 +137,19 @@
     return numbers.join(t("orWord"));
   }
 
+  // The words printed on the spot, then its name if they leave it out, what
+  // it wins on and pays, and the bet.
   function spotLabel(key) {
     var def = Engine.DEFS[key];
-    return t("spotLabel", {
-      name: betName(key),
-      wins: numberList(def.wins),
-      push: def.push.length ? t("pushPart", { push: numberList(def.push) }) : "",
-      pays: t(PAY_WORDS[def.kind]).toLowerCase(),
-      amount: money(state.bets[key] || 0)
-    });
+    return I18n.labelFor(spotFor(key), [
+      betName(key),
+      t("spotWins", {
+        wins: numberList(def.wins),
+        push: def.push.length ? t("pushPart", { push: numberList(def.push) }) : "",
+        pays: t(PAY_WORDS[def.kind]).toLowerCase()
+      }),
+      t("spotBet", { amount: money(state.bets[key] || 0) })
+    ]);
   }
 
   /* ---------------- Toast and banner ---------------- */

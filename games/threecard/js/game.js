@@ -304,9 +304,9 @@
     return round.bets[key] || 0;
   }
 
+  // The words printed on the spot, then its name if they leave it out, then the bet.
   function spotLabel(key) {
-    var pays = spotFor(key).querySelector(".spot-pay").textContent;
-    return t("spotLabel", { name: t(BET_NAMES[key]), pays: pays.toLowerCase(), amount: money(spotAmount(key)) });
+    return I18n.labelFor(spotFor(key), [t(BET_NAMES[key]), t("spotBet", { amount: money(spotAmount(key)) })]);
   }
 
   // Draws the chips on each spot; freshly placed stacks drop in.

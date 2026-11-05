@@ -17,6 +17,7 @@ The first release of the pit: nine tables, a money wheel, a slot machine, a vide
 - A save on file: the whole pit downloaded to one JSON backup and restored from it after a confirmation, under the account lock.
 - The cloth and the language chosen anywhere follow the player to every page. Five cloths: Emerald, Midnight, Bordeaux, Onyx and Amethyst.
 - English and Turkish throughout, with shares written the Turkish way in Turkish, the sign first (%97,11).
+- Built for screen readers and speech control: every betting spot is named first by the words printed on it, then by what the layout leaves unsaid and the stake (WCAG 2.5.3, Label in Name), and the lobby, every table and every dialog pass an axe-core audit of WCAG 2.1 A and AA in both languages.
 - One set of chips for the whole pit: the clay chips of Table 21 at every table, in the tray and stacked on the felt, and one colour per value everywhere, from the white $1 to the silver $100K; each table keeps its own tray.
 - One language engine and one set of shared words, shared stylesheets, and shared cards, card sounds and chips for the lobby and every table.
 - Every button within reach from wide screens down to the smallest phones, upright or on their side: where space is short the tray takes a row of its own or the chips and tools grow slimmer, so Deal, Spin, Roll and Play are never cut off by the edge of the table. A walk through twelve screen sizes checks each table while betting and in play.

@@ -65,7 +65,8 @@ test("the printed odds and house edges are the engine's, in both languages", fun
 });
 
 test("a spot for every bet, in the engine's order, named for the numbers it covers", function () {
-  var spots = Array.from(html.matchAll(/<button class="spot spot-(\w+)" data-bet="(\w+)" type="button"><span class="spot-name"[^>]*>([^<]+)<\/span>(?:<span class="spot-sub">([^<]+)<\/span>)?/g),
+  // A space parts the name from the sub so that "1" and "NIM 2" read as two words.
+  var spots = Array.from(html.matchAll(/<button class="spot spot-(\w+)" data-bet="(\w+)" type="button"><span class="spot-name"[^>]*>([^<]+)<\/span>(?: <span class="spot-sub">([^<]+)<\/span>)?/g),
     function (m) { return { kind: m[1], key: m[2], name: m[3], sub: m[4] || "" }; });
   assert.deepEqual(spots.map(function (spot) { return spot.key; }), Engine.BETS);
   spots.forEach(function (spot) {

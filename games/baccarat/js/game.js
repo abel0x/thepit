@@ -281,9 +281,9 @@
     el.balancePill.classList.add("win-flash");
   }
 
+  // The words printed on the spot, then its name if they leave it out, then the bet.
   function spotLabel(key) {
-    var pays = key === "banker" ? el.bankerPay.textContent : spotFor(key).querySelector(".spot-pay").textContent;
-    return t("spotLabel", { name: t(BET_NAMES[key]), pays: pays.toLowerCase(), amount: money(state.bets[key] || 0) });
+    return I18n.labelFor(spotFor(key), [t(BET_NAMES[key]), t("spotBet", { amount: money(state.bets[key] || 0) })]);
   }
 
   // Draws the chips on each spot; freshly placed stacks drop in.

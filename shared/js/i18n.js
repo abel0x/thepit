@@ -266,6 +266,40 @@
     return new Intl.NumberFormat(locale(), { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(fraction);
   }
 
+  // The words a control shows, in reading order, with one space between the
+  // pieces of text: <b>2</b><b>3</b> reads "2 3", not "23". The chips stacked
+  // on a betting spot (.spot-stack, .bet-stack) are the bet, not its label.
+  function shownText(control) {
+    var words = [];
+    (function walk(node) {
+      node.childNodes.forEach(function (child) {
+        if (child.nodeType === 3) {
+          var text = child.nodeValue.trim();
+          if (text) words.push(text);
+        } else if (child.nodeType === 1 && !child.matches(".spot-stack, .bet-stack")) {
+          walk(child);
+        }
+      });
+    })(control);
+    return words.join(" ");
+  }
+
+  // An accessible name that begins with the words the control shows, so that
+  // a player who speaks to the computer can say what they see (WCAG 2.5.3,
+  // Label in Name). Each further part follows as a sentence of its own; a part
+  // the shown words already hold is left out. Both lower cases are tried: in
+  // Turkish "NIM" lowers to "nım", which would miss the "Nim" it already shows.
+  function labelFor(control, parts) {
+    var shown = shownText(control);
+    var holds = function (part) {
+      return shown.toLowerCase().indexOf(part.toLowerCase()) !== -1 ||
+        shown.toLocaleLowerCase(locale()).indexOf(part.toLocaleLowerCase(locale())) !== -1;
+    };
+    return [shown].concat(parts.filter(function (part) {
+      return part && !holds(String(part));
+    })).filter(Boolean).join(". ");
+  }
+
   current = detectInitial();
 
   global.I18n = {
@@ -278,6 +312,8 @@
     get: get,
     locale: locale,
     percent: percent,
+    shownText: shownText,
+    labelFor: labelFor,
     DEFAULT: DEFAULT_LANG,
     available: LANGUAGES.slice(),
     sharedKeys: SHARED_KEYS.slice(),

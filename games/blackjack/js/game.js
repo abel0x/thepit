@@ -724,7 +724,8 @@
       spot.setAttribute("aria-pressed", String(state.betTarget === bet));
       spot.classList.toggle("won", !!(line && line.returned));
       spot.classList.toggle("lost", !!(line && !line.returned));
-      spot.setAttribute("aria-label", t(bet === "pairs" ? "sidePairsLabel" : "sideTrioLabel", { amount: "$" + fmt(stake) }));
+      // "PP" or "21+3" as printed, then the bet's full name and stake.
+      spot.setAttribute("aria-label", I18n.labelFor(spot, [t(bet === "pairs" ? "sidePairsLabel" : "sideTrioLabel", { amount: "$" + fmt(stake) })]));
     });
   }
 

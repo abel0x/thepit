@@ -169,3 +169,35 @@ test("no page writes a share by appending a percent sign", function () {
     });
   });
 });
+
+// A stand-in for the few DOM members shownText reads.
+function text(value) { return { nodeType: 3, nodeValue: value }; }
+function el(className, children) {
+  return {
+    nodeType: 1,
+    childNodes: children,
+    matches: function (selector) {
+      return selector.split(",").some(function (s) { return className.split(" ").indexOf(s.trim().slice(1)) !== -1; });
+    }
+  };
+}
+
+test("a control's name begins with the words it shows, then what they leave out", function () {
+  var I18n = bare("en");
+  // <button><span>4</span><span>9 TO 5</span><span class="spot-stack">$25</span></button>
+  var place = el("spot", [el("box-number", [text("4")]), el("spot-pay", [text("9 TO 5")]), el("spot-stack", [text("$25")])]);
+  assert.equal(I18n.shownText(place), "4 9 TO 5", "pieces apart, the stacked chips left out");
+  assert.equal(I18n.labelFor(place, ["Place 4", "9 to 5", "Bet: $25"]), "4 9 TO 5. Place 4. Bet: $25");
+  var player = el("spot", [text("\n  "), el("spot-name", [text("Player")]), text("\n  "), el("spot-pay", [text("1 TO 1")]), el("bet-stack", [])]);
+  assert.equal(I18n.labelFor(player, ["Player", "Bet: $0"]), "Player 1 TO 1. Bet: $0", "a name already shown is not repeated");
+  assert.equal(I18n.labelFor(player, [null, "", "Bet: $0"]), "Player 1 TO 1. Bet: $0", "empty parts are skipped");
+  assert.equal(I18n.labelFor(el("spot", [el("die", [])]), ["Triple 1", "Bet: $0"]), "Triple 1. Bet: $0", "a control that shows no words starts with its name");
+});
+
+test("in Turkish a shown word in capitals still counts as said", function () {
+  var I18n = bare("tr");
+  var nim = el("spot", [el("spot-name", [text("1")]), el("spot-sub", [text("NIM 2")])]);
+  assert.equal(I18n.labelFor(nim, ["1 Nim 2", "Bahis: $0"]), "1 NIM 2. Bahis: $0");
+  var small = el("spot", [el("spot-name", [text("Küçük")]), el("spot-pay", [text("1'E 1")])]);
+  assert.equal(I18n.labelFor(small, ["KÜÇÜK", "Bahis: $0"]), "Küçük 1'E 1. Bahis: $0");
+});

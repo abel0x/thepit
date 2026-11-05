@@ -51,7 +51,7 @@
       smallRange: "4 TO 10",
       bigRange: "11 TO 17",
       loseOnTriple: "LOSES ON ANY TRIPLE",
-      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+      spotBet: "Bet: {amount}",
 
       payTo: "{n} TO 1",
       paySingle: "1, 2 OR 3 TO 1",
@@ -151,7 +151,7 @@
       smallRange: "4 İLE 10",
       bigRange: "11 İLE 17",
       loseOnTriple: "HER ÜÇLÜDE KAYBEDER",
-      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+      spotBet: "Bahis: {amount}",
 
       payTo: "1'E {n}",
       paySingle: "1'E 1, 2 YA DA 3",

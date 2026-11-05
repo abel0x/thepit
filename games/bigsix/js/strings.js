@@ -41,7 +41,7 @@
       jokerName: "Joker",
       logoName: "Logo",
       spotCount: "{count} of 54",
-      spotLabel: "{name}, pays {pays}. Bet: {amount}",
+      spotBet: "Bet: {amount}",
       payTo: "{n} TO 1",
 
       placeBets: "Place your bets",
@@ -126,7 +126,7 @@
       jokerName: "Joker",
       logoName: "Logo",
       spotCount: "54'te {count}",
-      spotLabel: "{name}, {pays} öder. Bahis: {amount}",
+      spotBet: "Bahis: {amount}",
       payTo: "1'E {n}",
 
       placeBets: "Bahislerinizi yapın",

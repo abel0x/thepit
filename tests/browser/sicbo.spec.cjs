@@ -213,7 +213,8 @@ test("Turkish names the bets, the odds and the roll", async () => {
     assert.equal(await text(page, '[data-bet="small"] .spot-name'), "Küçük");
     assert.equal(await text(page, '[data-bet="even"] .spot-name'), "Çift");
     assert.equal(await text(page, '[data-bet="total4"] .spot-pay'), "1'E 60");
-    assert.match(await page.$eval('[data-bet="combo34"]', n => n.getAttribute("aria-label")), /^3 ve 4 kombinasyonu, 1'e 5 öder/);
+    // The dice are drawn, so the printed odds lead and the name follows.
+    assert.equal(await page.$eval('[data-bet="combo34"]', n => n.getAttribute("aria-label")), "1'E 5. 3 ve 4 kombinasyonu. Bahis: $0");
     await bet(page, "big");
     const lines = await watchBanner(page);
     await roll(page);

@@ -167,7 +167,7 @@
             <span class="dealer-plate-name" id="dealerName" data-i18n="dealerName">DEALER</span>
             <span class="score-chip" id="dealerScore" aria-live="polite"></span>
           </div>
-          <div class="hand" id="dealerHand" aria-label="Dealer hand" data-i18n-aria-label="dealerHand"></div>
+          <div class="hand" id="dealerHand" role="group" aria-label="Dealer hand" data-i18n-aria-label="dealerHand"></div>
           <div class="dealer-line" id="dealerLine" aria-live="polite"></div>
         </div>
 
@@ -178,7 +178,7 @@
 
         <!-- Player area: the cards sit just above the betting circle -->
         <div class="seat player-seat">
-          <div class="hands-row hand-count-0" id="playerHands" aria-label="Player hands" data-i18n-aria-label="playerHands"></div>
+          <div class="hands-row hand-count-0" id="playerHands" role="group" aria-label="Player hands" data-i18n-aria-label="playerHands"></div>
           <span class="score-chip" id="playerScore" hidden></span>
         </div>
 
@@ -229,10 +229,10 @@
       <div class="chips-tray" id="chipTray" role="group" aria-label="Betting chips" data-i18n-aria-label="chipsLabel">
         <button class="chip chip-100"  data-value="100"   type="button" aria-label="100"><span class="denom">100</span></button>
         <button class="chip chip-500"  data-value="500"   type="button" aria-label="500"><span class="denom">500</span></button>
-        <button class="chip chip-1k"   data-value="1000"  type="button" aria-label="1,000"><span class="denom">1K</span></button>
-        <button class="chip chip-5k"   data-value="5000"  type="button" aria-label="5,000"><span class="denom">5K</span></button>
-        <button class="chip chip-25k"  data-value="25000" type="button" aria-label="25,000"><span class="denom">25K</span></button>
-        <button class="chip chip-allin" data-value="allin" type="button" aria-label="All in" data-i18n-aria-label="allIn"><span class="denom"><span>ALL</span><span>IN</span></span></button>
+        <button class="chip chip-1k"   data-value="1000"  type="button" aria-label="1K: 1,000"><span class="denom">1K</span></button>
+        <button class="chip chip-5k"   data-value="5000"  type="button" aria-label="5K: 5,000"><span class="denom">5K</span></button>
+        <button class="chip chip-25k"  data-value="25000" type="button" aria-label="25K: 25,000"><span class="denom">25K</span></button>
+        <button class="chip chip-allin" data-value="allin" type="button" aria-label="All in" data-i18n-aria-label="allIn"><span class="denom"><span>ALL</span> <span>IN</span></span></button>
       </div>
 
       <div class="action-row">

@@ -207,7 +207,7 @@
       chipsLabel: "Bahis jetonları",
       dealerHand: "Krupiyenin eli",
       playerHands: "Elleriniz",
-      allIn: "Tüm bakiyeyi yatır",
+      allIn: "All in: tüm bakiyeyi yatır",
 
       deal: "Dağıt",
       hit: "Kart çek",

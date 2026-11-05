@@ -216,7 +216,7 @@ test("Turkish names the ticket, the pays and the catch", async () => {
     assert.equal(await text(page, "#bannerText"), "2 işaretli: $5 ile oynayın");
     assert.equal(await text(page, "#paytableTitle"), "2 işaret için ödemeler");
     assert.equal(await text(page, '#payRows tr[data-hits="2"] small'), "1'e 15");
-    assert.equal(await text(page, "#tableRtp"), "90,19%");
+    assert.equal(await text(page, "#tableRtp"), "%90,19");
     await play(page);
     assert.equal(await text(page, "#bannerText"), "2 işaretten 1 tuttu");
     assert.equal(await text(page, "#bannerSub"), "Bu oyunda kazanç yok");

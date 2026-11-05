@@ -29,7 +29,7 @@
   function fmt(n) { return Number(n).toLocaleString(I18n.locale()); }
   function money(n) { return "$" + fmt(n); }
   function percent(fraction) {
-    return (fraction * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+    return I18n.percent(fraction, 2);
   }
   function $(id) { return document.getElementById(id); }
 
@@ -338,7 +338,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stGames").textContent = fmt(s.games);
-    $("stWinRate").textContent = (s.games ? Math.round(s.winningGames / s.games * 100) : 0) + "%";
+    $("stWinRate").textContent = I18n.percent(s.games ? s.winningGames / s.games : 0);
     $("stBestCatch").textContent = fmt(s.bestCatch);
     $("stWagered").textContent = money(s.wagered);
     $("stReturned").textContent = money(s.returned);
@@ -566,9 +566,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

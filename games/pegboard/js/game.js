@@ -44,7 +44,7 @@
   function fmt(n) { return Number(n).toLocaleString(I18n.locale()); }
   function money(n) { return "$" + fmt(n); }
   function percent(fraction) {
-    return (fraction * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+    return I18n.percent(fraction, 2);
   }
   // A multiple of the bet: "0.5×", "1,000×". The slots print it without
   // the thousands separator, to keep it short: "1000×".
@@ -496,7 +496,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stDrops").textContent = fmt(s.drops);
-    $("stWinRate").textContent = (s.drops ? Math.round(s.winningDrops / s.drops * 100) : 0) + "%";
+    $("stWinRate").textContent = I18n.percent(s.drops ? s.winningDrops / s.drops : 0);
     $("stBest").textContent = s.bestMultiplier ? times(s.bestMultiplier / 10) : t("noneYet");
     $("stWagered").textContent = money(s.wagered);
     $("stReturned").textContent = money(s.returned);
@@ -685,9 +685,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

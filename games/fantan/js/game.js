@@ -345,7 +345,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stRounds").textContent = fmt(s.rounds);
-    $("stWinRate").textContent = (s.rounds ? Math.round(s.winningRounds / s.rounds * 100) : 0) + "%";
+    $("stWinRate").textContent = I18n.percent(s.rounds ? s.winningRounds / s.rounds : 0);
     $("stResults").textContent = [s.ones, s.twos, s.threes, s.fours].map(fmt).join(" · ");
     $("stWagered").textContent = money(s.wagered);
     $("stReturned").textContent = money(s.returned);
@@ -612,9 +612,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

@@ -318,7 +318,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stRolls").textContent = fmt(s.rolls);
-    $("stWinRate").textContent = (s.rolls ? Math.round(s.winningRolls / s.rolls * 100) : 0) + "%";
+    $("stWinRate").textContent = I18n.percent(s.rolls ? s.winningRolls / s.rolls : 0);
     $("stTriples").textContent = fmt(s.triples);
     $("stWagered").textContent = money(s.wagered);
     $("stReturned").textContent = money(s.returned);
@@ -533,9 +533,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 
@@ -610,7 +610,7 @@
   /* ---------------- Statistics ---------------- */
   // How often each result came in the last rolls the table remembers.
   function percentText(fraction) {
-    return (fraction * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+    return I18n.percent(fraction, 1);
   }
 
   function sinceText(rounds) {

@@ -224,9 +224,9 @@ test("the statistics chart every symbol of the last spins against its share of t
     await page.waitForFunction(() => !document.getElementById("statsModal").hidden);
     assert.equal(await page.$eval("#statsLead", node => node.textContent), "Son 4 çevirme, en çok 500.");
     const row = key => page.$eval('#tallySymbols tr[data-key="' + key + '"]', tr => [...tr.children].map(cell => cell.textContent));
-    assert.deepEqual(await row("one"), ["$1", "", "2 · 50,0%", "44,4%", "2 önce"]);
-    assert.deepEqual(await row("twenty"), ["$20", "", "1 · 25,0%", "3,7%", "son çevirme"]);
-    assert.deepEqual(await row("logo"), ["Logo", "", "0 · 0,0%", "1,9%", "henüz yok"]);
+    assert.deepEqual(await row("one"), ["$1", "", "2 · %50,0", "%44,4", "2 önce"]);
+    assert.deepEqual(await row("twenty"), ["$20", "", "1 · %25,0", "%3,7", "son çevirme"]);
+    assert.deepEqual(await row("logo"), ["Logo", "", "0 · %0,0", "%1,9", "henüz yok"]);
   });
 });
 

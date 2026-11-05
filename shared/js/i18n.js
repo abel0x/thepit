@@ -258,6 +258,14 @@
   function get() { return current; }
   function locale() { return current === "tr" ? "tr-TR" : "en-US"; }
 
+  // A share written the way the language writes it: 97.11% in English and
+  // %97,11 in Turkish, the sign before the number. fraction is the share
+  // itself (0.9711) and digits the decimals to show (none by default).
+  function percent(fraction, digits) {
+    digits = digits || 0;
+    return new Intl.NumberFormat(locale(), { style: "percent", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(fraction);
+  }
+
   current = detectInitial();
 
   global.I18n = {
@@ -269,6 +277,7 @@
     onChange: onChange,
     get: get,
     locale: locale,
+    percent: percent,
     DEFAULT: DEFAULT_LANG,
     available: LANGUAGES.slice(),
     sharedKeys: SHARED_KEYS.slice(),

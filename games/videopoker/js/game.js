@@ -321,7 +321,7 @@
     el.payTable.querySelectorAll("[data-coins]").forEach(function (cell) {
       cell.classList.toggle("active", Number(cell.getAttribute("data-coins")) === coins);
     });
-    el.tableRtp.textContent = Engine.RETURN_PERCENT[payTable].toLocaleString(I18n.locale(), { minimumFractionDigits: 2 }) + "%";
+    el.tableRtp.textContent = I18n.percent(Engine.RETURN_PERCENT[payTable] / 100, 2);
     body.setAttribute("data-pay-table", payTable);
     document.querySelectorAll(".rule-profile").forEach(function (button) {
       var on = button.getAttribute("data-profile") === state.settings.payTable;
@@ -340,7 +340,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stHands").textContent = fmt(s.hands);
-    $("stWinRate").textContent = s.hands ? Math.round(s.winningHands / s.hands * 100) + "%" : "0%";
+    $("stWinRate").textContent = I18n.percent(s.hands ? s.winningHands / s.hands : 0);
     $("stRoyals").textContent = fmt(s.royalFlushes);
     var best = Engine.CATEGORIES[s.bestHand];
     $("stBestHand").textContent = s.bestHand ? t(CATEGORY_WORDS[best]) : t("noHandYet");
@@ -351,7 +351,7 @@
     netNode.classList.toggle("positive", net > 0);
     netNode.classList.toggle("negative", net < 0);
     $("stBiggest").textContent = money(s.biggestWin);
-    $("stBestHolds").textContent = s.decisions ? Math.round(s.bestHolds / s.decisions * 100) + "% (" + fmt(s.decisions) + ")" : "0%";
+    $("stBestHolds").textContent = s.decisions ? I18n.percent(s.bestHolds / s.decisions) + " (" + fmt(s.decisions) + ")" : I18n.percent(0);
     $("stMissed").textContent = money(Math.round(s.missedMilli / 10) / 100);
   }
 
@@ -801,9 +801,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

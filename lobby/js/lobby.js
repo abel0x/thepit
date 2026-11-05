@@ -134,7 +134,7 @@
 
   function returnText(line) {
     if (!line.wagered) return "–";
-    return (line.returned / line.wagered * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+    return I18n.percent(line.returned / line.wagered, 1);
   }
 
   function playRow(line, header) {

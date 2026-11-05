@@ -946,11 +946,10 @@
     $("stPushes").textContent = state.stats.pushes;
     $("stBj").textContent = state.stats.blackjacks;
     var decided = state.stats.wins + state.stats.losses;
-    var rate = decided ? Math.round((state.stats.wins / decided) * 100) : 0;
-    $("stRate").textContent = rate + "%";
+    $("stRate").textContent = I18n.percent(decided ? state.stats.wins / decided : 0);
     var decisions = state.stats.strategyDecisions;
     $("stStrategy").textContent = decisions
-      ? Math.round((state.stats.strategyCorrect / decisions) * 100) + "% (" + fmt(decisions) + ")"
+      ? I18n.percent(state.stats.strategyCorrect / decisions) + " (" + fmt(decisions) + ")"
       : "\u2013";
     var sideNet = state.stats.sideReturned - state.stats.sideWagered;
     $("stSide").textContent = state.stats.sideWagered
@@ -958,7 +957,7 @@
       : "\u2013";
     var checks = state.stats.countChecks;
     $("stCount").textContent = checks
-      ? Math.round((state.stats.countCorrect / checks) * 100) + "% (" + fmt(checks) + ")"
+      ? I18n.percent(state.stats.countCorrect / checks) + " (" + fmt(checks) + ")"
       : "\u2013";
   }
 
@@ -2196,9 +2195,9 @@
       var percent = Math.round((levels[channel] == null ? 1 : levels[channel]) * 100);
       input.value = percent;
       input.style.setProperty("--fill", percent + "%");
-      input.setAttribute("aria-valuetext", percent + "%");
+      input.setAttribute("aria-valuetext", I18n.percent(percent / 100));
       var output = $(input.id + "Value");
-      if (output) output.textContent = percent + "%";
+      if (output) output.textContent = I18n.percent(percent / 100);
     });
   }
 

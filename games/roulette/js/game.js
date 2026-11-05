@@ -1348,7 +1348,7 @@
   function renderStats() {
     var s = state.stats;
     $("stSpins").textContent = fmt(s.spins);
-    $("stWinRate").textContent = s.spins ? Math.round(s.winningSpins / s.spins * 100) + "%" : "0%";
+    $("stWinRate").textContent = I18n.percent(s.spins ? s.winningSpins / s.spins : 0);
     $("stWagered").textContent = money(s.wagered);
     $("stReturned").textContent = money(s.returned);
     var net = s.returned - s.wagered;
@@ -1392,7 +1392,7 @@
       var span = document.createElement("span");
       span.className = part.cls;
       span.style.flexGrow = String(total ? part.value : 1);
-      span.textContent = total ? Math.round(part.value / total * 100) + "%" : "–";
+      span.textContent = total ? I18n.percent(part.value / total) : "–";
       span.title = part.label + ": " + part.value;
       bar.appendChild(span);
     });
@@ -1519,9 +1519,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

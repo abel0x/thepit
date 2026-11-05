@@ -357,7 +357,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stHands").textContent = fmt(s.hands);
-    $("stWinRate").textContent = s.hands ? Math.round(s.winningHands / s.hands * 100) + "%" : "0%";
+    $("stWinRate").textContent = I18n.percent(s.hands ? s.winningHands / s.hands : 0);
     $("stCalled").textContent = fmt(s.called);
     $("stFolded").textContent = fmt(s.folded);
     $("stNoQualify").textContent = fmt(s.noQualify);
@@ -753,9 +753,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

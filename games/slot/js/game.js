@@ -199,7 +199,7 @@
   function renderLimits() {
     el.tableMin.textContent = money(MIN_SPIN);
     el.tableMax.textContent = money(Engine.totalBet(TRAY[TRAY.length - 1]));
-    el.tableRtp.textContent = (Engine.returnToPlayer().total * 100).toLocaleString(I18n.locale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
+    el.tableRtp.textContent = I18n.percent(Engine.returnToPlayer().total, 2);
   }
 
   // The face a symbol shows in the chosen set, and its name.
@@ -300,7 +300,7 @@
     var s = state.stats;
     var net = s.returned - s.wagered;
     $("stSpins").textContent = fmt(s.spins);
-    $("stWinRate").textContent = s.spins ? Math.round(s.winningSpins / s.spins * 100) + "%" : "0%";
+    $("stWinRate").textContent = I18n.percent(s.spins ? s.winningSpins / s.spins : 0);
     $("stFeatures").textContent = fmt(s.features);
     $("stFreeSpins").textContent = fmt(s.freeSpinsWon);
     $("stWagered").textContent = money(s.wagered);
@@ -709,9 +709,9 @@
       var value = Math.round(volumes[slider.getAttribute("data-sound-level")] * 100);
       slider.value = String(value);
       slider.style.setProperty("--fill", value + "%");
-      slider.setAttribute("aria-valuetext", value + "%");
+      slider.setAttribute("aria-valuetext", I18n.percent(value / 100));
       var out = $(slider.id + "Value");
-      if (out) out.textContent = value + "%";
+      if (out) out.textContent = I18n.percent(value / 100);
     });
   }
 

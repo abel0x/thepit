@@ -183,7 +183,7 @@ test("Turkish names the board, the multiples and the result", async () => {
     assert.equal(await text(page, "#btnDrop"), "Bırak");
     await drop(page);
     assert.equal(await text(page, "#bannerText"), "0,5×: $5 geri döndü");
-    assert.equal(await text(page, "#tableRtp"), "97,11%", "as Keno 80 prints a return");
+    assert.equal(await text(page, "#tableRtp"), "%97,11", "the sign goes first in Turkish");
     assert.deepEqual(await texts(page, "#history li"), ["0,5×"]);
   });
 });

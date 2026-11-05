@@ -138,3 +138,34 @@ test("apply fills text and every translated attribute", function () {
   assert.equal(lang, "tr");
   assert.equal(sandbox.document.title, "ThePit");
 });
+
+test("a share is written the way each language writes it: the sign goes first in Turkish", function () {
+  var en = bare("en"), tr = bare("tr");
+  assert.equal(en.percent(0.9711, 2), "97.11%");
+  assert.equal(tr.percent(0.9711, 2), "%97,11");
+  assert.equal(en.percent(0.444, 1), "44.4%");
+  assert.equal(tr.percent(0.444, 1), "%44,4");
+  assert.equal(en.percent(0.5), "50%");
+  assert.equal(tr.percent(0.5), "%50");
+  assert.equal(tr.percent(0), "%0");
+  assert.equal(tr.percent(2 / 3), "%67", "no decimals unless asked");
+  assert.equal(tr.percent(0.9954, 2), "%99,54");
+});
+
+// Every share a page prints goes through I18n.percent, so none can put the
+// sign after the number in Turkish. A "%" joined to a number in a script is
+// only a CSS length (a fill, a position, a width).
+test("no page writes a share by appending a percent sign", function () {
+  var scripts = [];
+  fs.readdirSync(path.join(root, "games")).forEach(function (game) {
+    var file = path.join(root, "games", game, "js", "game.js");
+    if (fs.existsSync(file)) scripts.push(file);
+  });
+  scripts.push(path.join(root, "lobby/js/lobby.js"));
+  scripts.forEach(function (file) {
+    fs.readFileSync(file, "utf8").split("\n").forEach(function (line, index) {
+      if (!/\+ ?["']%|["']%["']/.test(line)) return;
+      assert.match(line, /style\.(left|top|width|height)\s*=|setProperty\("--fill"|gradient\(/, path.relative(root, file) + ":" + (index + 1) + " " + line.trim());
+    });
+  });
+});

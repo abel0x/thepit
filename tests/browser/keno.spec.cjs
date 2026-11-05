@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { resizeTo, sweepReach } = require("./reach.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
 const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "thepit-keno-"));
@@ -267,6 +268,20 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
       assert.ok(box.board, "every number has room");
       assert.ok(box.apart, "the board and the pay table never overlap");
       await page.screenshot({ path: path.join(artifacts, "fit-" + size.join("x") + ".png") });
+    });
+  });
+}
+
+// Every control within reach at every size, in both languages: with ten
+// numbers marked and the largest bet, and after a game.
+for (const lang of ["en", "tr"]) {
+  test(lang + ": every control is within reach at every size, marking and after a game", async () => {
+    await scene({ lang, draws: [BALLS], settings: { picks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], bet: 100 } }, async page => {
+      const problems = await sweepReach(page, "marking");
+      await resizeTo(page, 1280, 800);
+      await play(page);
+      problems.push(...await sweepReach(page, "after"));
+      assert.deepEqual(problems, []);
     });
   });
 }

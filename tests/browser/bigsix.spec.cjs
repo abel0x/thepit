@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { resizeTo, sweepReach } = require("./reach.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
 const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "thepit-bigsix-"));
@@ -271,6 +272,22 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
       assert.ok(box.room, "every spot has room");
       assert.ok(!box.overlaps, "no spot overlaps another or the wheel");
       await page.screenshot({ path: path.join(artifacts, "fit-" + size.join("x") + ".png") });
+    });
+  });
+}
+
+// Every control within reach at every size, in both languages: while the bets
+// go down, with a full stack of chips and a large total, and after a spin.
+for (const lang of ["en", "tr"]) {
+  test(lang + ": every control is within reach at every size, betting and after a spin", async () => {
+    await scene({ lang, spins: [13] }, async page => {
+      for (const value of [5, 25, 100, 500, 1000]) { await chip(page, value); await bet(page, "one"); }
+      await chip(page, 25); await bet(page, "joker"); await bet(page, "logo");
+      const problems = await sweepReach(page, "betting");
+      await resizeTo(page, 1280, 800);
+      await spin(page);
+      problems.push(...await sweepReach(page, "after"));
+      assert.deepEqual(problems, []);
     });
   });
 }

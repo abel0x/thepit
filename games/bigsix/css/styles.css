@@ -490,6 +490,19 @@
   .bet-total .last-win { display: none; }
 }
 
+/* Small phones on their side: the tray and every action share one row, so
+   the chips are slimmer and the tools keep only their icons. */
+@media (max-height: 560px) and (max-width: 700px) {
+  .chips-tray { gap: 4px; }
+  .chips-tray .chip { --size: 30px; }
+  .action-row { gap: 8px; }
+  .bet-actions { gap: 4px; }
+  .btn-tool { min-width: 0; padding: 6px 7px; }
+  .btn-tool span { display: none; }
+  .bet-total { min-width: 0; }
+  .deal-btn { padding-inline: 12px; }
+}
+
 /* No transitions at all for reduced motion: each step appears in place. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

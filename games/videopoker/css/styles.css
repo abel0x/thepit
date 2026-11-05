@@ -508,10 +508,14 @@ body:not([data-coach="true"]) .holds-btn { display: none; }
   .banner small { display: inline; margin-left: 6px; }
   .table-specs { display: flex; }
   .hold-btn { min-height: 22px; }
+  /* The tray and every action share one row, with slimmer coins and buttons. */
   .controls { flex-wrap: nowrap; gap: 8px; }
-  .chips-tray { width: auto; padding: 6px 8px; }
-  .chips-tray .chip { --size: 34px; }
-  .action-row { width: auto; }
+  .chips-tray { width: auto; gap: 4px; padding: 6px 8px; }
+  .chips-tray .chip { --size: 30px; }
+  .action-row { width: auto; gap: 8px; }
+  .bet-buttons { gap: 4px; }
+  .bet-buttons .btn-tool { min-width: 0; padding-inline: 7px; font-size: 9.5px; }
+  .bet-total, .win-meter { min-width: 0; }
   .deal-btn { width: 58px; height: 58px; }
   .win-meter .last-win, .bet-total .coins-line { display: none; }
 }

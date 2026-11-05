@@ -615,16 +615,21 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .btn-tool { min-width: 0; padding-inline: 7px; }
 }
 
-@media (max-width: 360px) {
-  .spot-tie .spot-name { font-size: 8px; letter-spacing: 0; }
-}
-
 @media (max-width: 420px) {
   .bet-total { min-width: 0; }
   .bet-total .last-win { display: none; }
   .bet-actions { gap: 4px; }
   .btn-tool span { display: none; }
   .deal-btn { min-width: 84px; padding: 0 14px; }
+}
+
+/* The narrowest phones: slimmer tools and button, so that a large total
+   still fits beside them. */
+@media (max-width: 360px) {
+  .spot-tie .spot-name { font-size: 8px; letter-spacing: 0; }
+  .btn-tool { padding-inline: 5px; }
+  .deal-btn { min-width: 72px; padding: 0 10px; }
+  .bet-total strong { font-size: 16px; }
 }
 
 @media (max-height: 640px) {
@@ -663,11 +668,18 @@ body[data-animation-speed="cinematic"] .bay-cards .card.deal-ready { animation-d
   .spot-name, .spot-main .spot-name { font-size: 11px; letter-spacing: 1px; }
   .spot-stack { bottom: 12px; }
   .spot-stack .bet-chip { --chip: 26px; }
+  /* The tray and every action share one row: the tools keep only their icons. */
   .controls { flex-wrap: nowrap; gap: 8px; }
-  .chips-tray { width: auto; padding: 6px 8px; }
-  .chips-tray .chip { --size: 34px; }
-  .action-row { width: auto; }
-  .deal-btn { height: 42px; min-width: 76px; }
+  .chips-tray { width: auto; gap: 4px; padding: 6px 8px; }
+  .chips-tray .chip { --size: 30px; }
+  .action-row { width: auto; gap: 8px; }
+  .bet-actions { gap: 4px; }
+  .btn-tool { min-width: 0; padding: 6px 7px; }
+  .btn-tool span { display: none; }
+  /* The stakes stand on the felt; here only their amount is repeated. */
+  .bet-total { min-width: 0; }
+  .bet-total small { display: none; }
+  .deal-btn { height: 42px; min-width: 76px; padding-inline: 12px; }
   .bet-total .last-win { display: none; }
 }
 

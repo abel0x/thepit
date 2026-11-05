@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { resizeTo, sweepReach } = require("./reach.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
 const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "thepit-baccarat-"));
@@ -322,6 +323,23 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
       assert.ok(box.cards, "every card is on screen");
       assert.ok(box.clear, "the cards stay clear of the betting spots");
       await page.screenshot({ path: path.join(artifacts, "fit-" + size.join("x") + ".png") });
+    });
+  });
+}
+
+// Every control within reach at every size, in both languages: while the bets
+// go down, with a full stack of chips on the Player and a large total, and
+// once a coup has been settled.
+for (const lang of ["en", "tr"]) {
+  test(lang + ": every control is within reach at every size, betting and after a coup", async () => {
+    await scene({ lang, cards: ["2S", "3H", "3C", "KD", "4S", "5C"] }, async page => {
+      for (const value of [5, 25, 100, 500, 1000]) { await chip(page, value); await bet(page, "player"); }
+      await chip(page, 500); await bet(page, "tie"); await bet(page, "playerPair");
+      const problems = await sweepReach(page, "betting");
+      await resizeTo(page, 1280, 800);
+      await dealAndSettle(page);
+      problems.push(...await sweepReach(page, "settled"));
+      assert.deepEqual(problems, []);
     });
   });
 }

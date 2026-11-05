@@ -502,10 +502,12 @@ body[data-phase="feature"] .spin-glyph { animation: spinTurn .9s linear infinite
   .table-specs { display: flex; }
   .win-list { display: none; }
   .machine-foot { min-height: 0; }
+  /* The tray and every action share one row, with slimmer chips. */
   .controls { flex-wrap: nowrap; gap: 8px; }
-  .chips-tray { width: auto; padding: 6px 8px; }
-  .chips-tray .chip { --size: 34px; }
-  .action-row { width: auto; }
+  .chips-tray { width: auto; gap: 4px; padding: 6px 8px; }
+  .chips-tray .chip { --size: 30px; }
+  .action-row { width: auto; gap: 8px; }
+  .bet-total, .win-meter { min-width: 0; }
   .bet-plate { display: none; }
   .spin-btn { width: 58px; height: 58px; }
   .win-meter .last-win, .bet-total .per-line { display: none; }

@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { resizeTo, sweepReach } = require("./reach.cjs");
 const Engine = require("../../games/slot/js/engine.js");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
@@ -340,6 +341,21 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
       assert.ok(box.reels, "the whole window of reels is on screen");
       assert.ok(box.square, "every symbol has room");
       await page.screenshot({ path: path.join(artifacts, "fit-" + size.join("x") + ".png") });
+    });
+  });
+}
+
+// Every control within reach at every size, in both languages: before the
+// spin, with the largest bet a line, and after a spin that paid.
+for (const lang of ["en", "tr"]) {
+  test(lang + ": every control is within reach at every size, before and after a spin", async () => {
+    await scene({ lang, spins: [{ stops: WIN }] }, async page => {
+      await page.click('.chip[data-value="100"]');
+      const problems = await sweepReach(page, "before");
+      await resizeTo(page, 1280, 800);
+      await spinAndSettle(page);
+      problems.push(...await sweepReach(page, "after"));
+      assert.deepEqual(problems, []);
     });
   });
 }

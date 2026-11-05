@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { unreachableControls } = require("./reach.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
 const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "thepit-reddog-"));
@@ -419,7 +420,8 @@ async function sweepLayouts(page, moment) {
   const found = [];
   for (const [width, height] of LAYOUT_VIEWPORTS) {
     await resizeTo(page, width, height);
-    for (const problem of await page.evaluate(layoutProblems)) found.push(width + "x" + height + " " + moment + ": " + problem);
+    const problems = [...await page.evaluate(layoutProblems), ...await page.evaluate(unreachableControls)];
+    for (const problem of new Set(problems)) found.push(width + "x" + height + " " + moment + ": " + problem);
   }
   return found;
 }

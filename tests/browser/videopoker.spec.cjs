@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { resizeTo, sweepReach } = require("./reach.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
 const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "thepit-videopoker-"));
@@ -352,6 +353,23 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
       assert.ok(box.cards, "every card is on screen");
       assert.ok(box.clear, "the cards stay clear of the pay table");
       await page.screenshot({ path: path.join(artifacts, "fit-" + size.join("x") + ".png") });
+    });
+  });
+}
+
+// Every control within reach at every size, in both languages: before the
+// deal, with the largest bet and Double Bonus's longest pay table, and while
+// the five cards wait to be held.
+for (const lang of ["en", "tr"]) {
+  test(lang + ": every control is within reach at every size, betting and holding", async () => {
+    await scene({ lang, deck: "QH KH AH 2S 5D 9C 3D 4C 5C 6C", settings: { payTable: "doubleBonus", coins: 5 } }, async page => {
+      await chip(page, 500);
+      const problems = await sweepReach(page, "betting");
+      await resizeTo(page, 1280, 800);
+      await dealToHold(page);
+      await hold(page, [0, 1]);
+      problems.push(...await sweepReach(page, "holding"));
+      assert.deepEqual(problems, []);
     });
   });
 }

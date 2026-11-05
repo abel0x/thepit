@@ -13,6 +13,7 @@ const path = require("node:path");
 const os = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { startServer } = require("./server.cjs");
+const { resizeTo, sweepReach } = require("./reach.cjs");
 const puppeteer = require(process.env.PIT_PUPPETEER_PATH || "puppeteer");
 const root = path.resolve(__dirname, "../..");
 const artifacts = fs.mkdtempSync(path.join(os.tmpdir(), "thepit-craps-"));
@@ -329,6 +330,23 @@ for (const size of [[320, 568], [360, 640], [390, 844], [768, 1024], [844, 390],
       assert.ok(box.wide, "the layout never scrolls sideways");
       assert.ok(box.boxes, "every number box has room");
       await page.screenshot({ path: path.join(artifacts, "fit-" + size.join("x") + ".png") });
+    });
+  });
+}
+
+// Every control within reach at every size, in both languages: before the
+// come-out roll, with a full stack on the Pass line and a large total, and
+// once a point is on.
+for (const lang of ["en", "tr"]) {
+  test(lang + ": every control is within reach at every size, on the come-out and with a point on", async () => {
+    await scene({ lang, rolls: [[3, 3]] }, async page => {
+      for (const value of [5, 25, 100, 500, 1000]) { await chip(page, value); await bet(page, "pass"); }
+      await chip(page, 500); await bet(page, "field"); await bet(page, "place8");
+      const problems = await sweepReach(page, "come-out");
+      await resizeTo(page, 1280, 800);
+      await roll(page);
+      problems.push(...await sweepReach(page, "point"));
+      assert.deepEqual(problems, []);
     });
   });
 }

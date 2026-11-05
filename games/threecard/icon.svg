@@ -24,27 +24,23 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
-  </g>
-
-  <!-- Three cards fanned in the hand, the last one a three -->
-  <g filter="url(#soft)" transform="rotate(-20 256 360)">
-    <rect x="196" y="160" width="120" height="172" rx="13" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-    <text x="214" y="204" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#17171a">A</text>
-    <text x="214" y="238" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17171a">♠</text>
-  </g>
-  <g filter="url(#soft)">
-    <rect x="196" y="156" width="120" height="172" rx="13" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-    <text x="214" y="200" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#17171a">2</text>
-    <text x="214" y="234" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17171a">♠</text>
-  </g>
-  <g filter="url(#soft)" transform="rotate(20 256 360)">
-    <rect x="196" y="160" width="124" height="176" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
-    <text x="258" y="290" font-family="Georgia, 'Times New Roman', serif" font-size="112" font-weight="700" fill="#b7151e" text-anchor="middle">3</text>
-    <text x="214" y="204" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#b7151e">3</text>
+  <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+    <!-- Three cards fanned in the hand, the last one a three -->
+    <g filter="url(#soft)" transform="rotate(-20 256 360)">
+      <rect x="196" y="160" width="120" height="172" rx="13" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
+      <text x="214" y="204" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#17171a">A</text>
+      <text x="214" y="238" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17171a">♠</text>
+    </g>
+    <g filter="url(#soft)">
+      <rect x="196" y="156" width="120" height="172" rx="13" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
+      <text x="214" y="200" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#17171a">2</text>
+      <text x="214" y="234" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17171a">♠</text>
+    </g>
+    <g filter="url(#soft)" transform="rotate(20 256 360)">
+      <rect x="196" y="160" width="124" height="176" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
+      <text x="258" y="290" font-family="Georgia, 'Times New Roman', serif" font-size="112" font-weight="700" fill="#b7151e" text-anchor="middle">3</text>
+      <text x="214" y="204" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#b7151e">3</text>
+    </g>
   </g>
 </svg>

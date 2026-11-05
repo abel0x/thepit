@@ -20,24 +20,20 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
-  </g>
-
-  <!-- Three dice, a six, a six and a six: eighteen -->
-  <g filter="url(#soft)" transform="rotate(-12 196 290)">
-    <rect x="146" y="240" width="100" height="100" rx="20" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
-    <circle cx="171" cy="262" r="8.5" fill="#fff8ea"/><circle cx="221" cy="262" r="8.5" fill="#fff8ea"/><circle cx="171" cy="290" r="8.5" fill="#fff8ea"/><circle cx="221" cy="290" r="8.5" fill="#fff8ea"/><circle cx="171" cy="318" r="8.5" fill="#fff8ea"/><circle cx="221" cy="318" r="8.5" fill="#fff8ea"/>
-  </g>
-  <g filter="url(#soft)" transform="rotate(10 316 290)">
-    <rect x="266" y="240" width="100" height="100" rx="20" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
-    <circle cx="291" cy="262" r="8.5" fill="#fff8ea"/><circle cx="341" cy="262" r="8.5" fill="#fff8ea"/><circle cx="291" cy="290" r="8.5" fill="#fff8ea"/><circle cx="341" cy="290" r="8.5" fill="#fff8ea"/><circle cx="291" cy="318" r="8.5" fill="#fff8ea"/><circle cx="341" cy="318" r="8.5" fill="#fff8ea"/>
-  </g>
-  <g filter="url(#soft)" transform="rotate(-2 256 198)">
-    <rect x="206" y="148" width="100" height="100" rx="20" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
-    <circle cx="231" cy="170" r="8.5" fill="#fff8ea"/><circle cx="281" cy="170" r="8.5" fill="#fff8ea"/><circle cx="231" cy="198" r="8.5" fill="#fff8ea"/><circle cx="281" cy="198" r="8.5" fill="#fff8ea"/><circle cx="231" cy="226" r="8.5" fill="#fff8ea"/><circle cx="281" cy="226" r="8.5" fill="#fff8ea"/>
+  <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+    <!-- Three dice, a six, a six and a six: eighteen -->
+    <g filter="url(#soft)" transform="rotate(-12 196 290)">
+      <rect x="146" y="240" width="100" height="100" rx="20" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
+      <circle cx="171" cy="262" r="8.5" fill="#fff8ea"/><circle cx="221" cy="262" r="8.5" fill="#fff8ea"/><circle cx="171" cy="290" r="8.5" fill="#fff8ea"/><circle cx="221" cy="290" r="8.5" fill="#fff8ea"/><circle cx="171" cy="318" r="8.5" fill="#fff8ea"/><circle cx="221" cy="318" r="8.5" fill="#fff8ea"/>
+    </g>
+    <g filter="url(#soft)" transform="rotate(10 316 290)">
+      <rect x="266" y="240" width="100" height="100" rx="20" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
+      <circle cx="291" cy="262" r="8.5" fill="#fff8ea"/><circle cx="341" cy="262" r="8.5" fill="#fff8ea"/><circle cx="291" cy="290" r="8.5" fill="#fff8ea"/><circle cx="341" cy="290" r="8.5" fill="#fff8ea"/><circle cx="291" cy="318" r="8.5" fill="#fff8ea"/><circle cx="341" cy="318" r="8.5" fill="#fff8ea"/>
+    </g>
+    <g filter="url(#soft)" transform="rotate(-2 256 198)">
+      <rect x="206" y="148" width="100" height="100" rx="20" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
+      <circle cx="231" cy="170" r="8.5" fill="#fff8ea"/><circle cx="281" cy="170" r="8.5" fill="#fff8ea"/><circle cx="231" cy="198" r="8.5" fill="#fff8ea"/><circle cx="281" cy="198" r="8.5" fill="#fff8ea"/><circle cx="231" cy="226" r="8.5" fill="#fff8ea"/><circle cx="281" cy="226" r="8.5" fill="#fff8ea"/>
+    </g>
   </g>
 </svg>

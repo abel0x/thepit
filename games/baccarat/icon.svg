@@ -24,22 +24,18 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
-  </g>
-
-  <!-- The Banker's king behind the Player's nine -->
-  <g filter="url(#soft)" transform="rotate(-14 214 262)">
-    <rect x="150" y="166" width="126" height="180" rx="14" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-    <text x="172" y="214" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="700" fill="#17171a">K</text>
-    <text x="172" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#17171a">♠</text>
-  </g>
-  <g filter="url(#soft)" transform="rotate(11 300 258)">
-    <rect x="236" y="160" width="130" height="186" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
-    <text x="301" y="292" font-family="Georgia, 'Times New Roman', serif" font-size="118" font-weight="700" fill="#b7151e" text-anchor="middle">9</text>
-    <text x="258" y="206" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#b7151e">9</text>
+  <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+    <!-- The Banker's king behind the Player's nine -->
+    <g filter="url(#soft)" transform="rotate(-14 214 262)">
+      <rect x="150" y="166" width="126" height="180" rx="14" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
+      <text x="172" y="214" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="700" fill="#17171a">K</text>
+      <text x="172" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#17171a">♠</text>
+    </g>
+    <g filter="url(#soft)" transform="rotate(11 300 258)">
+      <rect x="236" y="160" width="130" height="186" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
+      <text x="301" y="292" font-family="Georgia, 'Times New Roman', serif" font-size="118" font-weight="700" fill="#b7151e" text-anchor="middle">9</text>
+      <text x="258" y="206" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#b7151e">9</text>
+    </g>
   </g>
 </svg>

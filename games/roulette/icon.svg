@@ -34,39 +34,42 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Wooden bowl with a brass rim -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="190" fill="url(#bowl)"/>
-    <circle cx="256" cy="256" r="190" fill="none" stroke="url(#ring)" stroke-width="12"/>
-  </g>
-  <circle cx="256" cy="256" r="168" fill="none" stroke="#120804" stroke-width="10"/>
+  <!-- Grown a little so that the wheel still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.12) translate(-256 -256)">
+    <!-- Wooden bowl with a brass rim -->
+    <g filter="url(#soft)">
+      <circle cx="256" cy="256" r="190" fill="url(#bowl)"/>
+      <circle cx="256" cy="256" r="190" fill="none" stroke="url(#ring)" stroke-width="12"/>
+    </g>
+    <circle cx="256" cy="256" r="168" fill="none" stroke="#120804" stroke-width="10"/>
 
-  <!-- Number ring: 36 alternating pockets with the zero at the top -->
-  <g transform="rotate(-94.865 256 256)">
-    <circle cx="256" cy="256" r="140" fill="none" stroke="#141416" stroke-width="44"/>
-    <circle cx="256" cy="256" r="140" fill="none" stroke="#b5141d" stroke-width="44" stroke-dasharray="23.774 23.774"/>
-    <circle cx="256" cy="256" r="140" fill="none" stroke="#0e8a45" stroke-width="44" stroke-dasharray="23.774 855.86"/>
-  </g>
-  <circle cx="256" cy="256" r="162" fill="none" stroke="url(#ring)" stroke-width="4"/>
-  <circle cx="256" cy="256" r="118" fill="none" stroke="url(#ring)" stroke-width="4"/>
+    <!-- Number ring: 36 alternating pockets with the zero at the top -->
+    <g transform="rotate(-94.865 256 256)">
+      <circle cx="256" cy="256" r="140" fill="none" stroke="#141416" stroke-width="44"/>
+      <circle cx="256" cy="256" r="140" fill="none" stroke="#b5141d" stroke-width="44" stroke-dasharray="23.774 23.774"/>
+      <circle cx="256" cy="256" r="140" fill="none" stroke="#0e8a45" stroke-width="44" stroke-dasharray="23.774 855.86"/>
+    </g>
+    <circle cx="256" cy="256" r="162" fill="none" stroke="url(#ring)" stroke-width="4"/>
+    <circle cx="256" cy="256" r="118" fill="none" stroke="url(#ring)" stroke-width="4"/>
 
-  <!-- Cone and turret -->
-  <circle cx="256" cy="256" r="116" fill="url(#wood)"/>
-  <circle cx="256" cy="256" r="84" fill="none" stroke="#e6c869" stroke-opacity=".35" stroke-width="2"/>
-  <g stroke="url(#ring)" stroke-width="14" stroke-linecap="round">
-    <path d="M256 186v140M186 256h140"/>
-  </g>
-  <g fill="url(#ring)">
-    <circle cx="256" cy="182" r="12"/>
-    <circle cx="256" cy="330" r="12"/>
-    <circle cx="182" cy="256" r="12"/>
-    <circle cx="330" cy="256" r="12"/>
-    <circle cx="256" cy="256" r="26"/>
-  </g>
-  <circle cx="249" cy="248" r="9" fill="#fff8dd" opacity=".7"/>
+    <!-- Cone and turret -->
+    <circle cx="256" cy="256" r="116" fill="url(#wood)"/>
+    <circle cx="256" cy="256" r="84" fill="none" stroke="#e6c869" stroke-opacity=".35" stroke-width="2"/>
+    <g stroke="url(#ring)" stroke-width="14" stroke-linecap="round">
+      <path d="M256 186v140M186 256h140"/>
+    </g>
+    <g fill="url(#ring)">
+      <circle cx="256" cy="182" r="12"/>
+      <circle cx="256" cy="330" r="12"/>
+      <circle cx="182" cy="256" r="12"/>
+      <circle cx="330" cy="256" r="12"/>
+      <circle cx="256" cy="256" r="26"/>
+    </g>
+    <circle cx="249" cy="248" r="9" fill="#fff8dd" opacity=".7"/>
 
-  <!-- The ball, resting in a pocket -->
-  <g filter="url(#soft)">
-    <circle cx="352" cy="148" r="17" fill="url(#ball)"/>
+    <!-- The ball, resting in a pocket -->
+    <g filter="url(#soft)">
+      <circle cx="352" cy="148" r="17" fill="url(#ball)"/>
+    </g>
   </g>
 </svg>

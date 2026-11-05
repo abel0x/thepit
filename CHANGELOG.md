@@ -10,6 +10,7 @@ The first release of the pit: nine tables, a money wheel, a slot machine, a vide
 
 - A lobby that shows the play-money balance and leads to each table, with the language, the table cloth and *Add play money* in its settings, its tables laid out in rows: one on a phone, two on a tablet, four on a wide screen, with a last row that is not full centred.
 - The pit's mark: a gold spade on the green cloth, its point leaning right and cut through by a narrow arrow that parts the stem into two feet, on the app icons, in the lobby's header and on the link preview.
+- A tab icon for every table that still reads at 16 pixels: each drawing fills its tile, Table 21 shows its number under an ivory spade, Wheel 54 twelve broad segments, Keno 80 a ball with its own number and Drop 16 large pegs above three slots.
 - The lobby's *Your play*: every table's rounds, wagered, returned, net and return per dollar, with the pit's total.
 - One play-money balance shared by every table, guarded by a single Web Lock across pages and tabs; without Web Locks each tab keeps its own session balance.
 - One round at a time across the pit: a hand or a spin left unfinished at one table is played out there before another table takes a bet, and the lobby marks that table.

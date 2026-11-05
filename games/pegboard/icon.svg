@@ -14,8 +14,8 @@
     </linearGradient>
     <radialGradient id="ball" cx="38%" cy="34%" r="70%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="70%" stop-color="#efe8d6"/>
-      <stop offset="100%" stop-color="#c9a24b"/>
+      <stop offset="60%" stop-color="#f1e8cf"/>
+      <stop offset="100%" stop-color="#b9b29d"/>
     </radialGradient>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
@@ -25,26 +25,17 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
+  <!-- Three rows of pegs, a ball on its way down and three slots, drawn
+       large enough to read in a browser tab -->
+  <g fill="url(#ring)" filter="url(#soft)">
+    <circle cx="256" cy="120" r="22"/>
+    <circle cx="196" cy="200" r="22"/><circle cx="316" cy="200" r="22"/>
+    <circle cx="136" cy="280" r="22"/><circle cx="256" cy="280" r="22"/><circle cx="376" cy="280" r="22"/>
+  </g>
   <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
+    <rect x="86" y="338" width="100" height="72" rx="16" fill="#b3243a"/>
+    <rect x="206" y="338" width="100" height="72" rx="16" fill="#b08a2e"/>
+    <rect x="326" y="338" width="100" height="72" rx="16" fill="#b3243a"/>
+    <circle cx="226" cy="158" r="36" fill="url(#ball)"/>
   </g>
-
-  <!-- Four rows of pegs, five slots and a ball on its way down -->
-  <g fill="#f0dd9a">
-    <circle cx="256" cy="168" r="8"/>
-    <circle cx="226" cy="204" r="8"/><circle cx="286" cy="204" r="8"/>
-    <circle cx="196" cy="240" r="8"/><circle cx="256" cy="240" r="8"/><circle cx="316" cy="240" r="8"/>
-    <circle cx="166" cy="276" r="8"/><circle cx="226" cy="276" r="8"/><circle cx="286" cy="276" r="8"/><circle cx="346" cy="276" r="8"/>
-  </g>
-  <g>
-    <rect x="114" y="304" width="44" height="34" rx="8" fill="#b3243a"/>
-    <rect x="174" y="304" width="44" height="34" rx="8" fill="#b08a2e"/>
-    <rect x="234" y="304" width="44" height="34" rx="8" fill="#2f5d73"/>
-    <rect x="294" y="304" width="44" height="34" rx="8" fill="#b08a2e"/>
-    <rect x="354" y="304" width="44" height="34" rx="8" fill="#b3243a"/>
-  </g>
-  <circle cx="242" cy="186" r="17" fill="url(#ball)" filter="url(#soft)"/>
 </svg>

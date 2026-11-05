@@ -12,10 +12,6 @@
       <stop offset="74%" stop-color="#f0dd9a"/>
       <stop offset="100%" stop-color="#8c6a1c"/>
     </linearGradient>
-    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#fffefa"/>
-      <stop offset="100%" stop-color="#ebe6d8"/>
-    </linearGradient>
     <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
     </filter>
@@ -24,20 +20,16 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
-  </g>
-
-  <!-- Two dice, a three and a four: seven -->
-  <g filter="url(#soft)" transform="rotate(-12 216 246)">
-    <rect x="156" y="186" width="120" height="120" rx="24" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
-    <circle cx="176" cy="206" r="11" fill="#fff8ea"/><circle cx="216" cy="246" r="11" fill="#fff8ea"/><circle cx="256" cy="286" r="11" fill="#fff8ea"/>
-  </g>
-  <g filter="url(#soft)" transform="rotate(14 306 236)">
-    <rect x="246" y="176" width="120" height="120" rx="24" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
-    <circle cx="276" cy="206" r="11" fill="#fff8ea"/><circle cx="336" cy="206" r="11" fill="#fff8ea"/><circle cx="276" cy="266" r="11" fill="#fff8ea"/><circle cx="336" cy="266" r="11" fill="#fff8ea"/>
+  <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+    <!-- Two dice, a three and a four: seven -->
+    <g filter="url(#soft)" transform="rotate(-12 216 246)">
+      <rect x="156" y="186" width="120" height="120" rx="24" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
+      <circle cx="176" cy="206" r="11" fill="#fff8ea"/><circle cx="216" cy="246" r="11" fill="#fff8ea"/><circle cx="256" cy="286" r="11" fill="#fff8ea"/>
+    </g>
+    <g filter="url(#soft)" transform="rotate(14 306 236)">
+      <rect x="246" y="176" width="120" height="120" rx="24" fill="#c8202a" stroke="url(#ring)" stroke-width="4"/>
+      <circle cx="276" cy="206" r="11" fill="#fff8ea"/><circle cx="336" cy="206" r="11" fill="#fff8ea"/><circle cx="276" cy="266" r="11" fill="#fff8ea"/><circle cx="336" cy="266" r="11" fill="#fff8ea"/>
+    </g>
   </g>
 </svg>

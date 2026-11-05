@@ -24,24 +24,20 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
-  </g>
-
-  <!-- A four and a jack, and the eight that falls between them -->
-  <g filter="url(#soft)">
-    <rect x="126" y="196" width="92" height="132" rx="11" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-    <text x="172" y="284" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#17171a" text-anchor="middle">4</text>
-  </g>
-  <g filter="url(#soft)">
-    <rect x="294" y="196" width="92" height="132" rx="11" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-    <text x="340" y="284" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#17171a" text-anchor="middle">J</text>
-  </g>
-  <g filter="url(#soft)">
-    <rect x="205" y="164" width="102" height="146" rx="12" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
-    <text x="256" y="266" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="700" fill="#b7151e" text-anchor="middle">8</text>
+  <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+    <!-- A four and a jack, and the eight that falls between them -->
+    <g filter="url(#soft)">
+      <rect x="126" y="196" width="92" height="132" rx="11" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
+      <text x="172" y="284" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#17171a" text-anchor="middle">4</text>
+    </g>
+    <g filter="url(#soft)">
+      <rect x="294" y="196" width="92" height="132" rx="11" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
+      <text x="340" y="284" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#17171a" text-anchor="middle">J</text>
+    </g>
+    <g filter="url(#soft)">
+      <rect x="205" y="164" width="102" height="146" rx="12" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>
+      <text x="256" y="266" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="700" fill="#b7151e" text-anchor="middle">8</text>
+    </g>
   </g>
 </svg>

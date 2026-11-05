@@ -25,21 +25,17 @@
   <!-- App tile -->
   <rect width="512" height="512" rx="112" fill="url(#bg)"/>
 
-  <!-- Medallion -->
-  <g filter="url(#soft)">
-    <circle cx="256" cy="256" r="182" fill="none" stroke="url(#ring)" stroke-width="16"/>
-    <circle cx="256" cy="256" r="160" fill="none" stroke="url(#ring)" stroke-width="4" opacity=".7"/>
-    <circle cx="256" cy="256" r="150" fill="#08231a"/>
+  <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+  <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+    <!-- The brass plate, a few beads and four taken away with the stick -->
+    <circle cx="246" cy="262" r="104" fill="#4a2f13" stroke="url(#ring)" stroke-width="10" filter="url(#soft)"/>
+    <g fill="url(#bead)">
+      <circle cx="216" cy="238" r="17"/><circle cx="252" cy="226" r="17"/><circle cx="234" cy="270" r="17"/>
+      <circle cx="198" cy="282" r="17"/><circle cx="270" cy="262" r="17"/>
+    </g>
+    <g fill="url(#bead)" opacity=".55">
+      <circle cx="300" cy="306" r="14"/><circle cx="330" cy="292" r="14"/><circle cx="322" cy="326" r="14"/><circle cx="292" cy="338" r="14"/>
+    </g>
+    <path d="M150 368 L372 176" stroke="url(#ring)" stroke-width="12" stroke-linecap="round" filter="url(#soft)"/>
   </g>
-
-  <!-- The brass plate, a few beads and four taken away with the stick -->
-  <circle cx="246" cy="262" r="104" fill="#4a2f13" stroke="url(#ring)" stroke-width="10" filter="url(#soft)"/>
-  <g fill="url(#bead)">
-    <circle cx="216" cy="238" r="17"/><circle cx="252" cy="226" r="17"/><circle cx="234" cy="270" r="17"/>
-    <circle cx="198" cy="282" r="17"/><circle cx="270" cy="262" r="17"/>
-  </g>
-  <g fill="url(#bead)" opacity=".55">
-    <circle cx="300" cy="306" r="14"/><circle cx="330" cy="292" r="14"/><circle cx="322" cy="326" r="14"/><circle cx="292" cy="338" r="14"/>
-  </g>
-  <path d="M150 368 L372 176" stroke="url(#ring)" stroke-width="12" stroke-linecap="round" filter="url(#soft)"/>
 </svg>

@@ -197,7 +197,7 @@ npm run test:browser
 
 ## Development
 
-There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-card-audio.sh` rebuilds the card-table samples in `shared/audio/` and `tools/generate-roulette-audio.sh` the roulette ones, with ffmpeg.
+There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-card-audio.sh` rebuilds the card-table samples in `shared/audio/` and `tools/generate-roulette-audio.sh` the roulette ones, with ffmpeg; `tools/generate-icons.sh` rebuilds the install icons from `icon.svg` with rsvg-convert and ImageMagick.
 
 A new table lives in its own folder under `games/`. It loads `shared/css/pit.css` and `shared/css/table.css` before its own stylesheet, `shared/js/pit.js` and `shared/js/i18n.js` first and `shared/js/pwa.js` last, adds its own words with `I18n.define()` (a word the pit already has can never be redefined), keeps its own data under `pit.<table>.*`, and joins `Pit.TABLES`, the lobby and the cache list in `sw.js`.
 
@@ -237,7 +237,7 @@ sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)
 assets/icons/              PNG install icons (192, 512 and a maskable 512)
 assets/social-preview.jpg  1200×630 link-preview image
-tools/                     reproducible local audio generators
+tools/                     reproducible local audio and icon generators
 tests/                     dependency-free tests for every table, the lobby and the site
 tests/browser/             optional real-browser suites (Puppeteer, development only)
 .github/workflows/         continuous integration for the core suite

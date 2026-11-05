@@ -42,21 +42,41 @@
         <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
       </a>
       <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+        <svg viewBox="0 0 512 512" width="44" height="44" focusable="false">
           <defs>
-            <linearGradient id="cRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
-              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+            <linearGradient id="mark-ring" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/>
+              <stop offset="28%" stop-color="#e6c869"/>
+              <stop offset="52%" stop-color="#b8902f"/>
+              <stop offset="74%" stop-color="#f0dd9a"/>
               <stop offset="100%" stop-color="#8c6a1c"/>
             </linearGradient>
+            <filter id="mark-soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
+            </filter>
           </defs>
-          <circle cx="32" cy="32" r="29" fill="#08231a"/>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#cRing)" stroke-width="2.6"/>
-          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#cRing)" stroke-width="1" opacity=".7"/>
-          <circle cx="32" cy="32" r="15" fill="#b7151e" stroke="#e6c869" stroke-width="1.2"/>
-          <path d="M32 32 L32.0 17.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L39.5 19.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L45.0 24.5" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L47.0 32.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L45.0 39.5" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L39.5 45.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L32.0 47.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L24.5 45.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L19.0 39.5" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L17.0 32.0" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L19.0 24.5" stroke="#e6c869" stroke-width=".7"/><path d="M32 32 L24.5 19.0" stroke="#e6c869" stroke-width=".7"/>
-          <circle cx="32" cy="32" r="5" fill="#e6c869"/>
-          <path d="M32 14.5 L29.5 10 H34.5 Z" fill="#f4efe2"/>
+          <!-- The money wheel under its pointer: twelve broad segments, since the
+               real fifty-four blur together in a browser tab -->
+          <g filter="url(#mark-soft)">
+            <circle cx="256" cy="262" r="198" fill="#3a240f" stroke="url(#mark-ring)" stroke-width="14"/>
+          </g>
+          <g stroke="#281a08" stroke-width="3">
+            <path d="M243.1 213.7L207.9 82.3A186 186 0 0 1 304.1 82.3L268.9 213.7A50 50 0 0 0 243.1 213.7Z" fill="#f1e8cf"/>
+            <path d="M268.9 213.7L304.1 82.3A186 186 0 0 1 387.5 130.5L291.4 226.6A50 50 0 0 0 268.9 213.7Z" fill="#2f6fb8"/>
+            <path d="M291.4 226.6L387.5 130.5A186 186 0 0 1 435.7 213.9L304.3 249.1A50 50 0 0 0 291.4 226.6Z" fill="#f1e8cf"/>
+            <path d="M304.3 249.1L435.7 213.9A186 186 0 0 1 435.7 310.1L304.3 274.9A50 50 0 0 0 304.3 249.1Z" fill="#23834b"/>
+            <path d="M304.3 274.9L435.7 310.1A186 186 0 0 1 387.5 393.5L291.4 297.4A50 50 0 0 0 304.3 274.9Z" fill="#f1e8cf"/>
+            <path d="M291.4 297.4L387.5 393.5A186 186 0 0 1 304.1 441.7L268.9 310.3A50 50 0 0 0 291.4 297.4Z" fill="#6c3ea8"/>
+            <path d="M268.9 310.3L304.1 441.7A186 186 0 0 1 207.9 441.7L243.1 310.3A50 50 0 0 0 268.9 310.3Z" fill="#f1e8cf"/>
+            <path d="M243.1 310.3L207.9 441.7A186 186 0 0 1 124.5 393.5L220.6 297.4A50 50 0 0 0 243.1 310.3Z" fill="#2f6fb8"/>
+            <path d="M220.6 297.4L124.5 393.5A186 186 0 0 1 76.3 310.1L207.7 274.9A50 50 0 0 0 220.6 297.4Z" fill="#f1e8cf"/>
+            <path d="M207.7 274.9L76.3 310.1A186 186 0 0 1 76.3 213.9L207.7 249.1A50 50 0 0 0 207.7 274.9Z" fill="#23834b"/>
+            <path d="M207.7 249.1L76.3 213.9A186 186 0 0 1 124.5 130.5L220.6 226.6A50 50 0 0 0 207.7 249.1Z" fill="#f1e8cf"/>
+            <path d="M220.6 226.6L124.5 130.5A186 186 0 0 1 207.9 82.3L243.1 213.7A50 50 0 0 0 220.6 226.6Z" fill="#c4472b"/>
+          </g>
+          <circle cx="256" cy="262" r="50" fill="#2a1a0b" stroke="url(#mark-ring)" stroke-width="8"/>
+          <circle cx="256" cy="262" r="34" fill="#b7151e"/>
+          <path d="M256 104 L230 48 H282 Z" fill="#f4efe2" stroke="#8c6a1c" stroke-width="5" stroke-linejoin="round" filter="url(#mark-soft)"/>
         </svg>
       </span>
       <div class="brand-text">

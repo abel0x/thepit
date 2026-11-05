@@ -43,21 +43,36 @@
         <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
       </a>
       <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+        <svg viewBox="0 0 512 512" width="44" height="44" focusable="false">
           <defs>
-            <linearGradient id="tRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
-              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+            <linearGradient id="mark-ring" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/>
+              <stop offset="28%" stop-color="#e6c869"/>
+              <stop offset="52%" stop-color="#b8902f"/>
+              <stop offset="74%" stop-color="#f0dd9a"/>
               <stop offset="100%" stop-color="#8c6a1c"/>
             </linearGradient>
+            <linearGradient id="mark-paper" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fffefa"/>
+              <stop offset="100%" stop-color="#ebe6d8"/>
+            </linearGradient>
+            <filter id="mark-soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
+            </filter>
           </defs>
-          <circle cx="32" cy="32" r="29" fill="#08231a"/>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#tRing)" stroke-width="2.6"/>
-          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#tRing)" stroke-width="1" opacity=".7"/>
-          <g transform="rotate(-12 32 46)"><rect x="19" y="18" width="17" height="24" rx="2.2" fill="#efe7d3" stroke="#8c6a1c" stroke-width=".8"/></g>
-          <g transform="rotate(10 32 46)">
-            <rect x="28" y="17" width="17.5" height="24.5" rx="2.2" fill="#fbf8ef" stroke="#c9a24b" stroke-width=".9"/>
-            <text x="36.7" y="34" font-size="12" font-weight="700" fill="#17171a" text-anchor="middle">A</text>
+          <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+          <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+            <!-- Two hole cards on a blue back, the ace of hearts turned up -->
+            <g filter="url(#mark-soft)" transform="rotate(-12 236 330)">
+              <rect x="166" y="160" width="124" height="176" rx="14" fill="url(#mark-paper)" stroke="#8c6a1c" stroke-width="3"/>
+              <rect x="175" y="169" width="106" height="158" rx="10" fill="#2a5aa6" stroke="#8fb2ea" stroke-width="3"/>
+              <path d="M228 213L253 248L228 283L203 248Z" fill="none" stroke="#8fb2ea" stroke-width="4"/>
+            </g>
+            <g filter="url(#mark-soft)" transform="rotate(12 276 330)">
+              <rect x="222" y="160" width="128" height="180" rx="14" fill="url(#mark-paper)" stroke="url(#mark-ring)" stroke-width="4"/>
+              <text x="286" y="296" font-family="Georgia, 'Times New Roman', serif" font-size="112" font-weight="700" fill="#b7151e" text-anchor="middle">A</text>
+              <text x="240" y="206" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700" fill="#b7151e">♥</text>
+            </g>
           </g>
         </svg>
       </span>

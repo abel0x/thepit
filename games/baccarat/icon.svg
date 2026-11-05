@@ -26,11 +26,11 @@
 
   <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
   <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
-    <!-- The Banker's king behind the Player's nine -->
+    <!-- The Banker's card, still on its amber back, behind the Player's nine -->
     <g filter="url(#soft)" transform="rotate(-14 214 262)">
       <rect x="150" y="166" width="126" height="180" rx="14" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-      <text x="172" y="214" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="700" fill="#17171a">K</text>
-      <text x="172" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="32" fill="#17171a">♠</text>
+      <rect x="159" y="175" width="108" height="162" rx="10" fill="#c0661f" stroke="#f3c48f" stroke-width="3"/>
+      <path d="M213 221L238 256L213 291L188 256Z" fill="none" stroke="#f3c48f" stroke-width="4"/>
     </g>
     <g filter="url(#soft)" transform="rotate(11 300 258)">
       <rect x="236" y="160" width="130" height="186" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>

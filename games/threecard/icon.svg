@@ -26,16 +26,16 @@
 
   <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
   <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
-    <!-- Three cards fanned in the hand, the last one a three -->
+    <!-- Three cards fanned in the hand, two on a purple back and a three turned up -->
     <g filter="url(#soft)" transform="rotate(-20 256 360)">
       <rect x="196" y="160" width="120" height="172" rx="13" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-      <text x="214" y="204" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#17171a">A</text>
-      <text x="214" y="238" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17171a">♠</text>
+      <rect x="205" y="169" width="102" height="154" rx="9" fill="#6b3aa0" stroke="#c4a2ea" stroke-width="3"/>
+      <path d="M256 212.4L280 246L256 279.6L232 246Z" fill="none" stroke="#c4a2ea" stroke-width="4"/>
     </g>
     <g filter="url(#soft)">
       <rect x="196" y="156" width="120" height="172" rx="13" fill="url(#paper)" stroke="#8c6a1c" stroke-width="3"/>
-      <text x="214" y="200" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#17171a">2</text>
-      <text x="214" y="234" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#17171a">♠</text>
+      <rect x="205" y="165" width="102" height="154" rx="9" fill="#6b3aa0" stroke="#c4a2ea" stroke-width="3"/>
+      <path d="M256 208.4L280 242L256 275.6L232 242Z" fill="none" stroke="#c4a2ea" stroke-width="4"/>
     </g>
     <g filter="url(#soft)" transform="rotate(20 256 360)">
       <rect x="196" y="160" width="124" height="176" rx="14" fill="url(#paper)" stroke="url(#ring)" stroke-width="4"/>

@@ -43,23 +43,40 @@
         <svg class="lobby-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
       </a>
       <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 64 64" width="44" height="44" focusable="false">
+        <svg viewBox="0 0 512 512" width="44" height="44" focusable="false">
           <defs>
-            <linearGradient id="rRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#f7ecc0"/><stop offset="30%" stop-color="#e6c869"/>
-              <stop offset="55%" stop-color="#b8902f"/><stop offset="80%" stop-color="#f0dd9a"/>
+            <linearGradient id="mark-ring" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#f7ecc0"/>
+              <stop offset="28%" stop-color="#e6c869"/>
+              <stop offset="52%" stop-color="#b8902f"/>
+              <stop offset="74%" stop-color="#f0dd9a"/>
               <stop offset="100%" stop-color="#8c6a1c"/>
             </linearGradient>
+            <linearGradient id="mark-paper" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fffefa"/>
+              <stop offset="100%" stop-color="#ebe6d8"/>
+            </linearGradient>
+            <filter id="mark-soft" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity=".5"/>
+            </filter>
           </defs>
-          <circle cx="32" cy="32" r="29" fill="#08231a"/>
-          <circle cx="32" cy="32" r="28" fill="none" stroke="url(#rRing)" stroke-width="2.6"/>
-          <circle cx="32" cy="32" r="23.5" fill="none" stroke="url(#rRing)" stroke-width="1" opacity=".7"/>
-          <rect x="11" y="22" width="13" height="19" rx="2" fill="#f6f1e4" stroke="#8c6a1c" stroke-width=".8"/>
-          <text x="17.5" y="35.5" font-size="9" font-weight="700" fill="#17171a" text-anchor="middle">4</text>
-          <rect x="40" y="22" width="13" height="19" rx="2" fill="#f6f1e4" stroke="#8c6a1c" stroke-width=".8"/>
-          <text x="46.5" y="35.5" font-size="9" font-weight="700" fill="#17171a" text-anchor="middle">J</text>
-          <rect x="24.5" y="18" width="15" height="22" rx="2.2" fill="#fbf8ef" stroke="#c9a24b" stroke-width=".9"/>
-          <text x="32" y="33.5" font-size="11" font-weight="700" fill="#b7151e" text-anchor="middle">8</text>
+          <!-- No medallion: the drawing fills the tile so that it still reads in a browser tab -->
+          <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+            <!-- A four and a jack, and the third card still face down on its red back -->
+            <g filter="url(#mark-soft)">
+              <rect x="126" y="196" width="92" height="132" rx="11" fill="url(#mark-paper)" stroke="#8c6a1c" stroke-width="3"/>
+              <text x="172" y="284" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#17171a" text-anchor="middle">4</text>
+            </g>
+            <g filter="url(#mark-soft)">
+              <rect x="294" y="196" width="92" height="132" rx="11" fill="url(#mark-paper)" stroke="#8c6a1c" stroke-width="3"/>
+              <text x="340" y="284" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700" fill="#17171a" text-anchor="middle">J</text>
+            </g>
+            <g filter="url(#mark-soft)">
+              <rect x="205" y="164" width="102" height="146" rx="12" fill="url(#mark-paper)" stroke="#8c6a1c" stroke-width="3"/>
+              <rect x="213" y="172" width="86" height="130" rx="8" fill="#b3243a" stroke="#f0a0aa" stroke-width="3"/>
+              <path d="M256 209L276 237L256 265L236 237Z" fill="none" stroke="#f0a0aa" stroke-width="4"/>
+            </g>
+          </g>
         </svg>
       </span>
       <div class="brand-text">

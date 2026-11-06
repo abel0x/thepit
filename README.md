@@ -5,7 +5,7 @@
 
 A polished, **fully static & offline** casino of play-money table games. One lobby, one balance, every table on your own device. No build step, no runtime dependencies, no network. Open and play.
 
-**[Enter ThePit in your browser](https://abel0x.github.io/thepit/)** · Version 1.0.0 · [GNU AGPL v3](LICENSE) · [![Tests](https://github.com/abel0x/thepit/actions/workflows/tests.yml/badge.svg)](https://github.com/abel0x/thepit/actions/workflows/tests.yml)
+**[Enter ThePit in your browser](https://abel0x.github.io/thepit/)** · Version 1.0.1 · [GNU AGPL v3](LICENSE) · [![Tests](https://github.com/abel0x/thepit/actions/workflows/tests.yml/badge.svg)](https://github.com/abel0x/thepit/actions/workflows/tests.yml)
 
 ![The fourteen tables of ThePit on green felt: blackjack, roulette, baccarat, poker, slots, craps, sic bo, keno, the big six wheel, red dog, a peg board and fan-tan](assets/social-preview.jpg)
 

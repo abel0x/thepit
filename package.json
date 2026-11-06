@@ -1,6 +1,6 @@
 {
   "name": "thepit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Static, offline casino of play-money table games. The games themselves have no dependencies; Puppeteer is only for the optional browser tests.",
   "author": "abel0x",

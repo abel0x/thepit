@@ -7,7 +7,7 @@ A polished, **fully static & offline** casino of play-money table games. One lob
 
 **[Enter ThePit in your browser](https://abel0x.github.io/thepit/)** · Version 1.0.0 · [GNU AGPL v3](LICENSE) · [![Tests](https://github.com/abel0x/thepit/actions/workflows/tests.yml/badge.svg)](https://github.com/abel0x/thepit/actions/workflows/tests.yml)
 
-![The lobby of ThePit with Table 21, Table 37, Table 9 and Table 3 on green felt](assets/social-preview.jpg)
+![The fourteen tables of ThePit on green felt: blackjack, roulette, baccarat, poker, slots, craps, sic bo, keno, the big six wheel, red dog, a peg board and fan-tan](assets/social-preview.jpg)
 
 ## Play
 
@@ -197,7 +197,7 @@ npm run test:browser
 
 ## Development
 
-There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-card-audio.sh` rebuilds the card-table samples in `shared/audio/` and `tools/generate-roulette-audio.sh` the roulette ones, with ffmpeg; `tools/generate-icons.sh` rebuilds the install icons from `icon.svg` with rsvg-convert and ImageMagick, and `node tools/sync-brand-marks.cjs` redraws each table's header mark from its `icon.svg`.
+There is no build step: edit a file and reload the page. Whenever a change touches a file the pit ships, bump `CACHE_VERSION` in `sw.js` so that installed copies pick up the new version; the update waits until no round is in play. `tools/generate-card-audio.sh` rebuilds the card-table samples in `shared/audio/` and `tools/generate-roulette-audio.sh` the roulette ones, with ffmpeg; `tools/generate-icons.sh` rebuilds the install icons from `icon.svg` with rsvg-convert and ImageMagick, `node tools/sync-brand-marks.cjs` redraws each table's header mark from its `icon.svg`, and `node tools/generate-social-preview.cjs` draws `assets/social-preview.jpg` from the lobby with Puppeteer and ImageMagick, so run it after adding a table.
 
 A new table lives in its own folder under `games/`. It loads `shared/css/pit.css` and `shared/css/table.css` before its own stylesheet, `shared/js/pit.js` and `shared/js/i18n.js` first and `shared/js/pwa.js` last, adds its own words with `I18n.define()` (a word the pit already has can never be redefined), keeps its own data under `pit.<table>.*`, and joins `Pit.TABLES`, the lobby and the cache list in `sw.js`.
 
@@ -237,7 +237,7 @@ sw.js                      offline cache for the whole pit (only used over http)
 icon.svg                   app icon (apple-touch-icon.png: iOS home-screen PNG)
 assets/icons/              PNG install icons (192, 512 and a maskable 512)
 assets/social-preview.jpg  1200×630 link-preview image
-tools/                     reproducible local audio, icon and header-mark generators
+tools/                     reproducible local audio, icon, header-mark and preview generators
 tests/                     dependency-free tests for every table, the lobby and the site
 tests/browser/             optional real-browser suites (Puppeteer, development only)
 .github/workflows/         continuous integration for the core suite

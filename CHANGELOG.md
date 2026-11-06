@@ -2,6 +2,12 @@
 
 All notable changes to ThePit are documented here. The project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+- The link preview shows all fourteen tables; it had shown only the four of the first day. `tools/generate-social-preview.cjs` now draws it from the lobby, so a new table joins it the next time it runs.
+- The site is published to GitHub Pages by the test workflow, only from `main` and only once the core suite has passed on every Node version.
+- The README names the chip trays of Table 13, Table 4 and Drop 16, the two hands a European blackjack table splits to, the card backs every card table takes from the cloth, and the current test counts.
+
 ## [1.0.0] - 2026-11-05
 
 The first release of the pit: nine tables, a money wheel, a slot machine, a video poker machine, a keno machine and a peg board, one wallet, one lobby.
@@ -20,7 +26,7 @@ The first release of the pit: nine tables, a money wheel, a slot machine, a vide
 - Built for screen readers and speech control: every betting spot is named first by the words printed on it, then by what the layout leaves unsaid and the stake (WCAG 2.5.3, Label in Name), and the lobby, every table and every dialog pass an axe-core audit of WCAG 2.1 A and AA in both languages.
 - One set of chips for the whole pit: the clay chips of Table 21 at every table, in the tray and stacked on the felt, and one colour per value everywhere, from the white $1 to the silver $100K; each table keeps its own tray.
 - One language engine and one set of shared words, shared stylesheets, and shared cards, card sounds and chips for the lobby and every table.
-- Every button within reach from wide screens down to the smallest phones, upright or on their side: where space is short the tray takes a row of its own or the chips and tools grow slimmer, so Deal, Spin, Roll and Play are never cut off by the edge of the table. A walk through twelve screen sizes checks each table while betting and in play.
+- Every button within reach from wide screens down to the smallest phones, upright or on their side: where space is short the tray takes a row of its own or the chips and tools grow slimmer, so Deal, Spin, Roll and Play are never cut off by the edge of the table. A walk through twelve screen sizes checks every table but Table 21, whose page scrolls instead, while betting and in play.
 - One installable app with one offline cache for the lobby and every table, plus the zero-setup `file://` route.
 - Play money only, with a disclaimer on every page and in the README.
 - Licensed under the GNU AGPL v3 or later.
@@ -50,4 +56,5 @@ The first release of the pit: nine tables, a money wheel, a slot machine, a vide
 - Keno 80, a keno machine: mark 1 to 10 of 80 numbers or quick pick, twenty balls drawn one by one, a pay table for every count of marks with its exact return, and a game left unfinished settled with the same balls. One ticket plays 1, 5, 10 or 20 draws in a row, every draw paid for, drawn and saved before the first ball, and the lot paid together.
 - Drop 16, a peg board machine: balls bounce down 8, 12 or 16 rows of pegs into slots that pay up to 1000 times the bet, under three risks with pay tables of its own and returns from 96.88% to 97.25% counted over every way down, with 1, 5, 10 or 20 balls a drop, all saved before the first one falls.
 
+[Unreleased]: https://github.com/abel0x/thepit/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/abel0x/thepit/releases/tag/v1.0.0

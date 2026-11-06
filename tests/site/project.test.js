@@ -129,3 +129,13 @@ test("continuous integration runs the core suite without installing anything", f
   assert.doesNotMatch(workflow, /npm (?:install|ci)/);
   assert.match(pkg.scripts.test, /^node --test /);
 });
+
+test("the site is published only from main and only after the core suite passes", function () {
+  var workflow = read(".github/workflows/tests.yml");
+  var pages = workflow.slice(workflow.indexOf("\n  pages:"));
+  assert.ok(pages.length > 1, "the workflow has a pages job");
+  assert.match(pages, /\n    needs: core\n/);
+  assert.match(pages, /\n    if: github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'\n/);
+  assert.match(pages, /uses: actions\/deploy-pages@v\d+/);
+  assert.match(pages, /cancel-in-progress: false/);
+});

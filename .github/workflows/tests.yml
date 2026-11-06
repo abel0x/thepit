@@ -22,3 +22,31 @@ jobs:
           node-version: ${{ matrix.node }}
       # The core suite has no dependencies, so there is nothing to install.
       - run: npm test
+
+  pages:
+    name: Publish to GitHub Pages
+    # Only a push to main is published, and only once every Node version has
+    # passed the core suite.
+    needs: core
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # A publish that has started always finishes; the next one waits for it.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/configure-pages@v6
+      # The pit is static and has no build step: the files are the site.
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v5

@@ -22,7 +22,8 @@ function resolve(from, ref) {
 }
 
 function pageRefs(page) {
-  var html = read(page);
+  // A canonical link names the page's published address; it never loads anything.
+  var html = read(page).replace(/<link rel="canonical"[^>]*>/g, "");
   var refs = [];
   var pattern = /<(?:script|link)\b[^>]*(?:src|href)=["']([^"'#]+)["']/g;
   var match;
@@ -189,8 +190,10 @@ test("runtime files are clean UTF-8 that never reach the network", function () {
     var buffer = fs.readFileSync(path.join(root, file));
     assert.ok(buffer.length > 0, file);
     assert.notDeepEqual(Array.from(buffer.subarray(0, 3)), [0xef, 0xbb, 0xbf], "BOM in " + file);
-    // A plain <a href> only navigates when followed; it never loads anything.
-    var source = buffer.toString("utf8").replace(/<a\b[^>]*>/gi, "").replace(/<meta property="og:[^>]*>/gi, "");
+    // A plain <a href> only navigates when followed, and the link preview and
+    // the canonical address only name the published pages: none loads anything.
+    var source = buffer.toString("utf8").replace(/<a\b[^>]*>/gi, "").replace(/<meta property="og:[^>]*>/gi, "")
+      .replace(/<link rel="canonical"[^>]*>/gi, "");
     assert.doesNotMatch(source, /\uFFFD/, file);
     assert.doesNotMatch(source, /(?:src|href)\s*=\s*["']https?:\/\//i, file);
     assert.doesNotMatch(source, /url\(\s*["']?https?:\/\//i, file);

@@ -14,7 +14,8 @@ var RUNTIME = ["index.html", "css/styles.css", "js/strings.js", "js/sound.js", "
   "js/store.js", "js/wheel.js", "js/game.js"];
 
 function pageRefs() {
-  var html = read("index.html");
+  // A canonical link names the page's published address; it never loads anything.
+  var html = read("index.html").replace(/<link rel="canonical"[^>]*>/g, "");
   var refs = [];
   var pattern = /<(?:script|link)\b[^>]*(?:src|href)=["']([^"'#]+)["']/g;
   var match;
@@ -70,8 +71,10 @@ test("every sound sample ships as Ogg and AAC and is precached", function () {
 
 test("runtime files contain no remote fetch, script, stylesheet, or image URL", function () {
   RUNTIME.forEach(function (file) {
-    // A plain <a href> only navigates when followed; it never loads anything.
-    var source = read(file).replace(/<a\b[^>]*>/gi, "").replace(/<meta property="og:[^>]*>/gi, "");
+    // A plain <a href> only navigates when followed, and the link preview and
+    // the canonical address only name the published page: none loads anything.
+    var source = read(file).replace(/<a\b[^>]*>/gi, "").replace(/<meta property="og:[^>]*>/gi, "")
+      .replace(/<link rel="canonical"[^>]*>/gi, "");
     assert.doesNotMatch(source, /(?:src|href)\s*=\s*["']https?:\/\//i, file);
     assert.doesNotMatch(source, /url\(\s*["']?https?:\/\//i, file);
     assert.doesNotMatch(source, /fetch\(\s*["']https?:\/\//i, file);

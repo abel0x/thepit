@@ -13,7 +13,8 @@ var root = path.resolve(__dirname, "../../games/blackjack");
 var read = function (file) { return fs.readFileSync(path.join(root, file), "utf8"); };
 
 test("every runtime asset is local and present", function () {
-  var html = read("index.html");
+  // A canonical link names the page's published address; it never loads anything.
+  var html = read("index.html").replace(/<link rel="canonical"[^>]*>/g, "");
   var refs = [];
   var pattern = /<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+)["']/g;
   var match;
@@ -26,7 +27,7 @@ test("every runtime asset is local and present", function () {
 });
 
 test("the pit's service worker precaches everything the table loads", function () {
-  var html = read("index.html");
+  var html = read("index.html").replace(/<link rel="canonical"[^>]*>/g, "");
   var worker = read("../../sw.js");
   var refs = ["index.html"];
   var pattern = /<(?:script|link)\b[^>]*(?:src|href)=["']([^"'#]+)["']/g;
@@ -41,8 +42,9 @@ test("the pit's service worker precaches everything the table loads", function (
 
 test("runtime files contain no remote fetch, script, stylesheet, or image URL", function () {
   ["index.html", "css/styles.css", "js/strings.js", "js/engine.js", "js/rules.js", "js/chip-stack.js", "js/game.js"].forEach(function (file) {
-    // A plain <a href> only navigates when followed; it never loads anything.
-    var source = read(file).replace(/<a\b[^>]*>/gi, "");
+    // A plain <a href> only navigates when followed and the canonical link only
+    // names the published page: neither loads anything.
+    var source = read(file).replace(/<a\b[^>]*>/gi, "").replace(/<link rel="canonical"[^>]*>/gi, "");
     assert.doesNotMatch(source, /(?:src|href)\s*=\s*["']https?:\/\//i, file);
     assert.doesNotMatch(source, /url\(\s*["']?https?:\/\//i, file);
     assert.doesNotMatch(source, /fetch\(\s*["']https?:\/\//i, file);

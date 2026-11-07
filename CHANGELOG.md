@@ -2,6 +2,10 @@
 
 All notable changes to ThePit are documented here. The project follows [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+- Search engines get one address per page: the lobby and every table name their published address as canonical, `sitemap.xml` lists all fifteen, and the lobby carries the Google Search Console verification.
+
 ## [1.0.1] - 2026-11-06
 
 A picture of the whole pit, a site published only once the tests pass, and a README that matches the tables.
@@ -58,5 +62,6 @@ The first release of the pit: nine tables, a money wheel, a slot machine, a vide
 - Keno 80, a keno machine: mark 1 to 10 of 80 numbers or quick pick, twenty balls drawn one by one, a pay table for every count of marks with its exact return, and a game left unfinished settled with the same balls. One ticket plays 1, 5, 10 or 20 draws in a row, every draw paid for, drawn and saved before the first ball, and the lot paid together.
 - Drop 16, a peg board machine: balls bounce down 8, 12 or 16 rows of pegs into slots that pay up to 1000 times the bet, under three risks with pay tables of its own and returns from 96.88% to 97.25% counted over every way down, with 1, 5, 10 or 20 balls a drop, all saved before the first one falls.
 
+[Unreleased]: https://github.com/abel0x/thepit/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/abel0x/thepit/releases/tag/v1.0.1
 [1.0.0]: https://github.com/abel0x/thepit/tree/v1.0.0

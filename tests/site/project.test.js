@@ -112,6 +112,22 @@ test("GitHub Pages serves the files as they are, with a matching link preview", 
   });
 });
 
+test("search engines find every page once, under its published address", function () {
+  var urls = PAGES.map(function (page) { return pkg.homepage + page.replace(/index\.html$/, ""); });
+  PAGES.forEach(function (page, i) {
+    var canonical = read(page).match(/<link rel="canonical" href="([^"]+)" \/>/g) || [];
+    assert.deepEqual(canonical, ['<link rel="canonical" href="' + urls[i] + '" />'], page);
+  });
+  var sitemap = read("sitemap.xml");
+  assert.match(sitemap, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">\n/);
+  var listed = (sitemap.match(/<loc>[^<]*<\/loc>/g) || []).map(function (loc) { return loc.slice(5, -6); });
+  assert.deepEqual(listed, urls);
+  // Search Console keeps the site verified only while the lobby carries its token.
+  var tokens = PAGES.map(function (page) { return (read(page).match(/name="google-site-verification"/g) || []).length; });
+  assert.deepEqual(tokens, PAGES.map(function (page) { return page === "index.html" ? 1 : 0; }));
+  assert.match(read("index.html"), /<meta name="google-site-verification" content="XacY5y52KIxRIvYicwvR-VJYq8Yw1od7nXy4N9m9evI" \/>/);
+});
+
 test("the lobby and every table name ThePit on home screens", function () {
   PAGES.forEach(function (page) {
     var html = read(page);
